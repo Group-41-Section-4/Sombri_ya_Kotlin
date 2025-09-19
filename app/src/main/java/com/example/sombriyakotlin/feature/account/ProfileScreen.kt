@@ -166,7 +166,7 @@ fun ContentCard(modifier: Modifier = Modifier) {
             OutlinedTextField(
                 value = "user@uniandes.edu.co",
                 onValueChange = {},
-                label = { Text("email") },
+
                 readOnly = true,
                 shape = RoundedCornerShape(24.dp),
                 prefix = {

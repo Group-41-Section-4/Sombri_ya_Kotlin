@@ -21,8 +21,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SombriYaKotlinTheme {
-                //CardProfile()
-                cardRent()
+                CardProfile()
+                //cardRent()
                 /*
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
