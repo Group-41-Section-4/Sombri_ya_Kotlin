@@ -12,7 +12,7 @@ import com.example.sombriyakotlin.feature.account.CardProfile
 import com.example.sombriyakotlin.feature.home.CardHome
 import com.example.sombriyakotlin.feature.main.CardEstaciones
 import com.example.sombriyakotlin.feature.main.CardMain
-import com.example.sombriyakotlin.feature.rent.cardRent
+import com.example.sombriyakotlin.feature.rent.CardRent
 import androidx.navigation.compose.rememberNavController
 import com.example.sombriyakotlin.navigation.AppNavigation
 import com.example.sombriyakotlin.ui.theme.SombriYaKotlinTheme

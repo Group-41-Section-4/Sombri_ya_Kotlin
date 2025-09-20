@@ -68,7 +68,7 @@ fun Bar(navController: NavController){
         ) {
             Button(
                 onClick = {
-                    navController.navigate("rentar")
+                    navController.navigate("rent")
                 },
                 modifier = Modifier.fillMaxSize(), // El botón ocupa todo el Box, Button
                 shape = CircleShape,

@@ -10,7 +10,7 @@ import com.example.sombriyakotlin.feature.account.signup.SignUpScreen
 import com.example.sombriyakotlin.feature.home.CardHome
 import com.example.sombriyakotlin.feature.main.CardEstaciones
 import com.example.sombriyakotlin.feature.main.CardMain
-import com.example.sombriyakotlin.feature.rent.cardRent
+import com.example.sombriyakotlin.feature.rent.CardRent
 import com.example.sombriyakotlin.screens.HomeScreen
 
 // Definimos las rutas de navegación
@@ -70,7 +70,7 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable(Routes.RENT) {
-            cardRent(navController)
+            CardRent(navController)
         }
 
         composable(Routes.STATIONS) {

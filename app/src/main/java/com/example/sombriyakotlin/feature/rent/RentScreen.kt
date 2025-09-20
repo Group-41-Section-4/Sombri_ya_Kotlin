@@ -43,24 +43,19 @@ import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.feature.inferiorbar.Bar
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 //@Preview()
 @Composable
-fun cardRent(navController: NavController) {
-
-    Scaffold(
+fun CardRent(navController: NavController) {
+    Column(
         modifier = Modifier.fillMaxSize(),
-        topBar = {TopBar(navController)},
-
-
-        bottomBar = { Bar(navController) },
-        floatingActionButton = {botonNFC(onClick = { /* activar nfc */ })},
-        floatingActionButtonPosition = androidx.compose.material3.FabPosition.Center
-
-    ){ innerPadding ->
-        Box(Modifier.fillMaxSize().padding(innerPadding)) {
+    ) {
+        TopBar(navController)
+        Box(Modifier.weight(1f).fillMaxSize()) {
             ContentCard(Modifier.matchParentSize())
+            BotonNFC(onClick = { /* activar nfc */ }, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp) )
         }
+        Bar(navController)
     }
 }
 
@@ -105,8 +100,9 @@ fun ContentCard(modifier: Modifier = Modifier){
 }
 
 @Composable()
-fun botonNFC(onClick: () -> Unit, /*modifier: Modifier = Modifier*/){
-    ExtendedFloatingActionButton(onClick = {onClick},
+fun BotonNFC(onClick: () -> Unit, modifier: Modifier = Modifier){
+    ExtendedFloatingActionButton(
+        onClick = onClick,
         icon = {
             Icon(
                  painter = painterResource(id = R.drawable.vector),
@@ -117,65 +113,12 @@ fun botonNFC(onClick: () -> Unit, /*modifier: Modifier = Modifier*/){
         contentColor = colorResource(R.color.botonNfc),
         containerColor = colorResource(R.color.white),
         text = { Text("Activar NFC") },
-        modifier = Modifier
+        modifier = modifier
             .width(199.dp)
             .height(40.dp)
             .padding(
                 horizontal = 25.dp,
                 vertical = 5.dp
             )
-
     )
-}
-
-@Composable()
-fun bottomAppBar(){
-    Box(Modifier.fillMaxWidth()) {
-    BottomAppBar(
-        containerColor = colorResource(id = R.color.primary),
-        modifier = Modifier.height(71.dp),
-        actions = {
-            IconButton(onClick = { /* do something */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.mapa),
-                    contentDescription = "Map",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { /* do something */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.menu),
-                    contentDescription = "Menu",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-
-        },
-        floatingActionButton = {ButtonUmbrella()},
-
-        )
-}
-}
-@Composable()
-fun ButtonUmbrella(
-
-){
-    FloatingActionButton(
-        onClick = {/*ACTION WHEN DO CLICKS*/},
-        containerColor = colorResource(R.color.red),
-        contentColor = colorResource(R.color.white),
-        modifier = Modifier.size(64.dp).offset(y = (-28).dp)
-    ) {
-
-            Icon(
-                painter = painterResource(id = R.drawable.umbrella),
-                contentDescription = "umbrella",
-                modifier = Modifier.size(28.dp),
-            )
-        
-
-    }
-
-
 }
