@@ -33,14 +33,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview()
+//@Preview()
 @Composable
-fun CardProfile() {
+fun CardProfile(navController: NavController) {
 
     Column {
-        TopBar()
+        TopBar(navController)
         ContentCard(
             modifier = Modifier.fillMaxWidth()
         )
@@ -49,7 +50,7 @@ fun CardProfile() {
 @OptIn(ExperimentalMaterial3Api::class)
 //@Preview
 @Composable()
-fun TopBar(){
+fun TopBar(navController: NavController){
 
         TopAppBar(
             title = { Text("Cuenta",
@@ -62,7 +63,7 @@ fun TopBar(){
             ),
 
             navigationIcon = {
-                IconButton(onClick = { /* do something */ }) {
+                IconButton(onClick = { navController.navigate("main") }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Atrás"

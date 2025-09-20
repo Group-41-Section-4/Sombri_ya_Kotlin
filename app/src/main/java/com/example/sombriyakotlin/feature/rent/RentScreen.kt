@@ -1,6 +1,7 @@
 package com.example.sombriyakotlin.feature.rent
 
 import android.annotation.SuppressLint
+import android.window.BackEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,19 +39,21 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
+import com.example.sombriyakotlin.feature.inferiorbar.Bar
 
 
-@Preview()
+//@Preview()
 @Composable
-fun cardRent() {
+fun cardRent(navController: NavController) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {TopBar()},
+        topBar = {TopBar(navController)},
 
 
-        bottomBar = {bottomAppBar()},
+        bottomBar = { Bar(navController) },
         floatingActionButton = {botonNFC(onClick = { /* activar nfc */ })},
         floatingActionButtonPosition = androidx.compose.material3.FabPosition.Center
 
@@ -63,7 +66,7 @@ fun cardRent() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable()
-fun TopBar(){
+fun TopBar(navController : NavController){
     TopAppBar(
         title = { Text("") },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -80,7 +83,7 @@ fun TopBar(){
             }
         },
         actions = {
-            IconButton(onClick = { /* do something */ }) {
+            IconButton(onClick = { navController.navigate("profile") }) {
                 Icon(
                     imageVector = Icons.Filled.AccountCircle,
                     contentDescription = "Perfil"

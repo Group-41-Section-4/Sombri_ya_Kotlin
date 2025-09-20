@@ -24,16 +24,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import org.intellij.lang.annotations.JdkConstants
 
 data class Estacion(val id: Int, val nombre: String, val descripcion: String)
 
-@Preview(showBackground = true, device = Devices.PIXEL_4)
+//@Preview(showBackground = true, device = Devices.PIXEL_4)
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview()
+//@Preview()
 @Composable
-fun CardEstaciones(){
+fun CardEstaciones(navController: NavController){
     val estaciones = listOf(
         Estacion(1, "Estación A", "Descripción de la estación A"),
         Estacion(2, "Estación B", "Descripción de la estación B"),
@@ -56,7 +57,7 @@ fun CardEstaciones(){
     ) {
         // Contenido principal de la pantalla (puede estar vacío o tener otros elementos)
         Column(modifier = Modifier.fillMaxSize().padding(0.dp)) {
-            CardMain()
+            CardMain(navController = navController) // Reemplaza con tu composable principalna)
         }
     }
 }

@@ -4,8 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.sombriyakotlin.feature.account.CardProfile
 import com.example.sombriyakotlin.feature.account.login.LoginScreen
 import com.example.sombriyakotlin.feature.account.signup.SignUpScreen
+import com.example.sombriyakotlin.feature.home.CardHome
+import com.example.sombriyakotlin.feature.main.CardEstaciones
+import com.example.sombriyakotlin.feature.main.CardMain
+import com.example.sombriyakotlin.feature.rent.cardRent
 import com.example.sombriyakotlin.screens.HomeScreen
 
 // Definimos las rutas de navegación
@@ -13,13 +18,21 @@ object Routes {
     const val LOGIN = "login"
     const val SIGNUP = "signup"
     const val HOME = "home"
+
+    const val MAIN = "main"
+
+    const val RENT = "rent"
+
+    const val STATIONS = "stations"
+
+    const val PROFILE = "profile"
 }
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Routes.LOGIN
+        startDestination = Routes.HOME
     ) {
         composable(Routes.LOGIN) {
             LoginScreen(
@@ -28,7 +41,7 @@ fun AppNavigation(navController: NavHostController) {
                 },
                 onContinue = {
                     // Comentado para futura implementación
-                    // navController.navigate(Routes.HOME)
+                    navController.navigate(Routes.MAIN)
                 }
             )
         }
@@ -40,22 +53,34 @@ fun AppNavigation(navController: NavHostController) {
                 },
                 onContinue = {
                     // Comentado para futura implementación
-                    // navController.navigate(Routes.HOME)
+                    navController.navigate(Routes.MAIN)
                 }
             )
         }
         
-        // Ruta comentada para futura implementación
-        /*
+
         composable(Routes.HOME) {
-            HomeScreen(
-                onLogout = {
-                    navController.navigate(Routes.LOGIN) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                    }
-                }
+            CardHome(
+                navController
             )
         }
-        */
+
+        composable(Routes.MAIN) {
+            CardMain(navController)
+        }
+
+        composable(Routes.RENT) {
+            cardRent(navController)
+        }
+
+        composable(Routes.STATIONS) {
+            CardEstaciones(navController)
+        }
+
+        composable(Routes.PROFILE) {
+            CardProfile(navController)
+        }
+
+
     }
 }

@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         //enableEdgeToEdge()
         setContent {
             SombriYaKotlinTheme {
-
+                //cardRent(navController = rememberNavController())
                 val navController = rememberNavController()
                 AppNavigation(navController = navController)
             }

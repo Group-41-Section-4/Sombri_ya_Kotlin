@@ -30,12 +30,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview()
+//@Preview()
 @Composable
-fun Bar(){
+fun Bar(navController: NavController){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,7 +46,7 @@ fun Bar(){
         verticalAlignment = Alignment.CenterVertically
     ){
 
-        Button(onClick = { /*TODO*/ },
+        Button(onClick = { navController.navigate("main") },
 //            modifier = Modifier.size(48.dp), // Reduce el tamaño del botón
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent), // Color del botón
             contentPadding = PaddingValues(0.dp)
@@ -67,6 +68,7 @@ fun Bar(){
         ) {
             Button(
                 onClick = {
+                    navController.navigate("rentar")
                 },
                 modifier = Modifier.fillMaxSize(), // El botón ocupa todo el Box, Button
                 shape = CircleShape,

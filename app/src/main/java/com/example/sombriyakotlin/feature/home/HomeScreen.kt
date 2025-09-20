@@ -22,12 +22,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview()
+//@Preview()
 @Composable
-fun CardHome() {
+fun CardHome(navController: NavController) {
     Surface(modifier = Modifier.fillMaxSize(),
         color= colorResource(id=R.color.BlueInterface),
     ) {
@@ -46,7 +47,7 @@ fun CardHome() {
                     .fillMaxWidth(0.8f)
                     .fillMaxHeight(0.2f)
                 ,
-                onClick = { /*TODO*/ },
+                onClick = { navController.navigate("login") },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.HomeBlue),
                     contentColor = Color.White,

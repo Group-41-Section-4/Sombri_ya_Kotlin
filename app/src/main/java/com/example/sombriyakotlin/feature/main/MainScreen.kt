@@ -21,14 +21,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.feature.inferiorbar.Bar
 import com.example.sombriyakotlin.feature.rent.TopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview()
+//@Preview()
 @Composable
-fun CardMain(){
+fun CardMain(navController: NavController){
     Column (
         modifier = Modifier.fillMaxHeight(1f),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -42,7 +43,7 @@ fun CardMain(){
 //            titleContentColor = Color.White
 //        ))
 
-        TopBar()
+        TopBar(navController)
         Box(
             modifier = Modifier
                 .fillMaxHeight(0.9f)
@@ -52,7 +53,7 @@ fun CardMain(){
             contentAlignment = Alignment.TopCenter,
             //color = Color.Black
         ){
-            Button(onClick = { /*TODO*/ },
+            Button(onClick = { navController.navigate("stations")},
                 modifier = Modifier.padding(top=5.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.estaciones_button)), // Color del botón
             ) {
@@ -60,6 +61,6 @@ fun CardMain(){
             }
 
         }
-        Bar()
+        Bar(navController)
     }
 }
