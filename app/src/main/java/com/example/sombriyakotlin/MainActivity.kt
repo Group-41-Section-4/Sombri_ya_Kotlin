@@ -12,16 +12,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.sombriyakotlin.feature.account.CardProfile
+import com.example.sombriyakotlin.feature.home.CardHome
+import com.example.sombriyakotlin.feature.main.CardEstaciones
+import com.example.sombriyakotlin.feature.main.CardMain
 import com.example.sombriyakotlin.feature.rent.cardRent
 import com.example.sombriyakotlin.ui.theme.SombriYaKotlinTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        //enableEdgeToEdge()
         setContent {
             SombriYaKotlinTheme {
-                CardProfile()
+
+                //CardHome()
+                //CardMain()
+                CardEstaciones()
+                //CardProfile()
                 //cardRent()
                 /*
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
