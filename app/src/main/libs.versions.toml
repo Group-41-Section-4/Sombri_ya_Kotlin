@@ -1,0 +1,8 @@
+toml
+[versions]
+# ... tus otras versiones
+secretsGradlePlugin = "2.0.1"  # <-- Añade esta línea
+
+[plugins]
+# ... tus otros plugins
+secrets-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }  # <-- Añade esta línea
