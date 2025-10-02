@@ -257,7 +257,7 @@ fun ContentCard(modifier: Modifier = Modifier) {
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
                 ) {
-                    openDialogMail = true // <-- cambia estado aquí (sin llaves extra)
+                    openDialogMail = true
                 }
         ) {
             Text("Borrar cuenta")

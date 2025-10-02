@@ -14,6 +14,7 @@ import com.example.sombriyakotlin.feature.main.CardEstaciones
 import com.example.sombriyakotlin.feature.main.CardMain
 import com.example.sombriyakotlin.feature.rent.CardRent
 import androidx.navigation.compose.rememberNavController
+import com.example.sombriyakotlin.feature.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.navigation.AppNavigation
 import com.example.sombriyakotlin.ui.theme.SombriYaKotlinTheme
 
@@ -26,6 +27,7 @@ class MainActivity : ComponentActivity() {
             SombriYaKotlinTheme {
                 //cardRent(navController = rememberNavController())
                 val navController = rememberNavController()
+                //paymentMethopdsCard(navController)
                 AppNavigation(navController = navController)
             }
         }
