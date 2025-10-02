@@ -52,7 +52,7 @@ fun CardHome(navController: NavController) {
                     containerColor = colorResource(R.color.HomeBlue),
                     contentColor = Color.White,
                     )
-            ) { Text("Iniciar Sesión con Uniandes",
+            ) { Text("Iniciar Sesión",
                 fontSize = 20.sp)}
         }
     }
