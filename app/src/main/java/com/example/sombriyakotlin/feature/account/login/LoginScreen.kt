@@ -37,17 +37,18 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF28BCEF)) // background: #28BCEF
+            .background(color = Color(0xFF90E0EF)) // background: #28BCEF
     ) {
 
         // --- Título "Sombri-Ya" (arriba)
         Text(
             text = "Sombri-Ya",
             color = Color(0xFF001242),
-            fontSize = 48.sp,
-            fontWeight = FontWeight.W400,        // Block Berthold en Figma (fallback Roboto)
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .offset(x = 94.dp, y = 105.dp)   // left/top exactos de Figma
+                .align(Alignment.TopCenter)
+                .offset(y = 105.dp)   // left/top exactos de Figma
         )
 
         // --- Tarjeta principal (Rectangle 3)
@@ -56,7 +57,7 @@ fun LoginScreen(
                 .size(width = 349.dp, height = 445.dp)
                 .offset(x = 22.dp, y = 205.dp)
                 .shadow(8.dp, RoundedCornerShape(45.dp), clip = false)
-                .clip(RoundedCornerShape(45.dp))
+                .clip(RoundedCornerShape(25.dp))
                 .background(Color(0xFFFFFDFD))
         ) {
             // Dentro de la tarjeta: offsets RELATIVOS al card
@@ -66,8 +67,8 @@ fun LoginScreen(
             Text(
                 text = "Inicia Sesión",
                 color = Color.Black,
-                fontSize = 36.sp,
-                fontWeight = FontWeight.W400,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .offset(y = 13.dp)
@@ -78,7 +79,6 @@ fun LoginScreen(
                 modifier = Modifier
                     .size(width = 53.dp, height = 57.dp)
                     .offset(x = 148.dp, y = 80.dp)
-                    .shadow(6.dp, RoundedCornerShape(6.dp), clip = false)
                     .clip(RoundedCornerShape(6.dp))
                     .background(Color.White),
                 contentAlignment = Alignment.Center
@@ -87,7 +87,7 @@ fun LoginScreen(
                     imageVector = Icons.Filled.Person,
                     contentDescription = "person",
                     tint = Color(0xFF001242),
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(50.dp)
                 )
             }
 
@@ -99,6 +99,8 @@ fun LoginScreen(
                 modifier = Modifier
                     .offset(x = 33.dp, y = 150.dp)
                     .size(width = 284.dp, height = 50.dp)
+                    .padding(vertical = 16.dp)
+
             )
 
             // Campo Contraseña → (l:55-22=33, t:397-205=192) 284×40
@@ -109,6 +111,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .offset(x = 33.dp, y = 200.dp)
                     .size(width = 284.dp, height = 50.dp)
+                    .padding(vertical = 16.dp)
             )
 
             // ¿Olvidaste tu contraseña? → (l:118-22=96, t:511-205=306)
@@ -138,7 +141,7 @@ fun LoginScreen(
                     .size(width = 230.dp, height = 36.dp)
                     .shadow(6.dp, RoundedCornerShape(1000.dp), clip = false)
                     .clip(RoundedCornerShape(1000.dp))
-                    .background(Color(0xFFFF4645))
+                    .background(Color(0xFF001242))
                     .clickable { onContinue() },
                 contentAlignment = Alignment.Center
             ) {
@@ -156,6 +159,7 @@ fun LoginScreen(
             text = "Sombri-Ya",
             color = Color(0xFFFFFAFA),
             fontSize = 22.sp,
+            textAlign = TextAlign.Center,
             modifier = Modifier.offset(x = 140.dp, y = 699.dp)
         )
 
