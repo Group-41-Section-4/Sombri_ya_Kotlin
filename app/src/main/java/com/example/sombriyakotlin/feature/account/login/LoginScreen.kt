@@ -37,17 +37,18 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF28BCEF)) // background: #28BCEF
+            .background(color = Color(0xFF90E0EF)) // background: #28BCEF
     ) {
 
         // --- Título "Sombri-Ya" (arriba)
         Text(
             text = "Sombri-Ya",
             color = Color(0xFF001242),
-            fontSize = 48.sp,
-            fontWeight = FontWeight.W400,        // Block Berthold en Figma (fallback Roboto)
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .offset(x = 94.dp, y = 105.dp)   // left/top exactos de Figma
+                .align(Alignment.TopCenter)
+                .offset(y = 105.dp)   // left/top exactos de Figma
         )
 
         // --- Tarjeta principal (Rectangle 3)
@@ -55,99 +56,103 @@ fun LoginScreen(
             modifier = Modifier
                 .size(width = 349.dp, height = 445.dp)
                 .offset(x = 22.dp, y = 205.dp)
-                .shadow(8.dp, RoundedCornerShape(45.dp), clip = false)
-                .clip(RoundedCornerShape(45.dp))
-                .background(Color(0xFFFFFDFD))
+                .shadow(8.dp, RoundedCornerShape(25.dp), clip = false)
+                .clip(RoundedCornerShape(25.dp))
+                .background(Color(0xFFFFFDFD)),
+            contentAlignment = Alignment.Center
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
             // Dentro de la tarjeta: offsets RELATIVOS al card
             // (restando 22 y 205 de los valores globales)
 
-            // Título: "Inicia Sesión" (top 218 → 218-205 = 13)
-            Text(
-                text = "Inicia Sesión",
-                color = Color.Black,
-                fontSize = 36.sp,
-                fontWeight = FontWeight.W400,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .offset(y = 13.dp)
-            )
-
-            // Caja del ícono (person) → (l:170-22=148, t:285-205=80) 53x57
-            Box(
-                modifier = Modifier
-                    .size(width = 53.dp, height = 57.dp)
-                    .offset(x = 148.dp, y = 80.dp)
-                    .shadow(6.dp, RoundedCornerShape(6.dp), clip = false)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(Color.White),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = "person",
-                    tint = Color(0xFF001242),
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-
-            // Campo Email → (l:55-22=33, t:332-205=127) 284×40
-            LoginInput(
-                value = email,
-                onValueChange = { email = it },
-                hint = "xxx@ejemplo.com",
-                modifier = Modifier
-                    .offset(x = 33.dp, y = 150.dp)
-                    .size(width = 284.dp, height = 50.dp)
-            )
-
-            // Campo Contraseña → (l:55-22=33, t:397-205=192) 284×40
-            LoginInput(
-                value = pass,
-                onValueChange = { pass = it },
-                hint = "contraseña",
-                modifier = Modifier
-                    .offset(x = 33.dp, y = 200.dp)
-                    .size(width = 284.dp, height = 50.dp)
-            )
-
-            // ¿Olvidaste tu contraseña? → (l:118-22=96, t:511-205=306)
-            Text(
-                text = "¿Olvidaste tu contraseña?",
-                color = Color(0xFF001242),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.offset(x = 96.dp, y = 306.dp)
-            )
-
-            // ¿No tienes una cuenta? Regístrate → (l:84-22=62, t:545-205=340)
-            Text(
-                text = "¿No tienes una cuenta? Regístrate",
-                color = Color(0xFF001242),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier
-                    .offset(x = 62.dp, y = 340.dp)
-                    .clickable { onNavigateToSignUp() }
-            )
-
-            // Botón: Iniciar sesión → (l:82-22=60, t:579-205=374) 230×36
-            Box(
-                modifier = Modifier
-                    .offset(x = 60.dp, y = 374.dp)
-                    .size(width = 230.dp, height = 36.dp)
-                    .shadow(6.dp, RoundedCornerShape(1000.dp), clip = false)
-                    .clip(RoundedCornerShape(1000.dp))
-                    .background(Color(0xFFFF4645))
-                    .clickable { onContinue() },
-                contentAlignment = Alignment.Center
-            ) {
+                // Título: "Inicia Sesión" (top 218 → 218-205 = 13)
                 Text(
-                    text = "Seguir",
-                    color = Color.White,
-                    fontSize = 22.sp,
-                    letterSpacing = (-0.26f).sp
+                    text = "Inicia Sesión",
+                    color = Color.Black,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
                 )
+
+                // Caja del ícono (person) → (l:170-22=148, t:285-205=80) 53x57
+                Box(
+                    modifier = Modifier
+                        .size(width = 53.dp, height = 57.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "person",
+                        tint = Color(0xFF001242),
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
+
+                // Campo Email → (l:55-22=33, t:332-205=127) 284×40
+                LoginInput(
+                    value = email,
+                    onValueChange = { email = it },
+                    hint = "xxx@ejemplo.com",
+                    modifier = Modifier
+                        .height(80.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 16.dp)
+
+                )
+
+                // Campo Contraseña → (l:55-22=33, t:397-205=192) 284×40
+                LoginInput(
+                    value = pass,
+                    onValueChange = { pass = it },
+                    hint = "contraseña",
+                    modifier = Modifier
+                        .height(80.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 16.dp)
+                )
+
+                // ¿Olvidaste tu contraseña? → (l:118-22=96, t:511-205=306)
+                Text(
+                    text = "¿Olvidaste tu contraseña?",
+                    color = Color(0xFF001242),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    // modifier = Modifier.offset(x = 96.dp, y = 306.dp)
+                )
+
+                // ¿No tienes una cuenta? Regístrate → (l:84-22=62, t:545-205=340)
+                Text(
+                    text = "¿No tienes una cuenta? Regístrate",
+                    color = Color(0xFF001242),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .clickable { onNavigateToSignUp() }
+                )
+
+                // Botón: Iniciar sesión → (l:82-22=60, t:579-205=374) 230×36
+                Box(
+                    modifier = Modifier
+                        .size(width = 230.dp, height = 36.dp)
+                        .shadow(6.dp, RoundedCornerShape(25.dp), clip = false)
+                        .clip(RoundedCornerShape(25.dp))
+                        .background(Color(0xFF001242))
+                        .clickable { onContinue() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Seguir",
+                        color = Color.White,
+                        fontSize = 22.sp,
+                        letterSpacing = (-0.26f).sp
+                    )
+                }
             }
         }
 
@@ -156,6 +161,7 @@ fun LoginScreen(
             text = "Sombri-Ya",
             color = Color(0xFFFFFAFA),
             fontSize = 22.sp,
+            textAlign = TextAlign.Center,
             modifier = Modifier.offset(x = 140.dp, y = 699.dp)
         )
 
