@@ -1,6 +1,8 @@
 package com.example.sombriyakotlin.feature.rent
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.util.Log
 import android.window.BackEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -31,10 +33,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,18 +49,38 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.feature.inferiorbar.Bar
+import com.example.sombriyakotlin.feature.rent.Scan.NfcScanStrategy
+import com.example.sombriyakotlin.feature.rent.Scan.ScanStrategy
 
 @OptIn(ExperimentalMaterial3Api::class)
 //@Preview()
 @Composable
 fun CardRent(navController: NavController) {
+    val ctx = LocalContext.current
+    val activity = remember(ctx) { ctx as Activity }
+
+    var strategy: ScanStrategy? by remember { mutableStateOf(null) }
+
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
         TopBar(navController)
         Box(Modifier.weight(1f).fillMaxSize()) {
             ContentCard(Modifier.matchParentSize())
-            BotonNFC(onClick = { /* activar nfc */ }, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp) )
+            BotonNFC(onClick = {
+                //Log.d("En toeria funciona NFC")
+                if (strategy == null) {
+                    // activar NFC
+                    val nfc = NfcScanStrategy()
+                    nfc.start(activity)
+                    strategy = nfc
+                } else {
+                    // detener NFC
+                    strategy?.stop(activity)
+                    strategy = null
+                }
+
+            }, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp) )
         }
         Bar(navController)
     }
