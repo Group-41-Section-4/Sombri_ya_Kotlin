@@ -20,20 +20,35 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.sombriyakotlin.ui.account.login.LoginViewModel.LoginState
 
-/**
- * Pantalla Login (sólo vista)
- */
 @Composable
 fun LoginScreen(
     onNavigateToSignUp: () -> Unit = {},
-    onContinue: () -> Unit = {}
+    onContinue: () -> Unit = {},
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
 
     // Estados locales de los inputs (sólo para que se vea el hint/edición)
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
 
+    val loginState by viewModel.loginState.collectAsState()
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is LoginState.Success -> {
+                // Navega solo cuando el registro es exitoso
+                onContinue()
+            }
+            is LoginState.Error -> {
+                // Muestra un Snackbar, Toast o un diálogo con el error
+                // scaffoldState.snackbarHostState.showSnackbar((signUpState as SignUpState.Error).message)
+            }
+            else -> { /* No hacer nada en Idle o Loading */ }
+        }
+    }
     // Lienzo base de 393x852 — los offsets están calc. para esa maqueta
     Box(
         modifier = Modifier
@@ -144,7 +159,7 @@ fun LoginScreen(
                         .shadow(6.dp, RoundedCornerShape(25.dp), clip = false)
                         .clip(RoundedCornerShape(25.dp))
                         .background(Color(0xFF001242))
-                        .clickable { onContinue() },
+                        .clickable { viewModel.loginUser("5e1a88f1-55c5-44d0-87bb-44919f9f4202") },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(

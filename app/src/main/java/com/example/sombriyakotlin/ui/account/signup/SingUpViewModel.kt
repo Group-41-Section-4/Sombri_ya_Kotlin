@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sombriyakotlin.domain.model.User
-import com.example.sombriyakotlin.domain.usecase.user.CreateUserUseCase
+import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SingUpViewModel @Inject constructor (
-    private val createUserUseCase: CreateUserUseCase
+    private val userUseCases: UserUseCases
 ) : ViewModel() {
 
     sealed class SignUpState {
@@ -36,13 +36,12 @@ class SingUpViewModel @Inject constructor (
                 //    val user = User(id = 0, name = name, email = email, password = pass)
                 val user = User(id = "", name = name, email = email) // <-- ¡MODIFICA ESTO!
                 
-                val createdUser = createUserUseCase.invoke(user)
+                val createdUser = userUseCases.createUserUseCase.invoke(user)
                 _signUpState.value = SignUpState.Success(createdUser)
             } catch (e: Exception) {
                 // 3. AÑADIMOS UN LOG PARA VER EL ERROR EN LOGCAT
                 Log.e("SignUpViewModel", "Error al registrar: ${e.message}", e)
                 _signUpState.value = SignUpState.Error("Error al registrar el usuario: ${e.message}")
-            }
-        }
+            }        }
     }
 }

@@ -101,8 +101,8 @@ class NotificationsViewModel @Inject constructor(
                     message = "Probabilidad de lluvia: $pop%",
                     time = nowLabel()
                 )
-            }*/
-
+            }
+*/
         }
     }
 
