@@ -14,10 +14,14 @@ data class RentalDto(
     val endedAt: String?
 )
 
-data class RentalRequest(
+data class RentalRequestDto(
     val user_id: String,
     val station_start_id: String,
     val auth_type: String
+)
+data class EndRentalDto(
+    val user_id: String,
+    val station_end_id: String,
 )
 
 data class StartGps(
@@ -53,8 +57,8 @@ fun Rental.toDto(): RentalDto {
     )
 }
 
-fun Rental.toRequest(): RentalRequest {
-    val request = RentalRequest(
+fun Rental.toRequestDto(): RentalRequestDto {
+    val request = RentalRequestDto(
         user_id = userId,
         station_start_id = stationStartId,
         auth_type = authType
@@ -62,6 +66,15 @@ fun Rental.toRequest(): RentalRequest {
 
     Log.d("RENTAL_REQUEST", "DTO enviado: $request")
 
+    return request
+}
+
+fun Rental.toEndDto(): EndRentalDto {
+    val request = EndRentalDto(
+        user_id = userId,
+        station_end_id = stationStartId
+    )
+    Log.d("RENTAL_REQUEST", "DTO enviado: $request")
     return request
 }
 

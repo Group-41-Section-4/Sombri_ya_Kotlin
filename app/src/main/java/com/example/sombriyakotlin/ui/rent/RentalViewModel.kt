@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sombriyakotlin.domain.model.Rental
-import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -55,16 +55,9 @@ class RentViewModel @Inject constructor(
                 val startTimestamp = formatter.format(now)
 
                 val rental = Rental(
-
                     userId = user.id,
                     stationStartId = stationId,
-                    paymentMethodId = null,
-                    startLat = 6.2442,
-                    startLon = -75.5812,
                     authType = "nfc",
-                    status = "ACTIVE",
-                    startedAt = startTimestamp,
-                    endedAt = null
                 )
                 Log.d("RENT", "ARMO LA RESERVAAAAAAAA")
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
@@ -72,8 +65,14 @@ class RentViewModel @Inject constructor(
                 _rentState.value = RentState.Success(created)
 
             } catch (e: Exception) {
-                _rentState.value = RentState.Error(e.message ?: "Error creando la reserva")
-                Log.d("RENT", "e",e)
+                val errorMessage = if (e is HttpException) {
+                    val errorBody = e.response()?.errorBody()?.string()
+                    "Error ${e.code()}: $errorBody"
+                } else {
+                    e.message ?: "Error creando la reserva"
+                }
+                _rentState.value = RentState.Error(errorMessage)
+                Log.e("RENT", "Error al crear la reserva", e)
             }
         }
     }
