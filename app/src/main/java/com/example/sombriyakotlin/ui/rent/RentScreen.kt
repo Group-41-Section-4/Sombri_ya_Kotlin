@@ -39,6 +39,7 @@ import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.ui.rent.Scan.ScanStrategy
 import com.example.sombriyakotlin.feature.rent.NfcScanStrategy
 import com.example.sombriyakotlin.ui.layout.AppLayout
+import com.example.sombriyakotlin.ui.rent.Scan.QrScannerScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 //@Preview()
@@ -59,7 +60,7 @@ fun CardRent(navController: NavController) {
         modifier = Modifier.fillMaxSize(),
     ) {
         Box(Modifier.weight(1f).fillMaxSize()) {
-            ContentCard(Modifier.matchParentSize())
+            ContentCard(Modifier)
             BotonNFC(onClick = {
                 if (strategy == null) {
                     nfc.start(activity)   // habilita Reader Mode
@@ -108,12 +109,13 @@ fun TopBar(navController : NavController){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable()
 fun ContentCard(modifier: Modifier = Modifier){
-    Image(
-        painter = painterResource(id = R.drawable.simulacionqr),
-        contentDescription = "simulacion qr",
-        modifier = modifier.fillMaxSize(),
-        contentScale = ContentScale.Crop
-    )
+//    Image(
+//        painter = painterResource(id = R.drawable.simulacionqr),
+//        contentDescription = "simulacion qr",
+//        modifier = modifier.fillMaxSize(),
+//        contentScale = ContentScale.Crop
+//    )
+    QrScannerScreen(modifier = modifier)
 }
 
 @Composable()

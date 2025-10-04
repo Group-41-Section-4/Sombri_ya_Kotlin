@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.sombriyakotlin"
-        minSdk = 24
+        minSdk = 22
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -75,6 +75,15 @@ dependencies {
     ksp("com.google.dagger:hilt-compiler:2.51.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // --- CameraX ---
+    implementation("androidx.camera:camera-core:1.2.3")
+    implementation("androidx.camera:camera-camera2:1.2.3")
+    implementation("androidx.camera:camera-lifecycle:1.2.3")
+    implementation("androidx.camera:camera-view:1.2.3")
+
+    // --- ML Kit Barcode Scanning ---
+    implementation("com.google.mlkit:barcode-scanning:17.0.2")
 
 }
 
