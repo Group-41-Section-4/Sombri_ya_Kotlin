@@ -36,10 +36,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
-import com.example.sombriyakotlin.feature.inferiorbar.Bar
-import com.example.sombriyakotlin.feature.rent.NfcScanStrategy
+import com.example.sombriyakotlin.ui.inferiorbar.Bar
 import com.example.sombriyakotlin.ui.rent.Scan.ScanStrategy
-
+import com.example.sombriyakotlin.feature.rent.NfcScanStrategy
 @OptIn(ExperimentalMaterial3Api::class)
 //@Preview()
 @Composable
