@@ -9,8 +9,10 @@ import com.example.sombriyakotlin.ui.account.login.LoginScreen
 import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
 import com.example.sombriyakotlin.ui.home.CardHome
 import com.example.sombriyakotlin.ui.main.CardEstaciones
-import com.example.sombriyakotlin.ui.main.CardMain
+import com.example.sombriyakotlin.ui.main.MainEstaciones
+import com.example.sombriyakotlin.ui.main.MainWithDrawer
 import com.example.sombriyakotlin.ui.rent.CardRent
+import com.example.sombriyakotlin.ui.rent.MainRenta
 
 // Definimos las rutas de navegación
 object Routes {
@@ -25,6 +27,8 @@ object Routes {
     const val STATIONS = "stations"
 
     const val PROFILE = "profile"
+
+    const val PAYMENT_METHODS = "paymentMethods"
 }
 
 @Composable
@@ -66,15 +70,15 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable(Routes.MAIN) {
-            CardMain(navController)
+            MainWithDrawer(navController)
         }
 
         composable(Routes.RENT) {
-            CardRent(navController)
+            MainRenta(navController)
         }
 
         composable(Routes.STATIONS) {
-            CardEstaciones(navController)
+            MainEstaciones(navController)
         }
 
         composable(Routes.PROFILE) {

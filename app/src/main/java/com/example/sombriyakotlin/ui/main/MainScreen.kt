@@ -13,14 +13,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +39,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.ui.inferiorbar.Bar
+import com.example.sombriyakotlin.ui.layout.AppLayout
+import com.example.sombriyakotlin.ui.navigation.Routes
+import com.example.sombriyakotlin.ui.inferiorbar.Bar
 import com.example.sombriyakotlin.ui.rent.TopBar
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -40,11 +50,10 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
-//@Preview()
 @Composable
-fun CardMain(navController: NavController,
+fun MainContent(navController: NavController,
              viewModel: LocationViewModel = viewModel()){
 
     val context = LocalContext.current
@@ -85,22 +94,21 @@ fun CardMain(navController: NavController,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        TopBar(navController)
         Box(
             modifier = Modifier
-                .fillMaxHeight(0.9f)
+                .fillMaxHeight()
                 .fillMaxWidth(),
             contentAlignment = Alignment.TopCenter,
-        ){
+        ) {
 
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
-                onMapLoaded = {isMapLoaded = true},
+                onMapLoaded = { isMapLoaded = true },
                 properties = MapProperties(
                     isMyLocationEnabled = hasLocationPermission // Esto activa el "punto azul"
                 ),
-            ){
+            ) {
 
             }
             Button(
@@ -110,8 +118,14 @@ fun CardMain(navController: NavController,
             ) {
                 Text(text = "ESTACIONES")
             }
-
         }
-        Bar(navController)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainWithDrawer(navController: NavController) {
+    AppLayout(navController = navController) {
+        MainContent(navController)
     }
 }

@@ -15,7 +15,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val BASE_URL = "https://sombri-ya-back-4def07fa1804.herokuapp.com/"
-
+    // private const val BASE_URL = "http://localhost:3000/"
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
