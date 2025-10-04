@@ -10,8 +10,11 @@ data class CreateUserDto(
 data class UserDto(
     val id: String,
     val name: String,
-    val email: String
+    val email: String,
+    val password: String,
+    val biometric_enabled: String,
+    val created_at: String,
 )
 
-fun UserDto.toDomain(): User = User(id, name, email)
+fun UserDto.toDomain(): User = User(id, name, email, password, biometric_enabled, created_at)
 fun User.toDto(): CreateUserDto = CreateUserDto(name, email)
