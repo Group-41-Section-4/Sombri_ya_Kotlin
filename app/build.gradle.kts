@@ -2,7 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    // Secrets Gradle Plugin (Maps/keys)
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+
+    // Hilt + KSP (Hilt 2.51.1 soporta KSP)
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
 }
@@ -19,6 +23,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // ---- BuildConfig: API key de OpenWeather ----
+        // La tomamos de secrets.properties/local.properties usando project.findProperty.
+        val owmKey: String = (project.findProperty("OWM_API_KEY") as String?) ?: ""
+        buildConfigField("String", "OWM_API_KEY", "\"$owmKey\"")
     }
 
     buildTypes {
@@ -29,7 +38,12 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            // Si quieres una key distinta para debug, puedes sobreescribir aquí.
+            // buildConfigField("String", "OWM_API_KEY", "\"$owmKey\"")
+        }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -37,22 +51,26 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
+        buildConfig = true   // <- asegura que se genere BuildConfig
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
     implementation(libs.play.services.location)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -60,30 +78,31 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("androidx.navigation:navigation-compose:2.7.6")
-    // Google Maps Compose library
+
+    // Google Maps Compose
     val mapsComposeVersion = "4.4.1"
     implementation("com.google.maps.android:maps-compose:$mapsComposeVersion")
-    // Google Maps Compose utility library
     implementation("com.google.maps.android:maps-compose-utils:$mapsComposeVersion")
-    // Google Maps Compose widgets library
     implementation("com.google.maps.android:maps-compose-widgets:$mapsComposeVersion")
+
+    // Networking
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0") // OkHttp moderno
+
+    // Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
     ksp("com.google.dagger:hilt-compiler:2.51.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-
 }
 
-secrets{
-    // Optionally specify a different file name containing your secrets.
-    // The plugin defaults to "local.properties"
+secrets {
+    // El plugin buscará primero en 'secrets.properties' (que tú controlas)
     propertiesFileName = "secrets.properties"
 
-    // A properties file containing default secret values. This file can be
-    // checked in version control.
+    // Si falta, usa 'local.properties' como fallback
     defaultPropertiesFileName = "local.properties"
-
 }
