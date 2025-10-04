@@ -3,13 +3,7 @@ package com.example.sombriyakotlin.ui.account
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -17,93 +11,90 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.example.sombriyakotlin.R
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-
-
-
+import com.example.sombriyakotlin.R
 
 @OptIn(ExperimentalMaterial3Api::class)
-//@Preview()
 @Composable
 fun CardProfile(navController: NavController) {
-
     Column {
         TopBar(navController)
         ContentCard(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            navController = navController
         )
     }
-    }
-@OptIn(ExperimentalMaterial3Api::class)
-//@Preview
-@Composable()
-fun TopBar(navController: NavController){
+}
 
-        TopAppBar(
-            title = { Text("Cuenta",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            ) },
-             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = colorResource(R.color.primary),
-                navigationIconContentColor = Color.Black
-            ),
-
-            navigationIcon = {
-                IconButton(onClick = { navController.navigate("main") }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Atrás"
-                    )
-                }
-            }
-        )
-    }
-
-@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContentCard(modifier: Modifier = Modifier) {
+fun TopBar(navController: NavController){
+    TopAppBar(
+        title = {
+            Text(
+                "Cuenta",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = colorResource(R.color.primary),
+            navigationIconContentColor = Color.Black
+        ),
+        navigationIcon = {
+            IconButton(onClick = { navController.navigate("main") }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Atrás"
+                )
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ContentCard(modifier: Modifier = Modifier,navController: NavController ) {
     var openDialogName by rememberSaveable { mutableStateOf(false) }
     var openDialogPassword by rememberSaveable { mutableStateOf(false) }
     var openDialogMail by rememberSaveable { mutableStateOf(false) }
     var openDialogDelete by rememberSaveable { mutableStateOf(false) }
     var openDialogDiseable by rememberSaveable { mutableStateOf(false) }
 
-
     var currentName by rememberSaveable { mutableStateOf("Nombre") }
     var currentPassword by rememberSaveable { mutableStateOf("Nombre") }
     var currentMail by rememberSaveable { mutableStateOf("user@uniandes.edu.co") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -113,19 +104,11 @@ fun ContentCard(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        IconButton(
-            onClick = { /* acción foto */ },
-            modifier = Modifier.size(160.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.AccountCircle,
-                contentDescription = "Foto de perfil",
-                tint = Color.Black,
-                modifier = Modifier.size(166.dp)
-            )
-        }
-
-        Text("Cambiar foto de perfil")
+        // Card Material 3 como en la imagen
+        DryDistanceCard(
+            text = "Has estado seco durante 0.00 km",
+            modifier = Modifier.fillMaxWidth()
+        )
 
         // === NOMBRE ===
         OutlinedTextField(
@@ -163,9 +146,7 @@ fun ContentCard(modifier: Modifier = Modifier) {
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    openDialogName = true // <-- cambia estado aquí (sin llaves extra)
-                }
+                ) { openDialogName = true }
         )
 
         // === CONTRASEÑA ===
@@ -190,8 +171,7 @@ fun ContentCard(modifier: Modifier = Modifier) {
                         modifier = Modifier.size(24.dp)
                     )
                 }
-            }
-            ,
+            },
             colors = TextFieldDefaults.colors(
                 disabledContainerColor  = colorResource(R.color.secondary),
                 focusedContainerColor   = colorResource(R.color.secondary),
@@ -206,14 +186,12 @@ fun ContentCard(modifier: Modifier = Modifier) {
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    openDialogPassword = true // <-- cambia estado aquí (sin llaves extra)
-                }
+                ) { openDialogPassword = true }
         )
 
         // === EMAIL ===
         OutlinedTextField(
-            value =currentMail ,
+            value = currentMail,
             onValueChange = {},
             readOnly = true,
             shape = RoundedCornerShape(24.dp),
@@ -246,7 +224,7 @@ fun ContentCard(modifier: Modifier = Modifier) {
         )
 
         Button(
-            onClick = {openDialogDelete = true },
+            onClick = { openDialogDelete = true },
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.red),
                 contentColor = Color.White
@@ -254,12 +232,6 @@ fun ContentCard(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    openDialogMail = true
-                }
         ) {
             Text("Borrar cuenta")
         }
@@ -276,9 +248,26 @@ fun ContentCard(modifier: Modifier = Modifier) {
         ) {
             Text("Desactivar cuenta")
         }
+
+        //
+        Button(
+            onClick = {
+                /*Hace falta borrar el usuario del estado*/
+                navController.navigate("home")
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.red),
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Text("Cerrar Sesión")
+        }
     }
 
-    // === DIBUJAR EL DIALOGO DESDE LA COMPOSICIÓN ===
+    // === DIÁLOGOS ===
     if (openDialogName) {
         NameDialog(
             current = currentName,
@@ -288,28 +277,25 @@ fun ContentCard(modifier: Modifier = Modifier) {
                 openDialogName = false
             }
         )
-    }
-    else if(openDialogPassword){
+    } else if (openDialogPassword) {
         PasswordDialog(
             onDismiss = { openDialogPassword = false },
             onSave = { newPassword ->
-                currentPassword=newPassword
+                currentPassword = newPassword
                 openDialogPassword = false
             }
         )
-
-    }
-    else if(openDialogMail){
+    } else if (openDialogMail) {
         MailDialog(
             current = currentMail,
             onDismiss = { openDialogMail = false },
             onSave = { newMail ->
-                currentMail= newMail
+                currentMail = newMail
                 openDialogMail = false
             }
         )
-
     }
+
     if (openDialogDelete) {
         DeleteDiseableAccountDialog(
             text = "Esta acción es permanente y no se puede deshacer. " +
@@ -331,13 +317,47 @@ fun ContentCard(modifier: Modifier = Modifier) {
                     "¿Estás seguro?",
             onDismiss = { openDialogDiseable = false },
             onConfirm = {
-                // TODO after delete account
+                // TODO after disable account
                 openDialogDiseable = false
             }
         )
     }
 }
 
+/* ---------- Function to support ---------- */
+
+@Composable
+fun DryDistanceCard(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(R.color.secondary)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.AccountCircle,
+                contentDescription = null,
+                tint = colorResource(R.color.gray)
+            )
+            Text(
+                text = text,
+                color = colorResource(R.color.gray),
+                fontWeight = FontWeight.Normal
+            )
+        }
+    }
+}
 
 @Composable
 fun NameDialog(
@@ -371,17 +391,14 @@ fun NameDialog(
                     containerColor = colorResource(R.color.primary),
                     contentColor = Color.White
                 ),
-            ) {
-                Text("Guardar")
-            }
+            ) { Text("Guardar") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
+            TextButton(onClick = onDismiss) { Text("Cancelar") }
         }
     )
 }
+
 @Composable
 fun PasswordDialog(
     onDismiss: () -> Unit,
@@ -405,12 +422,9 @@ fun PasswordDialog(
         title = { Text("Cambiar Contraseña") },
         text = {
             Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
+                Modifier.fillMaxWidth().padding(top = 4.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Contraseña actual
                 OutlinedTextField(
                     value = currentPassword,
                     onValueChange = { currentPassword = it },
@@ -428,7 +442,6 @@ fun PasswordDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // Nueva contraseña
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
@@ -446,7 +459,6 @@ fun PasswordDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // Confirmar nueva contraseña
                 OutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
@@ -472,9 +484,7 @@ fun PasswordDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
+            TextButton(onClick = onDismiss) { Text("Cancelar") }
         },
         confirmButton = {
             Button(
@@ -484,12 +494,11 @@ fun PasswordDialog(
                     containerColor = colorResource(R.color.primary),
                     contentColor = Color.White
                 )
-            ) {
-                Text("Guardar")
-            }
+            ) { Text("Guardar") }
         }
     )
 }
+
 @Composable
 fun MailDialog(
     current: String = "Nombre",
@@ -521,17 +530,14 @@ fun MailDialog(
                     containerColor = colorResource(R.color.primary),
                     contentColor = Color.White
                 ),
-            ) {
-                Text("Guardar")
-            }
+            ) { Text("Guardar") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
+            TextButton(onClick = onDismiss) { Text("Cancelar") }
         }
     )
 }
+
 @Composable
 fun DeleteDiseableAccountDialog(
     tittle: String = "Borrar Cuenta",
@@ -543,15 +549,9 @@ fun DeleteDiseableAccountDialog(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(24.dp),
         title = { Text(tittle) },
-        text = {
-            Text(
-                text
-            )
-        },
+        text = { Text(text) },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Regresar")
-            }
+            TextButton(onClick = onDismiss) { Text("Regresar") }
         },
         confirmButton = {
             Button(
@@ -560,9 +560,7 @@ fun DeleteDiseableAccountDialog(
                     containerColor = colorResource(R.color.red),
                     contentColor = Color.White
                 )
-            ) {
-                Text("Confirmar")
-            }
+            ) { Text("Confirmar") }
         }
     )
 }
@@ -584,9 +582,7 @@ fun DisableAccountDialog(
             )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Regresar")
-            }
+            TextButton(onClick = onDismiss) { Text("Regresar") }
         },
         confirmButton = {
             Button(
@@ -595,14 +591,7 @@ fun DisableAccountDialog(
                     containerColor = colorResource(R.color.red),
                     contentColor = Color.White
                 )
-            ) {
-                Text("Confirmar")
-            }
+            ) { Text("Confirmar") }
         }
     )
 }
-
-
-//}
-
-

@@ -4,5 +4,7 @@ import com.example.sombriyakotlin.domain.model.Rental
 
 interface RentalRepository {
     suspend fun createRental(rental: Rental): Rental
+    suspend fun endRental(rental: Rental): Rental
+
 }
 
