@@ -1,7 +1,10 @@
 package com.example.sombriyakotlin.ui.main
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,6 +46,7 @@ import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.domain.model.Station
 import com.example.sombriyakotlin.ui.layout.AppLayout
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -129,8 +133,21 @@ fun MainContent(navController: NavController,
                     is StationsViewModel.StationsState.Success -> {
                         Log.d("MainContent", "Stations: ${currentState.stations}")
                         // Dibuja un marcador para cada estación en la lista
+                        val scaledIcon = remember(context) {
+                            // Crear un bitmap escalado para los iconos del mapa
+                            val originalBitmap = (ContextCompat.getDrawable(context, R.drawable.pin_umbrella) as BitmapDrawable).bitmap
+                            val width = 75 // Nuevo ancho en píxeles
+                            val height = 100 // Nuevo alto en píxeles
+                            val scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, false)
+                            BitmapDescriptorFactory.fromBitmap(scaledBitmap)
+                        }
                         currentState.stations.forEach { station ->
-                            Marker(state = MarkerState(position = LatLng(station.latitude, station.longitude)))
+                            Marker(
+                                state = MarkerState(position = LatLng(station.latitude, station.longitude)),
+                                title = station.placeName,
+                                snippet = "${station.description} \n- ${station.availableUmbrellas} available",
+                                icon = scaledIcon
+                            )
                         }
                     }
                     is StationsViewModel.StationsState.Loading -> {
