@@ -9,8 +9,7 @@ import com.example.sombriyakotlin.ui.account.CardProfile
 import com.example.sombriyakotlin.ui.account.login.LoginScreen
 import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
 import com.example.sombriyakotlin.ui.home.CardHome
-import com.example.sombriyakotlin.ui.main.CardEstaciones
-import com.example.sombriyakotlin.ui.main.MainEstaciones
+import com.example.sombriyakotlin.ui.main.CardStations
 import com.example.sombriyakotlin.ui.main.MainWithDrawer
 import com.example.sombriyakotlin.ui.rent.CardRent
 import com.example.sombriyakotlin.ui.rent.MainRenta
@@ -81,7 +80,7 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable(Routes.STATIONS) {
-            MainEstaciones(navController)
+            CardStations(navController)
         }
 
         composable(Routes.PROFILE) {
