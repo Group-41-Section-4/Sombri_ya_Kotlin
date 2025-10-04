@@ -35,10 +35,15 @@ abstract class RepositoryModule {
             return WeatherRepositoryImpl(apiKey = "64a018d01eba547f998be6d43c606c80")
 
         }
-    }
-    @Binds
-    @Singleton
-    abstract fun bindRentalRepository(rentalRepositoryImpl: RentalRepositoryImpl): RentalRepository
 
+        @Provides
+        @Singleton
+        fun provideRentalRepository(
+            rentalApi: com.example.sombriyakotlin.data.api.RentalApi,
+            rentalLocalDataSource: com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
+        ): com.example.sombriyakotlin.domain.repository.RentalRepository =
+            com.example.sombriyakotlin.data.repository.RentalRepositoryImpl(rentalApi, rentalLocalDataSource)
+
+    }
 
 }

@@ -1,14 +1,15 @@
 package com.example.sombriyakotlin.domain.usecase.rental
 
+import History
 import com.example.sombriyakotlin.domain.model.Rental
 import com.example.sombriyakotlin.domain.repository.RentalRepository
 import javax.inject.Inject
 
-class GetRentalUserUseCase @Inject constructor(
+class getRentalsHystoryUserUseCase @Inject constructor(
     private val rentalRepository: RentalRepository
 ){
-    suspend fun invoke(userID: String,status: String): List<Rental> {
-        return rentalRepository.getRentalsUser(userID,status)
+    suspend fun invoke(userID: String,status: String): List<History> {
+        return rentalRepository.getRentalsHystoryByUserAndStatus(userID,status)
     }
 
 }

@@ -38,18 +38,22 @@ class RentViewModel @Inject constructor(
     }
 
     fun createReservation(stationId: String) {
-        Log.d("RENT", "Se empieza a crear la renta")
+        Log.d("YYYYYYYYYYYYYYYYY", "Se empieza a crear la renta")
         viewModelScope.launch {
             _rentState.value = RentState.Loading
 
             try {
+                Log.d("YYYYYYYYYYYYYYYYY", "Q PUTAS")
+                Log.d("YYYYYYYYYYYYYYYYY", "yA MURIO")
                 val user = userUseCases.getUserUseCase().first()
 
                 if (user == null) {
+                    Log.d("YYYYYYY", "Identiifca al usario")
+
                     _rentState.value = RentState.Error("Usuario no autenticado")
                     return@launch
                 }
-                Log.d("USUARIO", "Identiifca al usario")
+                Log.d("YYYYYYY", "Identiifca al usario")
                 val now = Date()
                 val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                 val startTimestamp = formatter.format(now)
@@ -59,12 +63,13 @@ class RentViewModel @Inject constructor(
                     stationStartId = stationId,
                     authType = "nfc",
                 )
-                Log.d("RENT", "ARMO LA RESERVAAAAAAAA")
+                Log.d("YYYYYYY", "ARMO LA RESERVAAAAAAAA")
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
-                Log.d("RENT", "Mando a crear la reserva")
+                Log.d("YYYYYYYY", "Mando a crear la reserva")
                 _rentState.value = RentState.Success(created)
 
             } catch (e: Exception) {
+                Log.e("WWWWWWWWWWWWW", "Error al crear la reserva", e)
                 val errorMessage = if (e is HttpException) {
                     val errorBody = e.response()?.errorBody()?.string()
                     "Error ${e.code()}: $errorBody"
@@ -72,7 +77,7 @@ class RentViewModel @Inject constructor(
                     e.message ?: "Error creando la reserva"
                 }
                 _rentState.value = RentState.Error(errorMessage)
-                Log.e("RENT", "Error al crear la reserva", e)
+                Log.e("WWWWWWWWWWWWW", "Error al crear la reserva", e)
             }
         }
     }

@@ -79,7 +79,7 @@ class NotificationsViewModel @Inject constructor(
 
                 if (user != null) {
                     Log.d("RENTALS", "Cargando rentas del usuario...")
-                    val rentals = rentalUseCases.getRentalsUserUseCase.invoke(user.id)
+                    val rentals = rentalUseCases.getRentalsUserUseCase.invoke(user.id, status = "ongoing")
                     Log.d("RENTALS", "Rentas obtenidas: ${rentals.size}")
 
                     val rentalNotifications = rentals.map { rental ->

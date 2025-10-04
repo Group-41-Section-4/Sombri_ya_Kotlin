@@ -32,4 +32,14 @@ object DataSourceModule {
     fun provideUserLocalDataSource(
         dataStore: DataStore<Preferences>
     ): UserLocalDataSource = UserLocalDataSource(dataStore)
+
+    @Provides
+    @Singleton
+    fun provideRentalLocalDataSource(
+        dataStore: DataStore<Preferences>
+    ): com.example.sombriyakotlin.data.datasource.RentalLocalDataSource =
+        com.example.sombriyakotlin.data.datasource.RentalLocalDataSource(dataStore)
+
+
+
 }

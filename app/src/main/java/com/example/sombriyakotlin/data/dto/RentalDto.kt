@@ -1,5 +1,6 @@
 package com.example.sombriyakotlin.data.dto
 
+import History
 import android.util.Log
 import com.example.sombriyakotlin.domain.model.Rental
 
@@ -33,7 +34,21 @@ data class StartGps(
     val latitude: Double? = null,
     val longitude: Double? = null
 )
+data class RentalHistoryDto(
+    // Parámetros originales
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 
+    // Parámetros añadidos
+    val id: String,
+    val start_time: String,
+    val end_time: String,
+    val status: String,
+    val duration_minutes: Int,
+    val distance_meters: Double? = null, // Usamos Double? ya que el valor es null
+    val auth_type: String,
+    val auth_attempts: Int
+)
 /* ------------------ Mappers ------------------ */
 
 // DTO -> Dominio
@@ -84,3 +99,23 @@ fun Rental.toEndDto(): EndRentalDto {
     Log.d("RENTAL_REQUEST", "DTO enviado: $request")
     return request
 }
+fun RentalHistoryDto.toDomain(): History {
+    return History(
+        id = this.id,
+        startLat = this.latitude,
+        startLon = this.longitude,
+        startedAt = this.start_time,
+        endedAt = this.end_time,
+        status = this.status,
+        durationMinutes = this.duration_minutes,
+        distanceMeters = this.distance_meters,
+        authType = this.auth_type,
+        authAttempts = this.auth_attempts,
+
+        // Campos que no vienen del DTO y usan valores por defecto/null
+        userId = null,
+        stationStartId = null,
+        paymentMethodId = null
+    )
+}
+
