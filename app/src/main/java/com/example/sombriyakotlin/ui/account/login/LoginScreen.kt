@@ -53,7 +53,7 @@ fun LoginScreen(
     LaunchedEffect(biometricUser) {
         Log.e("LoginScreen", "biometricUser: ${biometricUser?.id}")
         val user = biometricUser
-        if (user != null && biometricAuthManager.canAuthenticate()) {
+        if (user != null ) {
             biometricAuthManager.showBiometricPrompt(
                 onSuccess = {
                     viewModel.loginUser(user.id)
