@@ -36,9 +36,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
-import com.example.sombriyakotlin.ui.inferiorbar.Bar
 import com.example.sombriyakotlin.ui.rent.Scan.ScanStrategy
 import com.example.sombriyakotlin.feature.rent.NfcScanStrategy
+import com.example.sombriyakotlin.ui.layout.AppLayout
+
 @OptIn(ExperimentalMaterial3Api::class)
 //@Preview()
 @Composable
@@ -57,7 +58,6 @@ fun CardRent(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
-        TopBar(navController)
         Box(Modifier.weight(1f).fillMaxSize()) {
             ContentCard(Modifier.matchParentSize())
             BotonNFC(onClick = {
@@ -73,7 +73,6 @@ fun CardRent(navController: NavController) {
 
             }, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp) )
         }
-        Bar(navController = navController, onMenuClick = {}) // Aquí añadimos el onMenuClick vacío
     }
 }
 
@@ -139,4 +138,12 @@ fun BotonNFC(onClick: () -> Unit, modifier: Modifier = Modifier){
                 vertical = 5.dp
             )
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainRenta(navController: NavController) {
+    AppLayout(navController = navController) {
+        CardRent(navController)
+    }
 }

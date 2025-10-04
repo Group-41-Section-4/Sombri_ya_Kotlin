@@ -94,10 +94,9 @@ fun MainContent(navController: NavController,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        TopBar(navController)
         Box(
             modifier = Modifier
-                .fillMaxHeight(0.9f)
+                .fillMaxHeight()
                 .fillMaxWidth(),
             contentAlignment = Alignment.TopCenter,
         ) {
