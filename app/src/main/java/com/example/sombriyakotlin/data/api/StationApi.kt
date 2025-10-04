@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface StationApi {
-    @POST("stations")
+    @POST("statiosn/nearby")
     suspend fun getStations(@Body queryStationDto: QueryLocalizationDto): List<StationDto>
 
 }
