@@ -35,6 +35,7 @@ abstract class RepositoryModule {
         @Singleton
         fun provideWeatherRepository(): WeatherRepository {
             return WeatherRepositoryImpl(apiKey = "64a018d01eba547f998be6d43c606c80")
+
         }
     }
 
