@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.feature.rent.TopBar
 import com.example.sombriyakotlin.ui.inferiorbar.Bar
+import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.navigation.Routes
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -66,63 +67,7 @@ fun MainContent(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainWithDrawer(navController: NavController) {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        gesturesEnabled = false,
-        drawerContent = {
-            ModalDrawerSheet {
-                Text("Opciones", modifier = Modifier.padding(16.dp))
-                NavigationDrawerItem(
-                    label = { Text("Profile") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        navController.navigate(Routes.PROFILE)
-                    }
-                )
-                NavigationDrawerItem(
-                    label = { Text("stations") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        navController.navigate(Routes.STATIONS)
-                    }
-                )
-                NavigationDrawerItem(
-                    label = { Text("Mi Perfil") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        navController.navigate(Routes.PAYMENT_METHODS)
-                    }
-                )
-            }
-        }
-    ) {
-        Scaffold(
-            topBar = { TopBar(navController) },
-            bottomBar = {
-                Bar(
-                    navController = navController,
-                    onMenuClick = {
-                        scope.launch {
-                            if (drawerState.isClosed) drawerState.open()
-                            else drawerState.close()
-                        }
-                    }
-                )
-            }
-        ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                MainContent(navController)
-            }
-        }
+    AppLayout(navController = navController) {
+        MainContent(navController)
     }
 }
