@@ -6,7 +6,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -96,16 +99,16 @@ fun MainContent(navController: NavController,
                 .fillMaxHeight(0.9f)
                 .fillMaxWidth(),
             contentAlignment = Alignment.TopCenter,
-        ){
+        ) {
 
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
-                onMapLoaded = {isMapLoaded = true},
+                onMapLoaded = { isMapLoaded = true },
                 properties = MapProperties(
                     isMyLocationEnabled = hasLocationPermission // Esto activa el "punto azul"
                 ),
-            ){
+            ) {
 
             }
             Button(
@@ -115,6 +118,7 @@ fun MainContent(navController: NavController,
             ) {
                 Text(text = "ESTACIONES")
             }
+        }
     }
 }
 
