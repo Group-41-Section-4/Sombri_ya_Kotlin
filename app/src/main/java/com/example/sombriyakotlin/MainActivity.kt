@@ -26,8 +26,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 //paymentMethopdsCard(navController)
 
-                HistoryScreen(navController =navController )
-                //AppNavigation(navController = navController)
+                //HistoryScreen(navController =navController )
+                AppNavigation(navController = navController)
             }
         }
     }
