@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.feature.main
+package com.example.sombriyakotlin.ui.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -21,12 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
-import org.intellij.lang.annotations.JdkConstants
 
 data class Estacion(val id: Int, val nombre: String, val descripcion: String)
 

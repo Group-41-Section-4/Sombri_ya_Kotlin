@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- AndroidManifest.xml -->
     <uses-permission android:name="android.permission.NFC" />
-
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-feature android:name="android.hardware.nfc" android:required="false" />
 
     <application
