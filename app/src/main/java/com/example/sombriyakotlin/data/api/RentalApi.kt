@@ -5,7 +5,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface RentalApi {
-    @POST("rental")
+    @POST("rentals/start")
     suspend fun createRental(@Body rentDto: RentalDto): RentalDto
 
 }

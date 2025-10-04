@@ -1,5 +1,6 @@
 package com.example.sombriyakotlin.data.repository
 
+import android.util.Log
 import com.example.sombriyakotlin.data.api.RentalApi
 import com.example.sombriyakotlin.data.api.UserApi
 import com.example.sombriyakotlin.data.dto.toDomain
@@ -13,7 +14,9 @@ class RentalRepositoryImpl @Inject constructor(
     private val rentalApi: RentalApi
 ): RentalRepository{
     override suspend fun createRental(rental: Rental): Rental {
+        Log.d("RENT", "YA MEJOR DICHO LO MANDO")
         val response = rentalApi.createRental(rental.toDto())
+        Log.d("RENT", "acaaaaaaaaaaaaaaaaaaaaaaa muereeeeeeeeeee")
         return  response.toDomain()
 
 }

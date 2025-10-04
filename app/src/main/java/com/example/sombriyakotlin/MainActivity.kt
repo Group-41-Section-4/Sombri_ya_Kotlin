@@ -24,8 +24,8 @@ class MainActivity : ComponentActivity() {
                 //cardRent(navController = rememberNavController())
                 val navController = rememberNavController()
                 //paymentMethopdsCard(navController)
-                NotificationsScreen(navController)
-                //AppNavigation(navController = navController)
+
+                AppNavigation(navController = navController)
             }
         }
     }

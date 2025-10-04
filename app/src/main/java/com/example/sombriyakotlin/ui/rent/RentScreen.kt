@@ -34,11 +34,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.ui.rent.Scan.ScanStrategy
 import com.example.sombriyakotlin.feature.rent.NfcScanStrategy
 import com.example.sombriyakotlin.ui.layout.AppLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.LaunchedEffect
+import com.example.sombriyakotlin.ui.navigation.Routes
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 //@Preview()
@@ -47,34 +52,48 @@ fun CardRent(navController: NavController) {
     val ctx = LocalContext.current
     val activity = remember(ctx) { ctx as Activity }
 
+    val rentViewModel: RentViewModel = hiltViewModel()
+    val rentState by rentViewModel.rentState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(rentState) {
+        if (rentState is RentViewModel.RentState.Success) {
+            navController.navigate(Routes.HOME) {
+                popUpTo(Routes.RENT) { inclusive = true }
+            }
+        }
+    }
+
     var strategy: ScanStrategy? by remember { mutableStateOf(null) }
-    val nfc by remember { mutableStateOf(
-        NfcScanStrategy(
 
-        onTagDetected = {}
+    val nfc by remember {
+        mutableStateOf(
+            NfcScanStrategy { stationId ->
+                rentViewModel.createReservation(stationId)
+            }
+        )
+    }
 
-    )) }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Box(Modifier.weight(1f).fillMaxSize()) {
             ContentCard(Modifier.matchParentSize())
-            BotonNFC(onClick = {
-                if (strategy == null) {
-                    nfc.start(activity)   // habilita Reader Mode
-                    strategy = nfc
-                    Log.d("Rent", "NFC Activado")
-                } else {
-                    strategy?.stop(activity)
-                    strategy = null
-                    Log.d("Rent", "NFC Desactivado")
-                }
-
-            }, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp) )
+            BotonNFC(
+                onClick = {
+                    if (strategy == null) {
+                        nfc.start(activity)
+                        strategy = nfc
+                        Log.d("Rent", "NFC Activado")
+                    } else {
+                        strategy?.stop(activity)
+                        strategy = null
+                        Log.d("Rent", "NFC Desactivado")
+                    }
+                },
+                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp)
+            )
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable()
@@ -87,10 +106,10 @@ fun TopBar(navController : NavController){
         ),
 
         navigationIcon = {
-            IconButton(onClick = { /* do something */ }) {
+            IconButton(onClick = { navController.navigate("notifications") }) {
                 Icon(
                     imageVector = Icons.Outlined.Notifications,
-                    contentDescription = "Atrás"
+                    contentDescription = "notifiaciones"
                 )
             }
         },
