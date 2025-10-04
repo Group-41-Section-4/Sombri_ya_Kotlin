@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.sombriyakotlin.feature.notifications.NotificationsScreen
 import com.example.sombriyakotlin.ui.account.CardProfile
 import com.example.sombriyakotlin.ui.account.login.LoginScreen
 import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
@@ -29,6 +30,8 @@ object Routes {
     const val PROFILE = "profile"
 
     const val PAYMENT_METHODS = "paymentMethods"
+
+    const val NOTIFICATIONS = "notifications"
 }
 
 @Composable
@@ -85,6 +88,9 @@ fun AppNavigation(navController: NavHostController) {
             CardProfile(navController)
         }
 
+        composable(Routes.NOTIFICATIONS) {
+            NotificationsScreen(navController)
+        }
 
     }
 }

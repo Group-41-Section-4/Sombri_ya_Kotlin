@@ -71,7 +71,7 @@ fun LoginScreen(
         Box(
             modifier = Modifier
                 .size(width = 349.dp, height = 445.dp)
-                .offset(x = 22.dp, y = 205.dp)
+                .align(Alignment.Center)
                 .shadow(8.dp, RoundedCornerShape(25.dp), clip = false)
                 .clip(RoundedCornerShape(25.dp))
                 .background(Color(0xFFFFFDFD)),
