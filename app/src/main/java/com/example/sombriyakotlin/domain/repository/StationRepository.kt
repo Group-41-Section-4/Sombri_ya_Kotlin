@@ -4,6 +4,6 @@ import com.example.sombriyakotlin.domain.model.Localization
 import com.example.sombriyakotlin.domain.model.Station
 
 interface StationRepository {
-    suspend fun getStations(localization: Localization): List<Station>
-
+    // Renamed for clarity
+    suspend fun getStations(location: Localization): List<Station>    // Example of another function you might add in the future
 }

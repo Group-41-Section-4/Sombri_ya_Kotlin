@@ -12,10 +12,11 @@ class StationRepositoryImpl @Inject constructor(
    private val stationApi: StationApi
 ) : StationRepository {
 
-    override suspend fun getStations(localization: Localization): List<Station> {
-        val response = stationApi.getStations(localization.toDto())
+    override suspend fun getStations(location: Localization): List<Station> {
+        val response = stationApi.getStations(location.toDto())
         return response.map { it.toDomain() }
     }
+
 }
 
 // private val rentalApi: RentalApi

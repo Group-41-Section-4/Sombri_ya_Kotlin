@@ -2,6 +2,7 @@ package com.example.sombriyakotlin.ui.main
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -83,12 +84,22 @@ fun MainContent(navController: NavController,
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(bogota, 17f)
     }
+
+    // Para mover la cámara solo una vez al obtener la primera ubicación
+    var isInitialLocationSet by remember { mutableStateOf(false) }
+
     LaunchedEffect(location) {
         location?.let { loc ->
-            // mueve la cámara a la ubicación del usuario con el mismo zoom
-            val newPos = CameraPosition.fromLatLngZoom(LatLng(loc.latitude, loc.longitude), 17f)
-            // Intentamos animar/mover la cámara; setear la posición directamente
-            cameraPositionState.position = newPos
+            // Mover la cámara solo la primera vez que tengamos una ubicación
+            if (!isInitialLocationSet) {
+                val newPos = CameraPosition.fromLatLngZoom(LatLng(loc.latitude, loc.longitude), cameraPositionState.position.zoom)
+                // Intentamos animar/mover la cámara; setear la posición directamente
+                cameraPositionState.position = newPos
+                isInitialLocationSet = true // Marcamos que ya se ha seteado la posición inicial
+
+                // Obtener estaciones solo la primera vez que se obtiene la ubicación.
+                stationsViewModel.getStations(loc.latitude, loc.longitude)
+            }
         }
     }
 
@@ -116,6 +127,7 @@ fun MainContent(navController: NavController,
             ) {
                 when (val currentState = stationsUiState) {
                     is StationsViewModel.StationsState.Success -> {
+                        Log.d("MainContent", "Stations: ${currentState.stations}")
                         // Dibuja un marcador para cada estación en la lista
                         currentState.stations.forEach { station ->
                             Marker(state = MarkerState(position = LatLng(station.latitude, station.longitude)))

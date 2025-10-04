@@ -16,12 +16,6 @@ data class StationDto(
     val totalUmbrellas: Int
 )
 
-data class QueryStationDto(
-    val latitude: Double,
-    val longitude: Double,
-    val radius_m: Int,
 
-)
 
 fun StationDto.toDomain(): Station = Station(id, placeName, description, latitude, longitude, distanceMeters, availableUmbrellas, totalUmbrellas)
-fun Localization.toDto(): QueryStationDto = QueryStationDto(latitude, longitude, 3600000)

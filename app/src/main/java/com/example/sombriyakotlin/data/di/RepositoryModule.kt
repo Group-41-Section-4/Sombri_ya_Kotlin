@@ -4,8 +4,10 @@ import com.example.sombriyakotlin.data.api.RentalApi
 import com.example.sombriyakotlin.data.api.UserApi
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.repository.RentalRepositoryImpl
+import com.example.sombriyakotlin.data.repository.StationRepositoryImpl
 import com.example.sombriyakotlin.data.repository.UserRepositoryImpl
 import com.example.sombriyakotlin.domain.repository.RentalRepository
+import com.example.sombriyakotlin.domain.repository.StationRepository
 import com.example.sombriyakotlin.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -30,4 +32,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindRentalRepository(rentalRepositoryImpl: RentalRepositoryImpl): RentalRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindStationRepository(stationRepositoryImpl: StationRepositoryImpl): StationRepository
 }
