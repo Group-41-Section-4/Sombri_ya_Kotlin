@@ -38,7 +38,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
-import com.example.sombriyakotlin.feature.rent.TopBar
 import com.example.sombriyakotlin.ui.inferiorbar.Bar
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.navigation.Routes

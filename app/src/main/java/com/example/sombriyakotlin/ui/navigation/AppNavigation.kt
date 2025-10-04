@@ -10,8 +10,6 @@ import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
 import com.example.sombriyakotlin.ui.home.CardHome
 import com.example.sombriyakotlin.ui.main.CardEstaciones
 import com.example.sombriyakotlin.ui.main.MainWithDrawer
-import com.example.sombriyakotlin.feature.rent.CardRent
-import com.example.sombriyakotlin.ui.main.CardMain
 import com.example.sombriyakotlin.ui.rent.CardRent
 
 // Definimos las rutas de navegación

@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.sombriyakotlin.feature.rent.TopBar
+import com.example.sombriyakotlin.ui.rent.TopBar
 import com.example.sombriyakotlin.ui.inferiorbar.Bar
 import com.example.sombriyakotlin.ui.navigation.Routes
 import kotlinx.coroutines.launch
