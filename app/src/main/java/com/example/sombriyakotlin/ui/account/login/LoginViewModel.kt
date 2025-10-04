@@ -8,6 +8,7 @@ import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,7 +17,19 @@ class LoginViewModel @Inject constructor(
     private val userUseCases: UserUseCases
 ) : ViewModel() {
 
-    // Clase sellada para manejar los estados de la UI
+    private val _biometricUserState = MutableStateFlow<User?>(null)
+    val biometricUserState: StateFlow<User?> = _biometricUserState
+
+    init {
+        viewModelScope.launch {
+            val user = userUseCases.getUserUseCase().firstOrNull()
+            //if (user != null && user.biometricEnabled == "true") {
+            if (user != null) {
+                _biometricUserState.value = user
+            }
+        }
+    }
+
     sealed class LoginState {
         object Idle : LoginState()
         object Loading : LoginState()

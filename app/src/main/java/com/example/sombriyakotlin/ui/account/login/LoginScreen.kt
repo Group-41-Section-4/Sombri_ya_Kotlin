@@ -1,5 +1,6 @@
 package com.example.sombriyakotlin.ui.account.login
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,13 +16,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.appcompat.app.AppCompatActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sombriyakotlin.ui.account.login.LoginViewModel.LoginState
+import com.example.sombriyakotlin.ui.util.BiometricAuthManager
 
 @Composable
 fun LoginScreen(
@@ -36,14 +40,38 @@ fun LoginScreen(
 
     val loginState by viewModel.loginState.collectAsState()
 
+    // -- Biometric --
+
+    // 1.
+    val activity = LocalContext.current as AppCompatActivity
+    val biometricAuthManager = remember { BiometricAuthManager(activity) }
+
+    // 2.
+    val biometricUser by viewModel.biometricUserState.collectAsState()
+
+    // 3.
+    LaunchedEffect(biometricUser) {
+        Log.e("LoginScreen", "biometricUser: ${biometricUser?.id}")
+        val user = biometricUser
+        if (user != null && biometricAuthManager.canAuthenticate()) {
+            biometricAuthManager.showBiometricPrompt(
+                onSuccess = {
+                    viewModel.loginUser(user.id)
+                    Log.e("LoginScreen", "bien: ${user.id}")
+                },
+                onError = { errorCode, errString ->
+                    Log.d("Biometric", "Error o cancelación: $errString")
+                }
+            )
+        }
+    }
+
     LaunchedEffect(loginState) {
         when (loginState) {
             is LoginState.Success -> {
-                // Navega solo cuando el registro es exitoso
                 onContinue()
             }
             is LoginState.Error -> {
-                // Muestra un Snackbar, Toast o un diálogo con el error
                 // scaffoldState.snackbarHostState.showSnackbar((signUpState as SignUpState.Error).message)
             }
             else -> { /* No hacer nada en Idle o Loading */ }
