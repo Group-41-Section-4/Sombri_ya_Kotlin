@@ -1,5 +1,6 @@
 package com.example.sombriyakotlin.data.di
 
+import com.example.sombriyakotlin.data.api.RentalApi
 import com.example.sombriyakotlin.data.api.UserApi
 import dagger.Module
 import dagger.Provides
@@ -28,5 +29,11 @@ object NetworkModule {
     @Singleton
     fun provideUserApi(retrofit: Retrofit): UserApi {
         return retrofit.create(UserApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRentalApi(retrofit: Retrofit): RentalApi {
+        return retrofit.create(RentalApi::class.java)
     }
 }
