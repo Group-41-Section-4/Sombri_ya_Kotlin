@@ -61,7 +61,7 @@ fun NotificationsScreen(
 
     val Bg = Color(0xFFFFFDFD)
 
-    // ✅ Disparo inicial (semilla + clima)
+    // Disparo inicial (semilla + clima)
     LaunchedEffect(Unit) {
         notificationsVM.onScreenOpened(locationVM.locationState.value)
         notificationsVM.bindLocationAuto(locationVM.locationState, minMinutesBetweenCalls = 60)
