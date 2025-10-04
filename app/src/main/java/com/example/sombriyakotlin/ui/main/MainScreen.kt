@@ -42,6 +42,8 @@ import com.example.sombriyakotlin.feature.rent.TopBar
 import com.example.sombriyakotlin.ui.inferiorbar.Bar
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.navigation.Routes
+import com.example.sombriyakotlin.ui.inferiorbar.Bar
+import com.example.sombriyakotlin.ui.rent.TopBar
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
