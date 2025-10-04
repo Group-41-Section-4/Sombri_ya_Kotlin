@@ -35,26 +35,28 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
-import com.example.sombriyakotlin.ui.inferiorbar.Bar
+import com.example.sombriyakotlin.domain.model.Station
 import com.example.sombriyakotlin.ui.layout.AppLayout
-import com.example.sombriyakotlin.ui.navigation.Routes
-import com.example.sombriyakotlin.ui.inferiorbar.Bar
-import com.example.sombriyakotlin.ui.rent.TopBar
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
 @Composable
 fun MainContent(navController: NavController,
-             viewModel: LocationViewModel = viewModel()){
+             viewModel: LocationViewModel = viewModel(),
+                stationsViewModel: StationsViewModel = hiltViewModel()
+){
 
     val context = LocalContext.current
 
@@ -89,6 +91,9 @@ fun MainContent(navController: NavController,
             cameraPositionState.position = newPos
         }
     }
+
+    val stationsUiState by stationsViewModel.stationsState.collectAsStateWithLifecycle()
+
     Column (
         modifier = Modifier.fillMaxHeight(1f),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -109,7 +114,23 @@ fun MainContent(navController: NavController,
                     isMyLocationEnabled = hasLocationPermission // Esto activa el "punto azul"
                 ),
             ) {
-
+                when (val currentState = stationsUiState) {
+                    is StationsViewModel.StationsState.Success -> {
+                        // Dibuja un marcador para cada estación en la lista
+                        currentState.stations.forEach { station ->
+                            Marker(state = MarkerState(position = LatLng(station.latitude, station.longitude)))
+                        }
+                    }
+                    is StationsViewModel.StationsState.Loading -> {
+                        // Opcional: Podrías mostrar un indicador de carga en algún lugar de la UI
+                    }
+                    is StationsViewModel.StationsState.Error -> {
+                        // Opcional: Podrías mostrar un mensaje de error
+                    }
+                    else -> {
+                        // Estado 'Idle' o inicial, no se hace nada.
+                    }
+                }
             }
             Button(
                 onClick = { navController.navigate("stations") },
