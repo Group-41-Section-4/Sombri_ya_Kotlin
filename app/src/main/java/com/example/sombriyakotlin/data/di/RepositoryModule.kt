@@ -40,4 +40,5 @@ abstract class RepositoryModule {
     @Singleton
     abstract fun bindRentalRepository(rentalRepositoryImpl: RentalRepositoryImpl): RentalRepository
 
+
 }
