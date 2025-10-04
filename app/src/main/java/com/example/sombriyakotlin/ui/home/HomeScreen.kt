@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.feature.home
+package com.example.sombriyakotlin.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

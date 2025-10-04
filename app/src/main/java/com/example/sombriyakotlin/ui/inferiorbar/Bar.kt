@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.feature.inferiorbar
+package com.example.sombriyakotlin.ui.inferiorbar
 
 import android.service.autofill.OnClickAction
 import androidx.compose.foundation.Image

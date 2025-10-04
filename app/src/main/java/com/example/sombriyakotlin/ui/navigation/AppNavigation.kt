@@ -7,10 +7,10 @@ import androidx.navigation.compose.composable
 import com.example.sombriyakotlin.ui.account.CardProfile
 import com.example.sombriyakotlin.ui.account.login.LoginScreen
 import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
-import com.example.sombriyakotlin.feature.home.CardHome
-import com.example.sombriyakotlin.feature.main.CardEstaciones
-import com.example.sombriyakotlin.feature.main.CardMain
-import com.example.sombriyakotlin.ui.rent.CardRent
+import com.example.sombriyakotlin.ui.home.CardHome
+import com.example.sombriyakotlin.ui.main.CardEstaciones
+import com.example.sombriyakotlin.ui.main.CardMain
+import com.example.sombriyakotlin.feature.rent.CardRent
 
 // Definimos las rutas de navegación
 object Routes {
