@@ -1,7 +1,10 @@
 package com.example.sombriyakotlin.domain.di
 
+import com.example.sombriyakotlin.domain.repository.StationRepository
 import com.example.sombriyakotlin.domain.repository.RentalRepository
 import com.example.sombriyakotlin.domain.repository.UserRepository
+import com.example.sombriyakotlin.domain.usecase.stations.GetStationsUseCase
+import com.example.sombriyakotlin.domain.usecase.stations.StationsUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.EndRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetRentalUserUseCase
@@ -39,6 +42,14 @@ object UseCaseModule {
             createRentalUseCase = CreateRentalUseCase(repo),
             endRentalUseCase = EndRentalUseCase(repo),
             getRentalsUserUseCase = GetRentalUserUseCase(repo)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideStationRepository(repo: StationRepository): StationsUseCases {
+        return StationsUseCases(
+        GetStationsUseCase(repo)
         )
     }
 }

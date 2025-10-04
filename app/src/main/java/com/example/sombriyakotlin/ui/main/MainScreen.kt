@@ -1,7 +1,11 @@
 package com.example.sombriyakotlin.ui.main
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -35,26 +39,29 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
-import com.example.sombriyakotlin.ui.inferiorbar.Bar
+import com.example.sombriyakotlin.domain.model.Station
 import com.example.sombriyakotlin.ui.layout.AppLayout
-import com.example.sombriyakotlin.ui.navigation.Routes
-import com.example.sombriyakotlin.ui.inferiorbar.Bar
-import com.example.sombriyakotlin.ui.rent.TopBar
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
 @Composable
 fun MainContent(navController: NavController,
-             viewModel: LocationViewModel = viewModel()){
+             viewModel: LocationViewModel = viewModel(),
+                stationsViewModel: StationsViewModel = hiltViewModel()
+){
 
     val context = LocalContext.current
 
@@ -81,14 +88,27 @@ fun MainContent(navController: NavController,
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(bogota, 17f)
     }
+
+    // Para mover la cámara solo una vez al obtener la primera ubicación
+    var isInitialLocationSet by remember { mutableStateOf(false) }
+
     LaunchedEffect(location) {
         location?.let { loc ->
-            // mueve la cámara a la ubicación del usuario con el mismo zoom
-            val newPos = CameraPosition.fromLatLngZoom(LatLng(loc.latitude, loc.longitude), 17f)
-            // Intentamos animar/mover la cámara; setear la posición directamente
-            cameraPositionState.position = newPos
+            // Mover la cámara solo la primera vez que tengamos una ubicación
+            if (!isInitialLocationSet) {
+                val newPos = CameraPosition.fromLatLngZoom(LatLng(loc.latitude, loc.longitude), cameraPositionState.position.zoom)
+                // Intentamos animar/mover la cámara; setear la posición directamente
+                cameraPositionState.position = newPos
+                isInitialLocationSet = true // Marcamos que ya se ha seteado la posición inicial
+
+                // Obtener estaciones solo la primera vez que se obtiene la ubicación.
+                stationsViewModel.getStations(loc.latitude, loc.longitude)
+            }
         }
     }
+
+    val stationsUiState by stationsViewModel.stationsState.collectAsStateWithLifecycle()
+
     Column (
         modifier = Modifier.fillMaxHeight(1f),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -109,7 +129,37 @@ fun MainContent(navController: NavController,
                     isMyLocationEnabled = hasLocationPermission // Esto activa el "punto azul"
                 ),
             ) {
-
+                when (val currentState = stationsUiState) {
+                    is StationsViewModel.StationsState.Success -> {
+                        Log.d("MainContent", "Stations: ${currentState.stations}")
+                        // Dibuja un marcador para cada estación en la lista
+                        val scaledIcon = remember(context) {
+                            // Crear un bitmap escalado para los iconos del mapa
+                            val originalBitmap = (ContextCompat.getDrawable(context, R.drawable.pin_umbrella) as BitmapDrawable).bitmap
+                            val width = 75 // Nuevo ancho en píxeles
+                            val height = 100 // Nuevo alto en píxeles
+                            val scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, false)
+                            BitmapDescriptorFactory.fromBitmap(scaledBitmap)
+                        }
+                        currentState.stations.forEach { station ->
+                            Marker(
+                                state = MarkerState(position = LatLng(station.latitude, station.longitude)),
+                                title = station.placeName,
+                                snippet = "${station.description} \n- ${station.availableUmbrellas} available",
+                                icon = scaledIcon
+                            )
+                        }
+                    }
+                    is StationsViewModel.StationsState.Loading -> {
+                        // Opcional: Podrías mostrar un indicador de carga en algún lugar de la UI
+                    }
+                    is StationsViewModel.StationsState.Error -> {
+                        // Opcional: Podrías mostrar un mensaje de error
+                    }
+                    else -> {
+                        // Estado 'Idle' o inicial, no se hace nada.
+                    }
+                }
             }
             Button(
                 onClick = { navController.navigate("stations") },
