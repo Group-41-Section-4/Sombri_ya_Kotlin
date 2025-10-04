@@ -1,5 +1,6 @@
 package com.example.sombriyakotlin.data.dto
 
+import android.util.Log
 import com.example.sombriyakotlin.domain.model.Rental
 
 data class RentalDto(
@@ -16,7 +17,6 @@ data class RentalDto(
 data class RentalRequest(
     val user_id: String,
     val station_start_id: String,
-    val start_gps: StartGps,
     val auth_type: String
 )
 
@@ -54,10 +54,14 @@ fun Rental.toDto(): RentalDto {
 }
 
 fun Rental.toRequest(): RentalRequest {
-    return RentalRequest(
+    val request = RentalRequest(
         user_id = userId,
         station_start_id = stationStartId,
-        start_gps = StartGps(startLat, startLon),
         auth_type = authType
     )
+
+    Log.d("RENTAL_REQUEST", "DTO enviado: $request")
+
+    return request
 }
+

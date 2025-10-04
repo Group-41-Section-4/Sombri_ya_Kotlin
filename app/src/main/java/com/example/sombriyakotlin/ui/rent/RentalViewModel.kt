@@ -49,7 +49,7 @@ class RentViewModel @Inject constructor(
                     _rentState.value = RentState.Error("Usuario no autenticado")
                     return@launch
                 }
-                Log.d("USER", "Identiifca al usario")
+                Log.d("USUARIO", "Identiifca al usario")
                 val now = Date()
                 val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                 val startTimestamp = formatter.format(now)
@@ -61,7 +61,7 @@ class RentViewModel @Inject constructor(
                     paymentMethodId = null,
                     startLat = 6.2442,
                     startLon = -75.5812,
-                    authType = "NFC",
+                    authType = "nfc",
                     status = "ACTIVE",
                     startedAt = startTimestamp,
                     endedAt = null

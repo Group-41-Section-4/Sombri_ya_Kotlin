@@ -33,7 +33,7 @@ class NfcScanStrategy(
     private val readerCallback = NfcAdapter.ReaderCallback { tag: Tag? ->
         if (tag == null) return@ReaderCallback
 
-        val uid = uidOf(tag)
+        val uid = "acadc4ef-f5b3-4ab8-9ab5-58f1161f0799" //uidOf(tag)
         Log.d("NFC", "Tag detectado (uid=$uid, techs=${tag.techList.joinToString()})")
         beep()
 
@@ -41,6 +41,7 @@ class NfcScanStrategy(
         mainHandler.post {
             try {
                 Log.d("RENT", "Se manda a crear la reserva")
+
                 onTagDetected(uid)
             } catch (e: Exception) {
                 Log.e("NFC", "Error en onTagDetected(uid)", e)
