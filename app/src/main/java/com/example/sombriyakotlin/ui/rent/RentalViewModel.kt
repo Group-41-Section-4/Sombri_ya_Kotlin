@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.feature.rent
+package com.example.sombriyakotlin.ui.rent
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,6 +1,6 @@
 package com.example.sombriyakotlin.data.dto
 
-import com.example.sombriyakotlin.domain.model.Rent
+import com.example.sombriyakotlin.domain.model.Rental
 
 data class RentalDto(
     val id: Int,              // UUID
@@ -15,22 +15,9 @@ data class RentalDto(
     val endedAt: String?         // puede ser null
 )
 
-// Conversión de DTO -> Domain
-fun RentalDto.toDomain(): Rent = Rent(
-    id = id,
-    userId = userId,
-    stationStartId = stationStartId,
-    paymentMethodId = paymentMethodId,
-    startLat = startLat,
-    startLon = startLon,
-    authType = authType,
-    status = status,
-    startedAt = startedAt,
-    endedAt = endedAt
-)
+fun RentalDto.toDomain(): Rental = Rental(id = id, userId = userId, stationStartId = stationStartId, paymentMethodId = paymentMethodId, startLat = startLat, startLon = startLon, authType = authType, status = status, startedAt = startedAt, endedAt = endedAt)
 
-// Conversión de Domain -> DTO
-fun Rent.toDto(): RentalDto = RentalDto(
+fun Rental.toDto(): RentalDto = RentalDto(
     id = id,
     userId = userId,
     stationStartId = stationStartId,

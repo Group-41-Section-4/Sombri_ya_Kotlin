@@ -1,10 +1,11 @@
 package com.example.sombriyakotlin.data.api
 
+import com.example.sombriyakotlin.data.dto.RentalDto
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-interface RentApi {
-    @POS    T("rent")
-    suspend fun createRent(@Body rentDto: RentDto): RentDto
+interface RentalApi {
+    @POST("rental")
+    suspend fun createRental(@Body rentDto: RentalDto): RentalDto
 
 }

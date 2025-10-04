@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.feature.rent.Scan
+package com.example.sombriyakotlin.ui.rent.Scan
 
 import android.app.Activity
 import android.content.Intent

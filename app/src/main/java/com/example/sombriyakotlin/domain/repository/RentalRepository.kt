@@ -1,7 +1,8 @@
 package com.example.sombriyakotlin.domain.repository
 
-import com.example.sombriyakotlin.domain.model.Rent
+import com.example.sombriyakotlin.domain.model.Rental
 
-interface RentRepository {
-    suspend fun CreateRent(rent: Rent): Rent
+interface RentalRepository {
+    suspend fun createRental(rental: Rental): Rental
 }
+

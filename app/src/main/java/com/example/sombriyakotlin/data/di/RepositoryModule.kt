@@ -1,6 +1,8 @@
 package com.example.sombriyakotlin.data.di
 
+import com.example.sombriyakotlin.data.repository.RentalRepositoryImpl
 import com.example.sombriyakotlin.data.repository.UserRepositoryImpl
+import com.example.sombriyakotlin.domain.repository.RentalRepository
 import com.example.sombriyakotlin.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -15,4 +17,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindUserRepository(userRepositoryImpl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRentalRepository(rentalRepositoryImpl: RentalRepositoryImpl): RentalRepository
 }

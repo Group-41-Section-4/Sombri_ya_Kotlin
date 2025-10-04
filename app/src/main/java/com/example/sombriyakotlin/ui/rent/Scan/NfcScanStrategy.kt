@@ -2,6 +2,7 @@
 package com.example.sombriyakotlin.feature.rent
 
 import android.app.Activity
+import android.content.Intent
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.nfc.NfcAdapter
@@ -12,7 +13,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.example.sombriyakotlin.feature.rent.Scan.ScanStrategy
+import com.example.sombriyakotlin.ui.rent.Scan.ScanStrategy
 import java.util.concurrent.atomic.AtomicBoolean
 
 class NfcScanStrategy(
@@ -99,7 +100,7 @@ class NfcScanStrategy(
     }
 
     @Composable override fun render() { Text("Acerca un tag NFC…") }
-    override fun onNewIntent(intent: android.content.Intent) { /* no-op (ReaderMode) */ }
+    override fun onNewIntent(intent: Intent) { /* no-op (ReaderMode) */ }
 
     private fun beep() {
         try {

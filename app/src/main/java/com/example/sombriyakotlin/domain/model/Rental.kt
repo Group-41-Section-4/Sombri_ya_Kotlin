@@ -1,6 +1,6 @@
 package com.example.sombriyakotlin.domain.model
 
-data class Rent(
+data class Rental(
     val id: Int = 0,
     val userId: String = "",
     val stationStartId: String = "",
