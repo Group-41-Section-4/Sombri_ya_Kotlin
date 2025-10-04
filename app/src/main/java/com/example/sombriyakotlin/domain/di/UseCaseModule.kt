@@ -4,6 +4,7 @@ import com.example.sombriyakotlin.domain.repository.RentalRepository
 import com.example.sombriyakotlin.domain.repository.UserRepository
 import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.EndRentalUseCase
+import com.example.sombriyakotlin.domain.usecase.rental.GetRentalUserUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.user.CreateUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.GetUserUseCase
@@ -34,7 +35,8 @@ object UseCaseModule {
     fun provideRentalUseCases(repo: RentalRepository): RentalUseCases {
         return RentalUseCases(
             createRentalUseCase = CreateRentalUseCase(repo),
-            endRentalUseCase = EndRentalUseCase(repo)
+            endRentalUseCase = EndRentalUseCase(repo),
+            getRentalsUserUseCase = GetRentalUserUseCase(repo)
         )
     }
 }

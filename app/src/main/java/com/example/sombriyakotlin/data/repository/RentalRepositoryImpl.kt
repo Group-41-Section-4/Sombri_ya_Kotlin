@@ -27,4 +27,11 @@ class RentalRepositoryImpl @Inject constructor(
         val response = rentalApi.endRental(rental.toEndDto())
         return response.toDomain()
     }
+
+    override suspend fun getRentalsUser(userId: String): List<Rental> {
+        return rentalApi.getRentalsByUserAndStatus(userId, "ongoing").map { it.toDomain()
+    }
+
+    }
+
 }

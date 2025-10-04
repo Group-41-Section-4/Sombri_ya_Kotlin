@@ -1,12 +1,14 @@
-// app/src/main/java/com/example/sombriyakotlin/feature/notifications/NotificationsViewModel.kt
 package com.example.sombriyakotlin.feature.notifications
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sombriyakotlin.domain.model.Notification
 import com.example.sombriyakotlin.domain.model.NotificationType
 import com.example.sombriyakotlin.domain.repository.WeatherRepository
+import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
+import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -18,64 +20,132 @@ import kotlin.random.Random
 
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    private val rentalUseCases: RentalUseCases,
+    private val userUseCases: UserUseCases
 ) : ViewModel() {
 
     private val _notifications = MutableStateFlow<List<Notification>>(emptyList())
     val notifications: StateFlow<List<Notification>> = _notifications
 
+    /* ------------------ utils de tiempo ------------------ */
     private fun nowLabel(): String =
         SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
 
     private fun nextId(prefix: String) =
         "$prefix-${System.currentTimeMillis()}-${Random.nextInt(0, 999)}"
 
+    // Intenta formatear ISO8601 (p. ej. "2025-10-04T19:10:02.922Z") a "hh:mm a"
+    private fun formatIsoToHourMinute(iso: String?): String {
+        if (iso.isNullOrBlank()) return nowLabel()
+        return try {
+            val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+            val date = parser.parse(iso) ?: return nowLabel()
+            val localFmt = SimpleDateFormat("hh:mm a", Locale.getDefault())
+            localFmt.format(date)
+        } catch (_: Exception) {
+            nowLabel()
+        }
+    }
+
     /** ----------------- API pública para la UI ----------------- */
 
     fun clearAll() { _notifications.value = emptyList() }
 
     fun removeById(id: String) {
+        // fix: estaba filtrando al revés
         _notifications.value = _notifications.value.filterNot { it.id == id }
     }
 
-    /** Notificación por SUSCRIPCIÓN (para semillas / demo) */
-    fun addSubscription(message: String) {
-        _notifications.value = _notifications.value + Notification(
-            id = nextId("s"),
-            type = NotificationType.SUBSCRIPTION,
-            title = "Suscripción",
-            message = message,
-            time = nowLabel()
-        )
-    }
+    fun onScreenOpened(lastLocation: Location? = null) {
+        loadUserRentalsAsNotifications()
 
-    /** Notificación por ALQUILER (para semillas / demo) */
-    fun addRental(message: String) {
-        _notifications.value = _notifications.value + Notification(
-            id = nextId("r"),
-            type = NotificationType.RENTAL,
-            title = "Recordatorio",
-            message = message,
-            time = nowLabel()
-        )
-    }
-
-    /**
-     * Llamar desde la Screen en `LaunchedEffect(Unit)`:
-     * - Si la lista está vacía, agrega 2 notificaciones por defecto
-     * - Si hay ubicación, hace UNA consulta a la Weather API (para comprobar)
-     */
-    fun onScreenOpened(lastLocation: Location?) {
-        if (_notifications.value.isEmpty()) {
-            addSubscription("Tu plan mensual se renovó correctamente.")
-            addRental("Tienes una sombrilla en alquiler. ¡No olvides devolverla!")
+        // Uniandes por defecto si no nos pasan ubicación
+        val defaultLocation = Location("").apply {
+            latitude = 4.6015
+            longitude = -74.0662
         }
-        lastLocation?.let { checkWeatherAt(it) }
+        checkWeatherAt(defaultLocation)
+    }
+
+    /** ----------------- ALQUILERES DEL BACKEND ----------------- */
+
+    private fun loadUserRentalsAsNotifications() {
+        viewModelScope.launch {
+            try {
+                val user = userUseCases.getUserUseCase().first()
+
+                if (user != null) {
+                    Log.d("RENTALS", "Cargando rentas del usuario...")
+                    val rentals = rentalUseCases.getRentalsUserUseCase.invoke(user.id)
+                    Log.d("RENTALS", "Rentas obtenidas: ${rentals.size}")
+
+                    val rentalNotifications = rentals.map { rental ->
+                        val startedLabel = formatIsoToHourMinute(rental.startedAt)
+                        val status = rental.status?.lowercase(Locale.getDefault()) ?: ""
+
+                        when (status) {
+                            "ongoing" -> Notification(
+                                id = nextId("reminder"),
+                                type = NotificationType.RENTAL,
+                                title = "Recordatorio",
+                                message = "Tienes una sombrilla en alquiler. ¡No olvides devolverla!",
+                                time = startedLabel
+                            )
+                            "created" -> Notification(
+                                id = nextId("rent"),
+                                type = NotificationType.RENTAL,
+                                title = "Preparando alquiler",
+                                message = "Estamos confirmando tu alquiler en ${rental.stationStartId}.",
+                                time = startedLabel
+                            )
+                            "completed" -> Notification(
+                                id = nextId("rent"),
+                                type = NotificationType.RENTAL,
+                                title = "Gracias por devolverla",
+                                message = "Tu alquiler ha finalizado correctamente.",
+                                time = startedLabel
+                            )
+                            else -> Notification(
+                                id = nextId("rent"),
+                                type = NotificationType.RENTAL,
+                                title = "Recordatorio",
+                                message = "Tienes una sombrilla en alquiler.",
+                                time = startedLabel
+                            )
+                        }
+                    }
+
+                    _notifications.value = _notifications.value + rentalNotifications
+                } else {
+                    _notifications.value = listOf(
+                        Notification(
+                            id = nextId("error"),
+                            type = NotificationType.RENTAL,
+                            title = "Error de sesión",
+                            message = "No se pudo obtener el usuario autenticado.",
+                            time = nowLabel()
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                _notifications.value = listOf(
+                    Notification(
+                        id = nextId("error"),
+                        type = NotificationType.RENTAL,
+                        title = "Error al cargar rentas",
+                        message = e.message ?: "Error desconocido.",
+                        time = nowLabel()
+                    )
+                )
+            }
+        }
     }
 
     /** ----------------- CLIMA ----------------- */
 
-    /** Consulta una vez la Weather API con la ubicación dada */
     fun checkWeatherAt(location: Location) {
         viewModelScope.launch {
             val pop = weatherRepository
@@ -91,22 +161,11 @@ class NotificationsViewModel @Inject constructor(
                     time = nowLabel()
                 )
             }
-            /*
-            else { // Solo para debug
-                println("DEBUG POP: $pop")
-                _notifications.value = _notifications.value + Notification(
-                    id = nextId("w"),
-                    type = NotificationType.WEATHER,
-                    title = "Prueba API",
-                    message = "Probabilidad de lluvia: $pop%",
-                    time = nowLabel()
-                )
-            }
-*/
         }
     }
 
-    /** Modo automático: llama periódicamente cuando cambia la ubicación */
+    /** ----------------- ACTUALIZACIÓN AUTOMÁTICA ----------------- */
+
     private var autoJob: Job? = null
 
     fun bindLocationAuto(

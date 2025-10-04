@@ -56,21 +56,14 @@ fun NotificationsScreen(
 ) {
     val locationVM: LocationViewModel = viewModel()
     val notificationsVM: NotificationsViewModel = hiltViewModel()
+    LaunchedEffect(Unit) {
+        notificationsVM.onScreenOpened()
+    }
+
 
     val notifications by notificationsVM.notifications.collectAsState()
 
     val Bg = Color(0xFFFFFDFD)
-
-    // Disparo inicial (semilla + clima)
-    LaunchedEffect(Unit) {
-        notificationsVM.onScreenOpened(locationVM.locationState.value)
-        notificationsVM.bindLocationAuto(locationVM.locationState, minMinutesBetweenCalls = 60)
-    }
-
-    // ✅ Cancelar modo automático al salir de la pantalla
-    DisposableEffect(Unit) {
-        onDispose { notificationsVM.unbindLocationAuto() }
-    }
 
     Scaffold(
         containerColor = Bg,
