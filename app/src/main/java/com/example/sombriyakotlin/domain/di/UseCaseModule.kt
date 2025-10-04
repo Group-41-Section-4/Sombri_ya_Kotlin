@@ -7,6 +7,7 @@ import com.example.sombriyakotlin.domain.usecase.rental.EndRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetRentalUserUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.user.CreateUserUseCase
+import com.example.sombriyakotlin.domain.usecase.user.GetUserDistance
 import com.example.sombriyakotlin.domain.usecase.user.GetUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.RefreshUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
@@ -26,7 +27,8 @@ object UseCaseModule {
         return UserUseCases(
             createUserUseCase = CreateUserUseCase(repo),
             getUserUseCase = GetUserUseCase(repo),
-            refreshUserUseCase = RefreshUserUseCase(repo)
+            refreshUserUseCase = RefreshUserUseCase(repo),
+            getUserDistance = GetUserDistance(repo)
         )
     }
 
