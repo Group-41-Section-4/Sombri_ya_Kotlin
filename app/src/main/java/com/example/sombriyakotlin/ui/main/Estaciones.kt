@@ -54,7 +54,7 @@ fun CardEstaciones(navController: NavController){
     ) {
         // Contenido principal de la pantalla (puede estar vacío o tener otros elementos)
         Column(modifier = Modifier.fillMaxSize().padding(0.dp)) {
-            CardMain(navController = navController) // Reemplaza con tu composable principalna)
+            MainContent(navController = navController) // Reemplaza con tu composable principalna)
         }
     }
 }
