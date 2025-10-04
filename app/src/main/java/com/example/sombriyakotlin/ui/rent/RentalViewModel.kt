@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sombriyakotlin.domain.model.Rental
 import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
+import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RentViewModel @Inject constructor(
-    private val createRentalUseCase: CreateRentalUseCase,
+    private val rentalUseCases: RentalUseCases,
 
     private val userUseCases: UserUseCases
 ) : ViewModel() {
@@ -54,7 +55,7 @@ class RentViewModel @Inject constructor(
                 val startTimestamp = formatter.format(now)
 
                 val rental = Rental(
-                    id = 0,
+
                     userId = user.id,
                     stationStartId = stationId,
                     paymentMethodId = null,
@@ -66,12 +67,13 @@ class RentViewModel @Inject constructor(
                     endedAt = null
                 )
                 Log.d("RENT", "ARMO LA RESERVAAAAAAAA")
-                val created = createRentalUseCase.invoke(rental)
+                val created = rentalUseCases.createRentalUseCase.invoke(rental)
                 Log.d("RENT", "Mando a crear la reserva")
                 _rentState.value = RentState.Success(created)
 
             } catch (e: Exception) {
                 _rentState.value = RentState.Error(e.message ?: "Error creando la reserva")
+                Log.d("RENT", "e",e)
             }
         }
     }

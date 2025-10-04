@@ -3,29 +3,61 @@ package com.example.sombriyakotlin.data.dto
 import com.example.sombriyakotlin.domain.model.Rental
 
 data class RentalDto(
-    val id: Int,              // UUID
-    val userId: String,          // UUID del usuario
-    val stationStartId: String,  // UUID de la estación inicial
-    val paymentMethodId: String?,// UUID opcional
-    val startLat: Double,
-    val startLon: Double,
-    val authType: String,        // o mejor enum si lo mapeas
-    val status: String,          // ongoing, completed, etc.
-    val startedAt: String,       // ISO-8601
-    val endedAt: String?         // puede ser null
+    val userId: String,
+    val stationStartId: String,
+    val paymentMethodId: String?,
+    val start_gps: StartGps,
+    val authType: String,
+    val status: String,
+    val startedAt: String,
+    val endedAt: String?
 )
 
-fun RentalDto.toDomain(): Rental = Rental(id = id, userId = userId, stationStartId = stationStartId, paymentMethodId = paymentMethodId, startLat = startLat, startLon = startLon, authType = authType, status = status, startedAt = startedAt, endedAt = endedAt)
+data class RentalRequest(
+    val user_id: String,
+    val station_start_id: String,
+    val start_gps: StartGps,
+    val auth_type: String
+)
 
-fun Rental.toDto(): RentalDto = RentalDto(
-    id = id,
+data class StartGps(
+    val latitude: Double,
+    val longitude: Double
+)
+
+
+fun RentalDto.toDomain(): Rental = Rental(
+    id = 0, // si el backend no lo devuelve, ponle un valor por defecto
     userId = userId,
     stationStartId = stationStartId,
     paymentMethodId = paymentMethodId,
-    startLat = startLat,
-    startLon = startLon,
+    startLat = start_gps.latitude,
+    startLon = start_gps.longitude,
     authType = authType,
     status = status,
     startedAt = startedAt,
     endedAt = endedAt
 )
+
+
+fun Rental.toDto(): RentalDto {
+    return RentalDto(
+        userId = userId,
+        stationStartId = stationStartId,
+        paymentMethodId = paymentMethodId,
+        start_gps = StartGps(startLat, startLon),
+        authType = authType,
+        status = status,
+        startedAt = startedAt,
+        endedAt = endedAt
+    )
+}
+
+fun Rental.toRequest(): RentalRequest {
+    return RentalRequest(
+        user_id = userId,
+        station_start_id = stationStartId,
+        start_gps = StartGps(startLat, startLon),
+        auth_type = authType
+    )
+}
