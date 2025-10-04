@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.feature.account
+package com.example.sombriyakotlin.ui.account
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 
 
@@ -71,7 +72,7 @@ fun TopBar(navController: NavController){
         TopAppBar(
             title = { Text("Cuenta",
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = TextAlign.Center
             ) },
              colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = colorResource(R.color.primary),

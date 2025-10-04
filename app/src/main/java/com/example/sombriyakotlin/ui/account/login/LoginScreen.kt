@@ -1,10 +1,11 @@
-package com.example.sombriyakotlin.feature.account.login
+package com.example.sombriyakotlin.ui.account.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -213,7 +214,7 @@ private fun LoginInput(
                 fontSize = 16.sp
             )
         }
-        androidx.compose.foundation.text.BasicTextField(
+        BasicTextField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,

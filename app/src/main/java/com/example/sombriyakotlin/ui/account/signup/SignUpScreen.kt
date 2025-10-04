@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.feature.account.signup
+package com.example.sombriyakotlin.ui.account.signup
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,12 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.sombriyakotlin.ui.account.signup.SingUpViewModel.SignUpState
 
 /**
  * Vista de Registro
@@ -28,11 +32,29 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun SignUpScreen(
     onNavigateBack: () -> Unit = {},
-    onContinue: () -> Unit = {}
+    onContinue: () -> Unit = {},
+    viewModel: SingUpViewModel = hiltViewModel()
 ) {
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
+
+    val signUpState by viewModel.signUpState.collectAsState()
+
+    LaunchedEffect(signUpState) {
+        when (signUpState) {
+            is SignUpState.Success -> {
+                // Navega solo cuando el registro es exitoso
+                onContinue()
+            }
+            is SignUpState.Error -> {
+                // Muestra un Snackbar, Toast o un diálogo con el error
+                // scaffoldState.snackbarHostState.showSnackbar((signUpState as SignUpState.Error).message)
+            }
+            else -> { /* No hacer nada en Idle o Loading */ }
+        }
+    }
 
     // Lienzo base
     Box(
@@ -111,6 +133,13 @@ fun SignUpScreen(
 
                     // Campos
                     LabeledInput(
+                        label = "Nombre",
+                        value = name,
+                        onValueChange = { name = it },
+                        hint = "Tu nombre",
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    LabeledInput(
                         label = "Correo electrónico",
                         value = email,
                         onValueChange = { email = it },
@@ -139,19 +168,27 @@ fun SignUpScreen(
 
         // -------- Botón rojo anclado abajo --------
         Button(
-            onClick = { onContinue() },
+            onClick = {
+                // Solo inicia el proceso, no navegues aquí
+                viewModel.registerUser(name, email)
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFFF4645),
                 contentColor = Color.White
             ),
             shape = RoundedCornerShape(1000.dp),
+            enabled = signUpState != SignUpState.Loading,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 24.dp)
                 .height(44.dp)
                 .fillMaxWidth(0.74f) // ancho relativo (similar a 230px/393px)
         ) {
-            Text("Seguir", fontSize = 18.sp)
+            if (signUpState == SignUpState.Loading) {
+                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
+            } else {
+                Text("Seguir", fontSize = 18.sp)
+            }
         }
     }
 }
@@ -216,19 +253,13 @@ private fun LabeledInput(
 /** VisualTransformation básica con puntos para contraseñas (sin lógica). */
 @Composable
 private fun PasswordVisualTransformationDot() =
-    object : androidx.compose.ui.text.input.VisualTransformation {
-        override fun filter(text: androidx.compose.ui.text.AnnotatedString):
-                androidx.compose.ui.text.input.TransformedText {
+    object : VisualTransformation {
+        override fun filter(text: AnnotatedString):
+                TransformedText {
             val mask = "•".repeat(text.text.length)
-            return androidx.compose.ui.text.input.TransformedText(
-                androidx.compose.ui.text.AnnotatedString(mask),
-                androidx.compose.ui.text.input.OffsetMapping.Identity
+            return TransformedText(
+                AnnotatedString(mask),
+                OffsetMapping.Identity
             )
         }
     }
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewSignUp() {
-    SignUpScreen()
-}

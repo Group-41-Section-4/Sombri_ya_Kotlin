@@ -1,17 +1,16 @@
-package com.example.sombriyakotlin.navigation
+package com.example.sombriyakotlin.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.sombriyakotlin.feature.account.CardProfile
-import com.example.sombriyakotlin.feature.account.login.LoginScreen
-import com.example.sombriyakotlin.feature.account.signup.SignUpScreen
+import com.example.sombriyakotlin.ui.account.CardProfile
+import com.example.sombriyakotlin.ui.account.login.LoginScreen
+import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
 import com.example.sombriyakotlin.feature.home.CardHome
 import com.example.sombriyakotlin.feature.main.CardEstaciones
 import com.example.sombriyakotlin.feature.main.CardMain
 import com.example.sombriyakotlin.feature.rent.CardRent
-import com.example.sombriyakotlin.screens.HomeScreen
 
 // Definimos las rutas de navegación
 object Routes {
@@ -54,7 +53,8 @@ fun AppNavigation(navController: NavHostController) {
                 onContinue = {
                     // Comentado para futura implementación
                     navController.navigate(Routes.MAIN)
-                }
+                },
+
             )
         }
         
