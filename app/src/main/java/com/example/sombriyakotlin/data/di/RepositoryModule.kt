@@ -5,8 +5,10 @@ import com.example.sombriyakotlin.data.api.RentalApi
 import com.example.sombriyakotlin.data.api.UserApi
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.repository.RentalRepositoryImpl
+import com.example.sombriyakotlin.data.repository.StationRepositoryImpl
 import com.example.sombriyakotlin.data.repository.UserRepositoryImpl
 import com.example.sombriyakotlin.domain.repository.RentalRepository
+import com.example.sombriyakotlin.domain.repository.StationRepository
 import com.example.sombriyakotlin.domain.repository.UserRepository
 import com.example.sombriyakotlin.domain.repository.WeatherRepository
 import com.example.sombriyakotlin.feature.notifications.data.WeatherRepositoryImpl
@@ -31,7 +33,7 @@ abstract class RepositoryModule {
 
         @Provides
         @Singleton
-        fun provideWeatherRepository():WeatherRepository{
+        fun provideWeatherRepository(): WeatherRepository {
             return WeatherRepositoryImpl(apiKey = "64a018d01eba547f998be6d43c606c80")
 
         }
@@ -42,8 +44,13 @@ abstract class RepositoryModule {
             rentalApi: com.example.sombriyakotlin.data.api.RentalApi,
             rentalLocalDataSource: com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
         ): com.example.sombriyakotlin.domain.repository.RentalRepository =
-            com.example.sombriyakotlin.data.repository.RentalRepositoryImpl(rentalApi, rentalLocalDataSource)
-
+            com.example.sombriyakotlin.data.repository.RentalRepositoryImpl(
+                rentalApi,
+                rentalLocalDataSource
+            )
     }
 
+    @Binds
+    @Singleton
+    abstract fun bindStationRepository(stationRepositoryImpl: StationRepositoryImpl): StationRepository
 }
