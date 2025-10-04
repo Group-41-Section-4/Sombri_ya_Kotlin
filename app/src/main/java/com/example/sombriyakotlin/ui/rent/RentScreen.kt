@@ -1,5 +1,6 @@
 package com.example.sombriyakotlin.feature.rent
 
+
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
@@ -49,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.feature.inferiorbar.Bar
-import com.example.sombriyakotlin.feature.rent.Scan.NfcScanStrategy
 import com.example.sombriyakotlin.feature.rent.Scan.ScanStrategy
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +60,11 @@ fun CardRent(navController: NavController) {
     val activity = remember(ctx) { ctx as Activity }
 
     var strategy: ScanStrategy? by remember { mutableStateOf(null) }
+    val nfc by remember { mutableStateOf(NfcScanStrategy(
+
+        onTagDetected = {}
+
+    )) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -68,16 +73,14 @@ fun CardRent(navController: NavController) {
         Box(Modifier.weight(1f).fillMaxSize()) {
             ContentCard(Modifier.matchParentSize())
             BotonNFC(onClick = {
-                //Log.d("En toeria funciona NFC")
                 if (strategy == null) {
-                    // activar NFC
-                    val nfc = NfcScanStrategy()
-                    nfc.start(activity)
+                    nfc.start(activity)   // habilita Reader Mode
                     strategy = nfc
+                    Log.d("Rent", "NFC Activado")
                 } else {
-                    // detener NFC
                     strategy?.stop(activity)
                     strategy = null
+                    Log.d("Rent", "NFC Desactivado")
                 }
 
             }, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp) )
@@ -118,12 +121,12 @@ fun TopBar(navController : NavController){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable()
 fun ContentCard(modifier: Modifier = Modifier){
-        Image(
-            painter = painterResource(id = R.drawable.simulacionqr),
-            contentDescription = "simulacion qr",
-            modifier = modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+    Image(
+        painter = painterResource(id = R.drawable.simulacionqr),
+        contentDescription = "simulacion qr",
+        modifier = modifier.fillMaxSize(),
+        contentScale = ContentScale.Crop
+    )
 }
 
 @Composable()
@@ -132,7 +135,7 @@ fun BotonNFC(onClick: () -> Unit, modifier: Modifier = Modifier){
         onClick = onClick,
         icon = {
             Icon(
-                 painter = painterResource(id = R.drawable.vector),
+                painter = painterResource(id = R.drawable.vector),
                 contentDescription = "NFC",
                 modifier = Modifier.size(24.dp)
             )
