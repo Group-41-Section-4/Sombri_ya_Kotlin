@@ -2,18 +2,12 @@ package com.example.sombriyakotlin.ui.inferiorbar
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,14 +16,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
+import com.example.sombriyakotlin.ui.rent.RentViewModel
 
 @Composable
 fun Bar(
     navController: NavController,
-    onMenuClick: () -> Unit // nuevo parámetro
+    onMenuClick: () -> Unit
 ) {
+    val rentViewModel: RentViewModel = hiltViewModel()
+    val hasActive by rentViewModel.hasActive.collectAsStateWithLifecycle()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -37,7 +37,7 @@ fun Bar(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // botón mapa
+        // Botón mapa
         Button(
             onClick = { navController.navigate("main") },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
@@ -50,32 +50,36 @@ fun Bar(
             )
         }
 
-        // botón central
+        // Botón central (rentar o devolver)
         Box(
             modifier = Modifier
                 .offset(y = (-30).dp)
                 .size(72.dp)
                 .clip(CircleShape)
         ) {
+            val containerColor =
+                if (hasActive) Color(0xFFBDBDBD) // Gris cuando hay alquiler activo
+                else Color.Transparent
+
             Button(
                 onClick = { navController.navigate("rent") },
                 modifier = Modifier.fillMaxSize(),
                 shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                colors = ButtonDefaults.buttonColors(containerColor = containerColor),
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.home_button),
-                    contentDescription = "Rentar",
+                    contentDescription = if (hasActive) "Devolver sombrilla" else "Rentar sombrilla",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier.fillMaxSize()
                 )
             }
         }
 
-        // botón menú → dispara el drawer
+        // Botón menú
         Button(
-            onClick = { onMenuClick() }, // aquí llamamos al callback
+            onClick = { onMenuClick() },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
             contentPadding = PaddingValues(0.dp)
         ) {

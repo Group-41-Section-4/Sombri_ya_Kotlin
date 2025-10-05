@@ -9,6 +9,7 @@ import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.EndRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetRentalUserUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
+import com.example.sombriyakotlin.domain.usecase.rental.getRentalsHystoryUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.CreateUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.GetUserDistance
 import com.example.sombriyakotlin.domain.usecase.user.GetUserUseCase
@@ -41,7 +42,9 @@ object UseCaseModule {
         return RentalUseCases(
             createRentalUseCase = CreateRentalUseCase(repo),
             endRentalUseCase = EndRentalUseCase(repo),
-            getRentalsUserUseCase = GetRentalUserUseCase(repo)
+            getRentalsUserUseCase = GetRentalUserUseCase(repo),
+            getRentalsHystoryUserUseCase = getRentalsHystoryUserUseCase(repo),
+            getCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.GetCurrentRentalUseCase(repo)
         )
     }
 

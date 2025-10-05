@@ -2,6 +2,7 @@ package com.example.sombriyakotlin.data.api
 
 import com.example.sombriyakotlin.data.dto.EndRentalDto
 import com.example.sombriyakotlin.data.dto.RentalDto
+import com.example.sombriyakotlin.data.dto.RentalHistoryDto
 import com.example.sombriyakotlin.data.dto.RentalRequestDto
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -20,4 +21,10 @@ interface RentalApi {
         @Query("user_id") userId: String,
         @Query("status") status: String
     ): List<RentalDto>
+
+    @GET("rentals")
+    suspend fun getRentalsHystoryByUserAndStatus(
+        @Query("user_id") userId: String,
+        @Query("status") status: String
+    ): List<RentalHistoryDto>
 }
