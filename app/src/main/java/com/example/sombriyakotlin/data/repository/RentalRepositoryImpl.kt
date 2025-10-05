@@ -21,7 +21,10 @@ class RentalRepositoryImpl @Inject constructor(
     private val local: RentalLocalDataSource
 ): RentalRepository{
     override suspend fun createRental(rental: Rental): Rental {
+
         val response = rentalApi.createRental(rental.toRequestDto())
+
+
         val domain = response.toDomain()
         local.saveCurrent(domain)           // ⬅️ Guarda localmente la renta “activa”
         return domain

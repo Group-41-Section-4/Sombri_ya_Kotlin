@@ -43,7 +43,8 @@ object UseCaseModule {
             createRentalUseCase = CreateRentalUseCase(repo),
             endRentalUseCase = EndRentalUseCase(repo),
             getRentalsUserUseCase = GetRentalUserUseCase(repo),
-            getRentalsHystoryUserUseCase = getRentalsHystoryUserUseCase(repo)
+            getRentalsHystoryUserUseCase = getRentalsHystoryUserUseCase(repo),
+            getCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.GetCurrentRentalUseCase(repo)
         )
     }
 

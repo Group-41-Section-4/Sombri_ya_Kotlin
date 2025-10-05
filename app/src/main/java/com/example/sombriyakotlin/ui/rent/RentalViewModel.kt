@@ -38,13 +38,10 @@ class RentViewModel @Inject constructor(
     }
 
     fun createReservation(stationId: String) {
-        Log.d("YYYYYYYYYYYYYYYYY", "Se empieza a crear la renta")
         viewModelScope.launch {
             _rentState.value = RentState.Loading
 
             try {
-                Log.d("YYYYYYYYYYYYYYYYY", "Q PUTAS")
-                Log.d("YYYYYYYYYYYYYYYYY", "yA MURIO")
                 val user = userUseCases.getUserUseCase().first()
 
                 if (user == null) {

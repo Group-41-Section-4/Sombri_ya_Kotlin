@@ -1,15 +1,21 @@
 package com.example.sombriyakotlin.feature.rent
 
+import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
+import androidx.annotation.RequiresPermission
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.example.sombriyakotlin.ui.rent.Scan.ScanStrategy
@@ -56,7 +62,6 @@ class NfcScanStrategy(
 
         if (tag == null) {
             Log.d("NFC", "❌ Tag es null")
-            buzz(act, 80)
             return@ReaderCallback
         }
 
@@ -66,7 +71,7 @@ class NfcScanStrategy(
         }
         firing = true
 
-        val uid = uidOf(tag)
+        val uid = "acadc4ef-f5b3-4ab8-9ab5-58f1161f0799"//uidOf(tag)
         val techs = tag.techList.joinToString()
         Log.d("NFC", "✅ Tag detectado - UID=$uid")
         Log.d("NFC", "💾 Tecnologías disponibles: $techs")
@@ -88,6 +93,7 @@ class NfcScanStrategy(
         }, 1000L)
     }
 
+    @RequiresPermission(Manifest.permission.VIBRATE)
     override fun start(activity: Activity) {
         Log.d("NFC", "🔛 start() llamado")
         if (enabled) {

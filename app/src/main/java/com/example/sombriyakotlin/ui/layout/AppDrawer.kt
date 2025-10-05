@@ -48,7 +48,17 @@ fun AppDrawer(
             onClick = {
                 scope.launch {
                     onCloseDrawer()
-                    // navController.navigate(Routes.PAYMENT_METHODS)
+                    navController.navigate(Routes.PAYMENT_METHODS)
+                }
+            }
+        )
+        NavigationDrawerItem(
+            label = { Text("Historial") },
+            selected = false,
+            onClick = {
+                scope.launch {
+                    onCloseDrawer()
+                    navController.navigate(Routes.HISTORY)
                 }
             }
         )

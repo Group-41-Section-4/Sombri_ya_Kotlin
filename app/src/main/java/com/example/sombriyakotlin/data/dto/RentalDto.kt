@@ -86,7 +86,6 @@ fun Rental.toRequestDto(): RentalRequestDto {
         station_start_id = stationStartId,
         auth_type = authType
     )
-    Log.d("RENTAL_REQUEST", "DTO enviado: $request")
     return request
 }
 
@@ -96,7 +95,6 @@ fun Rental.toEndDto(): EndRentalDto {
         user_id = userId,
         station_end_id = stationStartId // si tienes stationEndId, cámbialo aquí
     )
-    Log.d("RENTAL_REQUEST", "DTO enviado: $request")
     return request
 }
 fun RentalHistoryDto.toDomain(): History {
