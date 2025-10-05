@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.feature.rent.NfcScanStrategy
+import com.example.sombriyakotlin.ui.account.ContentCard
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.navigation.Routes
 import com.example.sombriyakotlin.ui.rent.Scan.QrScannerScreen
@@ -52,6 +53,7 @@ fun CardRent(navController: NavController) {
 
     val rentViewModel: RentViewModel = hiltViewModel()
     val rentState by rentViewModel.rentState.collectAsStateWithLifecycle()
+    val hasActive by rentViewModel.hasActive.collectAsStateWithLifecycle()
 
     LaunchedEffect(rentState) {
         if (rentState is RentViewModel.RentState.Success) {
@@ -61,20 +63,17 @@ fun CardRent(navController: NavController) {
         }
     }
 
+    // ——— NFC strategy ———
     var strategy: ScanStrategy? by remember { mutableStateOf(null) }
-
-    // Instancia NFC (persistente)
     val nfc by remember {
         mutableStateOf(
             NfcScanStrategy { stationId ->
-                Log.d("Rent", "➡️ onTagDetected($stationId) llamado")
-                rentViewModel.createReservation(stationId)
+                Log.d("Rent", "➡️ onTagDetected($stationId)")
+                rentViewModel.handleScan(stationId)
             }
         )
     }
 
-    // Log ciclo de vida y stop seguro
-    LaunchedEffect(Unit) { Log.d("Rent", "🧭 CardRent montado") }
     DisposableEffect(Unit) {
         onDispose {
             Log.d("Rent", "🧹 CardRent dispose -> stop NFC si estaba activo")
@@ -82,15 +81,19 @@ fun CardRent(navController: NavController) {
         }
     }
 
+    // Diálogo si hay alquiler activo
+    var showActiveDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(hasActive) { showActiveDialog = hasActive }
+
     Column(modifier = Modifier.fillMaxSize()) {
         Box(Modifier.weight(1f).fillMaxSize()) {
-            // Contenido principal (tu QR)
             ContentCard(Modifier.matchParentSize())
 
-            // Único FAB
+            // FAB NFC (sin bloqueo)
             BotonNFC(
                 onClick = {
                     Log.d("Rent", "🖱️ FAB clicado. strategy=$strategy")
+
                     if (!isNfcSupported(activity)) {
                         toast(activity, "Este dispositivo no soporta NFC")
                         Log.d("Rent", "❌ NFC no soportado")
@@ -132,11 +135,57 @@ fun CardRent(navController: NavController) {
             )
         }
     }
+
+    // ——— Diálogo de alquiler activo ———
+    if (showActiveDialog) {
+        AlquilerActivoDialog(
+            onIngresar = {
+                rentViewModel.setReturnIntent()
+                showActiveDialog = false
+
+                // 🔑 Asegura que el próximo toque del FAB active NFC
+                strategy = null
+
+                toast(activity, "Modo devolución activado. Acerca la tarjeta a la base…")
+            },
+            onNo = {
+                showActiveDialog = false
+                navController.navigate(Routes.HOME) {
+                    popUpTo(Routes.RENT) { inclusive = true }
+                    launchSingleTop = true
+                }
+            },
+            onDismiss = { showActiveDialog = false }
+        )
+    }
 }
 
 @Composable
 fun ContentCard(modifier: Modifier = Modifier) {
     QrScannerScreen(modifier = modifier)
+}
+
+@Composable
+fun AlquilerActivoDialog(
+    onIngresar: () -> Unit,
+    onNo: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Tienes un alquiler activo") },
+        text = { Text("¿Quieres ingresar a dejar tu sombrilla ahora?") },
+        confirmButton = {
+            androidx.compose.material3.TextButton(onClick = onIngresar) {
+                Text("Ingresar a dejar sombrilla")
+            }
+        },
+        dismissButton = {
+            androidx.compose.material3.TextButton(onClick = onNo) {
+                Text("No")
+            }
+        }
+    )
 }
 
 @Composable

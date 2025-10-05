@@ -33,7 +33,9 @@ class RentalRepositoryImpl @Inject constructor(
 
 
     override suspend fun endRental(rental: Rental): Rental {
+        Log.d("zzzzzzzzzzz", "Response: $rental")
         val response = rentalApi.endRental(rental.toEndDto())
+        Log.d("zzzzzzzzzzz", "Response: $response")
         val domain = response.toDomain()
         local.clear()                       // ⬅️ Borra la renta “activa”
         return domain
