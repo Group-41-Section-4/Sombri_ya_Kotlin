@@ -12,14 +12,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class RentViewModel @Inject constructor(
     private val rentalUseCases: RentalUseCases,
-
     private val userUseCases: UserUseCases
 ) : ViewModel() {
 
@@ -45,36 +42,28 @@ class RentViewModel @Inject constructor(
                 val user = userUseCases.getUserUseCase().first()
 
                 if (user == null) {
-                    Log.d("YYYYYYY", "Identiifca al usario")
-
                     _rentState.value = RentState.Error("Usuario no autenticado")
                     return@launch
                 }
-                Log.d("YYYYYYY", "Identiifca al usario")
-                val now = Date()
-                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-                val startTimestamp = formatter.format(now)
 
                 val rental = Rental(
                     userId = user.id,
                     stationStartId = stationId,
                     authType = "nfc",
                 )
-                Log.d("YYYYYYY", "ARMO LA RESERVAAAAAAAA")
+
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
-                Log.d("YYYYYYYY", "Mando a crear la reserva")
+
                 _rentState.value = RentState.Success(created)
 
             } catch (e: Exception) {
-                Log.e("WWWWWWWWWWWWW", "Error al crear la reserva", e)
                 val errorMessage = if (e is HttpException) {
                     val errorBody = e.response()?.errorBody()?.string()
-                    "Error ${e.code()}: $errorBody"
+                    "Error ${e.code()}: ${errorBody ?: "Solicitud inválida"}"
                 } else {
-                    e.message ?: "Error creando la reserva"
+                    e.message ?: "Error desconocido"
                 }
                 _rentState.value = RentState.Error(errorMessage)
-                Log.e("WWWWWWWWWWWWW", "Error al crear la reserva", e)
             }
         }
     }
