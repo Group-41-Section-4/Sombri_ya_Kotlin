@@ -12,6 +12,7 @@ import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
 import com.example.sombriyakotlin.ui.home.CardHome
 import com.example.sombriyakotlin.ui.main.CardStations
 import com.example.sombriyakotlin.ui.main.MainWithDrawer
+import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.ui.rent.CardRent
 import com.example.sombriyakotlin.ui.rent.MainRenta
 
@@ -94,6 +95,9 @@ fun AppNavigation(navController: NavHostController) {
         }
         composable(Routes.HISTORY) {
             HistoryScreen(navController)
+        }
+        composable(Routes.PAYMENT_METHODS) {
+            paymentMethopdsCard(navController)
         }
 
     }
