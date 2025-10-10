@@ -50,7 +50,7 @@ fun LoginScreen(
             else -> { /* No hacer nada en Idle o Loading */ }
         }
     }
-    // Lienzo base de 393x852 — los offsets están calc. para esa maqueta
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,9 +64,9 @@ fun LoginScreen(
         Text(
             text = "Sombri-Ya",
             color = Color(0xFF001242),
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
+            fontSize = 36.sp,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.padding(top = 50.dp)
 //                .align(Alignment.TopCenter)
 //                .offset(y = 105.dp)   // left/top exactos de Figma
         )
@@ -118,7 +118,7 @@ fun LoginScreen(
                 LoginInput(
                     value = email,
                     onValueChange = { email = it },
-                    hint = "xxx@ejemplo.com",
+                    hint = "user@ejemplo.com",
                     modifier = Modifier
                         .height(80.dp)
                         .fillMaxWidth()
@@ -154,6 +154,7 @@ fun LoginScreen(
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
                         .clickable { onNavigateToSignUp() }
+                        .padding(bottom = 16.dp)
                 )
 
                 // Botón: Iniciar sesión → (l:82-22=60, t:579-205=374) 230×36
@@ -164,6 +165,7 @@ fun LoginScreen(
                         .clip(RoundedCornerShape(25.dp))
                         .background(Color(0xFF001242))
                         .clickable { viewModel.loginUser("5e1a88f1-55c5-44d0-87bb-44919f9f4202") },
+
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -180,7 +182,7 @@ fun LoginScreen(
         Text(
             text = "Sombri-Ya",
             color = Color(0xFFFFFAFA),
-            fontSize = 22.sp,
+            fontSize = 24.sp,
             textAlign = TextAlign.Center,
 //            modifier = Modifier.offset(x = 140.dp, y = 699.dp)
         )
@@ -189,12 +191,11 @@ fun LoginScreen(
         Text(
             text = "Ahorra tiempo y mantente seco en cualquier trayecto",
             color = Color(0xFFFFFAFA),
-            fontSize = 22.sp,
+            fontSize = 20.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier
 //                .offset(x = 65.dp, y = 754.dp)
-                .width(263.dp)
-        )
+                .padding(horizontal = 16.dp)        )
     }
 }
 
