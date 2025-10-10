@@ -65,9 +65,9 @@ fun CardRent(navController: NavController) {
     var strategy: ScanStrategy? by remember { mutableStateOf(null) }
     val nfc by remember {
         mutableStateOf(
-            NfcScanStrategy { stationId ->
-                Log.d("Rent", "onTagDetected($stationId)")
-                rentViewModel.handleScan(stationId)
+            NfcScanStrategy { tagId ->
+                Log.d("Rent", "onTagDetected($tagId)")
+                rentViewModel.handleScanNfc(tagId)
             }
         )
     }

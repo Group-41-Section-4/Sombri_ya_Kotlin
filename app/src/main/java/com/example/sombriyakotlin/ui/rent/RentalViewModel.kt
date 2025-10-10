@@ -45,6 +45,14 @@ class RentViewModel @Inject constructor(
     fun setStartQrIntent()  { _scanIntent.value = ScanIntent.STARTQR }
 
 
+    fun handleScanNfc(tagUid: String) {
+        viewModelScope.launch {
+            val stationId = stationUseCases.getStationByTagUseCase.invoke(tagUid)
+            handleScan(stationId)
+        }
+
+    }
+
     fun handleScan(stationId: String) {
         when (_scanIntent.value) {
             ScanIntent.RETURN -> endCurrentRental(stationId)
@@ -95,8 +103,10 @@ class RentViewModel @Inject constructor(
                     _rentState.value = RentState.Error("Usuario no autenticado")
                     return@launch
                 }
-                val stationId = stationUseCases.getStationByTagUseCase.invoke("04:B0:5F:1F:6F:61:80")
-                Log.d("PASO", "passsssaa")
+                Log.d("RENT", "ya a punto ${tagUid}")
+                // val stationId = stationUseCases.getStationByTagUseCase.invoke(tagUid)
+                val stationId = tagUid
+                Log.d("RENT", "passsssaa")
 
                 if (stationId == null) {
                     _rentState.value = RentState.Error("No se encontró la estación con el UID proporcionado")
@@ -107,11 +117,11 @@ class RentViewModel @Inject constructor(
                     stationStartId = stationId,
                     authType = "nfc",
                 )
-                Log.d("PASO", "ya a punto")
+                Log.d("RENT", "ya a punto")
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
-                Log.d("PASO", "creada")
+                Log.d("RENT", "creada")
                 _rentState.value = RentState.Success(created)
-                Log.d("PASO", "guardada")
+                Log.d("RENT", "guardada")
 
             } catch (e: Exception) {
                 val errorMessage = if (e is HttpException) {
