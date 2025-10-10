@@ -17,5 +17,10 @@ data class StationDto(
 )
 
 
+data class QrStationDto(
+    val station_id: String,
+)
+
+
 
 fun StationDto.toDomain(): Station = Station(id, placeName, description, latitude, longitude, distanceMeters, availableUmbrellas, totalUmbrellas)

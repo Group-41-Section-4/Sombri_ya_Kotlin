@@ -29,16 +29,29 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.example.sombriyakotlin.ui.rent.RentViewModel
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun QrScannerScreen(
     modifier: Modifier = Modifier,
-    viewModel: QrViewModel = hiltViewModel()
+    viewModel: QrViewModel = hiltViewModel(),
+    rentViewModel: RentViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val qrCode by viewModel.qrCode.collectAsState()
+
+    LaunchedEffect(qrCode) {
+        qrCode?.let { stationId ->
+            //rentViewModel.setStartQrIntent()
+            Log.d("RENT", "Se incia proceso ${stationId}")
+            rentViewModel.handleScan(stationId)
+        }
+    }
+
+
+
 
     var hasCameraPermission by remember {
         mutableStateOf(
