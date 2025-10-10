@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -49,29 +50,32 @@ fun LoginScreen(
             else -> { /* No hacer nada en Idle o Loading */ }
         }
     }
-    // Lienzo base de 393x852 — los offsets están calc. para esa maqueta
-    Box(
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF90E0EF)) // background: #28BCEF
+            .background(color = Color(0xFF90E0EF)), // background: #28BCEF
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
+
     ) {
 
         // --- Título "Sombri-Ya" (arriba)
         Text(
             text = "Sombri-Ya",
             color = Color(0xFF001242),
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = 105.dp)   // left/top exactos de Figma
+            fontSize = 36.sp,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.padding(top = 50.dp)
+//                .align(Alignment.TopCenter)
+//                .offset(y = 105.dp)   // left/top exactos de Figma
         )
 
         // --- Tarjeta principal (Rectangle 3)
         Box(
             modifier = Modifier
                 .size(width = 349.dp, height = 445.dp)
-                .align(Alignment.Center)
+//                .align(Alignment.Center)
                 .shadow(8.dp, RoundedCornerShape(25.dp), clip = false)
                 .clip(RoundedCornerShape(25.dp))
                 .background(Color(0xFFFFFDFD)),
@@ -114,7 +118,7 @@ fun LoginScreen(
                 LoginInput(
                     value = email,
                     onValueChange = { email = it },
-                    hint = "xxx@ejemplo.com",
+                    hint = "user@ejemplo.com",
                     modifier = Modifier
                         .height(80.dp)
                         .fillMaxWidth()
@@ -150,6 +154,7 @@ fun LoginScreen(
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
                         .clickable { onNavigateToSignUp() }
+                        .padding(bottom = 16.dp)
                 )
 
                 // Botón: Iniciar sesión → (l:82-22=60, t:579-205=374) 230×36
@@ -160,6 +165,7 @@ fun LoginScreen(
                         .clip(RoundedCornerShape(25.dp))
                         .background(Color(0xFF001242))
                         .clickable { viewModel.loginUser("5e1a88f1-55c5-44d0-87bb-44919f9f4202") },
+
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -176,21 +182,20 @@ fun LoginScreen(
         Text(
             text = "Sombri-Ya",
             color = Color(0xFFFFFAFA),
-            fontSize = 22.sp,
+            fontSize = 24.sp,
             textAlign = TextAlign.Center,
-            modifier = Modifier.offset(x = 140.dp, y = 699.dp)
+//            modifier = Modifier.offset(x = 140.dp, y = 699.dp)
         )
 
         // Slogan → (l:65, t:754) w:263
         Text(
             text = "Ahorra tiempo y mantente seco en cualquier trayecto",
             color = Color(0xFFFFFAFA),
-            fontSize = 22.sp,
+            fontSize = 20.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .offset(x = 65.dp, y = 754.dp)
-                .width(263.dp)
-        )
+//                .offset(x = 65.dp, y = 754.dp)
+                .padding(horizontal = 16.dp)        )
     }
 }
 
