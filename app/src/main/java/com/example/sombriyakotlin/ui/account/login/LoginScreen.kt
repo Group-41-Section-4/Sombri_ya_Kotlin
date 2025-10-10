@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -50,10 +51,13 @@ fun LoginScreen(
         }
     }
     // Lienzo base de 393x852 — los offsets están calc. para esa maqueta
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF90E0EF)) // background: #28BCEF
+            .background(color = Color(0xFF90E0EF)), // background: #28BCEF
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
+
     ) {
 
         // --- Título "Sombri-Ya" (arriba)
@@ -63,15 +67,15 @@ fun LoginScreen(
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = 105.dp)   // left/top exactos de Figma
+//                .align(Alignment.TopCenter)
+//                .offset(y = 105.dp)   // left/top exactos de Figma
         )
 
         // --- Tarjeta principal (Rectangle 3)
         Box(
             modifier = Modifier
                 .size(width = 349.dp, height = 445.dp)
-                .align(Alignment.Center)
+//                .align(Alignment.Center)
                 .shadow(8.dp, RoundedCornerShape(25.dp), clip = false)
                 .clip(RoundedCornerShape(25.dp))
                 .background(Color(0xFFFFFDFD)),
@@ -178,7 +182,7 @@ fun LoginScreen(
             color = Color(0xFFFFFAFA),
             fontSize = 22.sp,
             textAlign = TextAlign.Center,
-            modifier = Modifier.offset(x = 140.dp, y = 699.dp)
+//            modifier = Modifier.offset(x = 140.dp, y = 699.dp)
         )
 
         // Slogan → (l:65, t:754) w:263
@@ -188,7 +192,7 @@ fun LoginScreen(
             fontSize = 22.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .offset(x = 65.dp, y = 754.dp)
+//                .offset(x = 65.dp, y = 754.dp)
                 .width(263.dp)
         )
     }
