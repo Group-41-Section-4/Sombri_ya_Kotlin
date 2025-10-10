@@ -1,6 +1,7 @@
 package com.example.sombriyakotlin.ui.rent.Scan
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -29,6 +30,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun QrScannerScreen(
     modifier: Modifier = Modifier,
