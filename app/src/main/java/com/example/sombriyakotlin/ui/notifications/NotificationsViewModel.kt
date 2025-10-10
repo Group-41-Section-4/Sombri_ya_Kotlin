@@ -161,6 +161,17 @@ class NotificationsViewModel @Inject constructor(
                     time = nowLabel()
                 )
             }
+            else{
+
+                    _notifications.value = _notifications.value + Notification(
+                        id = nextId("w"),
+                        type = NotificationType.WEATHER,
+                        title = "Alerta de Lluvia",
+                        message = "Hay $pop% de probabilidad de lluvia en las próximas horas.",
+                        time = nowLabel()
+                    )
+
+            }
         }
     }
 

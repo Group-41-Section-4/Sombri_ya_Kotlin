@@ -10,6 +10,7 @@ import com.example.sombriyakotlin.domain.usecase.rental.EndRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetRentalUserUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.getRentalsHystoryUserUseCase
+import com.example.sombriyakotlin.domain.usecase.stations.GetStationByTagUseCase
 import com.example.sombriyakotlin.domain.usecase.user.CreateUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.GetUserDistance
 import com.example.sombriyakotlin.domain.usecase.user.GetUserUseCase
@@ -52,7 +53,8 @@ object UseCaseModule {
     @Singleton
     fun provideStationRepository(repo: StationRepository): StationsUseCases {
         return StationsUseCases(
-        GetStationsUseCase(repo)
+        GetStationsUseCase(repo),
+            GetStationByTagUseCase(repo)
         )
     }
 }

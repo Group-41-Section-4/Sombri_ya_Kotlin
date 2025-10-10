@@ -22,7 +22,7 @@ import com.example.sombriyakotlin.ui.rent.Scan.ScanStrategy
 import java.lang.ref.WeakReference
 
 class NfcScanStrategy(
-    private val onTagDetected: (stationId: String) -> Unit
+    private val onTagDetected: (tagId: String) -> Unit
 ) : ScanStrategy {
 
     private var adapter: NfcAdapter? = null
@@ -36,7 +36,7 @@ class NfcScanStrategy(
     private fun uidOf(tag: Tag): String =
         tag.id?.joinToString(":") { "%02X".format(it) } ?: "NO_UID"
 
-    // 🔔 Beep
+    // Beep
     private fun beep(ms: Int = 150) {
         mainHandler.post {
             try { toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, ms) } catch (_: Exception) {}
@@ -44,29 +44,32 @@ class NfcScanStrategy(
     }
 
     // 📳 Vibración corta
+    @RequiresPermission(Manifest.permission.VIBRATE)
     private fun buzz(activity: Activity?, ms: Long = 60) {
         if (activity == null) return
         try {
-            val v = activity.getSystemService(android.content.Context.VIBRATOR_SERVICE) as android.os.Vibrator
-            if (android.os.Build.VERSION.SDK_INT >= 26) {
-                v.vibrate(android.os.VibrationEffect.createOneShot(ms, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
+            val v = activity.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (Build.VERSION.SDK_INT >= 26) {
+                v.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
                 @Suppress("DEPRECATION") v.vibrate(ms)
             }
         } catch (_: Exception) { }
     }
 
-    private val readerCallback = NfcAdapter.ReaderCallback { tag: Tag? ->
-        Log.d("NFC", "📡 ReaderCallback triggered... tag=$tag")
+    private val readerCallback = NfcAdapter.ReaderCallback @androidx.annotation.RequiresPermission(
+        android.Manifest.permission.VIBRATE
+    ) { tag: Tag? ->
+        Log.d("NFC", "LEYENDO TAG = $tag")
         val act = activityRef?.get()
 
         if (tag == null) {
-            Log.d("NFC", "❌ Tag es null")
+            Log.d("NFC", "Tag es null")
             return@ReaderCallback
         }
 
         if (firing) {
-            Log.d("NFC", "⚠️ Ya se está procesando otro tag, ignorando…")
+            Log.d("NFC", "Ya se está procesando otro tag, ignorando…")
             return@ReaderCallback
         }
         firing = true
@@ -83,10 +86,11 @@ class NfcScanStrategy(
         mainHandler.postDelayed({
             activityRef?.get()?.let { safeStop(it) }
             try {
-                Log.d("ZZZZZZZZZZZZZZZZZZZZZZZ", "🚀 Ejecutando onTagDetected con uid=$uid")
+                Log.d("ZZZZZZZZZZZZZZZZZZZZZZZ", "Ejecutando onTagDetected con uid=$uid")
+
                 onTagDetected(uid)
             } catch (e: Exception) {
-                Log.e("NFC", "❌ Error en onTagDetected(uid)", e)
+                Log.e("NFC", "Error en onTagDetected(uid)", e)
             } finally {
                 firing = false
             }
@@ -95,9 +99,9 @@ class NfcScanStrategy(
 
     @RequiresPermission(Manifest.permission.VIBRATE)
     override fun start(activity: Activity) {
-        Log.d("NFC", "🔛 start() llamado")
+        Log.d("NFC", "start() llamado")
         if (enabled) {
-            Log.d("NFC", "⚠️ ReaderMode ya estaba habilitado")
+            Log.d("NFC", "ReaderMode ya estaba habilitado")
             // Feedback igual para el usuario
             beep(100); buzz(activity, 40)
             return
@@ -105,7 +109,7 @@ class NfcScanStrategy(
 
         val adapter = NfcAdapter.getDefaultAdapter(activity)
             ?: run {
-                Log.d("NFC", "❌ getDefaultAdapter() = null")
+                Log.d("NFC", "getDefaultAdapter() = null")
                 throw IllegalStateException("Este dispositivo no soporta NFC")
             }
 
@@ -135,7 +139,7 @@ class NfcScanStrategy(
         this.adapter = adapter
         enabled = true
         firing = false
-        Log.d("NFC", "✅ ReaderMode ENABLED (A|B|F|V|BARCODE)")
+        Log.d("NFC", "ReaderMode ENABLED (A|B|F|V|BARCODE)")
 
         // Confirmación audible/táctil al activar
         beep(120); buzz(activity, 50)
@@ -151,7 +155,7 @@ class NfcScanStrategy(
     }
 
     override fun onNewIntent(intent: Intent) {
-        Log.d("NFC", "ℹ️ onNewIntent llamado (no usado en ReaderMode)")
+        Log.d("NFC", "onNewIntent llamado (no usado en ReaderMode)")
     }
 
     private fun safeStop(activity: Activity) {

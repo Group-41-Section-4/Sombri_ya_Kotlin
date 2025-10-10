@@ -1,10 +1,13 @@
 package com.example.sombriyakotlin.ui.rent
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sombriyakotlin.domain.model.Rental
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
+import com.example.sombriyakotlin.domain.usecase.stations.StationsUseCases
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -16,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RentViewModel @Inject constructor(
     private val rentalUseCases: RentalUseCases,
-    private val userUseCases: UserUseCases
+    private val userUseCases: UserUseCases,
+    private val stationUseCases: StationsUseCases
 ) : ViewModel() {
 
     sealed class RentState {
@@ -38,6 +42,7 @@ class RentViewModel @Inject constructor(
     fun setStartIntent()  { _scanIntent.value = ScanIntent.START }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun handleScan(stationId: String) {
         when (_scanIntent.value) {
             ScanIntent.RETURN -> endCurrentRental(stationId)
@@ -66,7 +71,7 @@ class RentViewModel @Inject constructor(
         _rentState.value = RentState.Idle
     }
 
-    fun createReservation(stationId: String) {
+    fun createReservation(tagUid: String) {
         viewModelScope.launch {
             _rentState.value = RentState.Loading
             try {
@@ -75,15 +80,23 @@ class RentViewModel @Inject constructor(
                     _rentState.value = RentState.Error("Usuario no autenticado")
                     return@launch
                 }
+                val stationId = stationUseCases.getStationByTagUseCase.invoke("04:B0:5F:1F:6F:61:80")
+                Log.d("PASO", "passsssaa")
 
+                if (stationId == null) {
+                    _rentState.value = RentState.Error("No se encontró la estación con el UID proporcionado")
+                    return@launch
+                }
                 val rental = Rental(
                     userId = user.id,
                     stationStartId = stationId,
                     authType = "nfc",
                 )
-
+                Log.d("PASO", "ya a punto")
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
+                Log.d("PASO", "creada")
                 _rentState.value = RentState.Success(created)
+                Log.d("PASO", "guardada")
 
             } catch (e: Exception) {
                 val errorMessage = if (e is HttpException) {
@@ -97,6 +110,7 @@ class RentViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun endCurrentRental(stationId: String) {
         viewModelScope.launch {
             _rentState.value = RentState.Loading
@@ -115,15 +129,13 @@ class RentViewModel @Inject constructor(
                 // Crea una copia con los datos necesarios para terminarla
                 val rentalToEnd = current.copy(
                     userId = user.id,
-                    stationStartId = stationId, // o usa un campo diferente si tu backend lo requiere
+                    stationStartId = stationId,
                     endedAt = java.time.Instant.now().toString(),
-                    status = "completed" // o el estado que tu API espera
+                    status = "completed"
                 )
 
-                // Envía la solicitud al backend
                 val ended = rentalUseCases.endRentalUseCase.invoke(rentalToEnd)
 
-                // Éxito → actualiza estado
                 _rentState.value = RentState.Success(ended)
 
             } catch (e: Exception) {
@@ -137,6 +149,8 @@ class RentViewModel @Inject constructor(
             }
         }
     }
+
+
 
 
 

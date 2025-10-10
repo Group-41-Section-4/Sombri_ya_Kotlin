@@ -11,4 +11,8 @@ interface StationApi {
     @POST("stations/nearby")
     suspend fun getStations(@Body queryStationDto: QueryLocalizationDto): Response<List<StationDto>>
 
+    @GET("tags/{uid}/station")
+    suspend fun getStationByTag(
+        @retrofit2.http.Path("uid") uid: String
+    ): StationDto
 }

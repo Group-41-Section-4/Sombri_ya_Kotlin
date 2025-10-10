@@ -27,4 +27,6 @@ interface RentalApi {
         @Query("user_id") userId: String,
         @Query("status") status: String
     ): List<RentalHistoryDto>
+
+
 }

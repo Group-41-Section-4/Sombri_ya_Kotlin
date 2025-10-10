@@ -26,5 +26,12 @@ class StationRepositoryImpl @Inject constructor(
             return emptyList()
         }
     }
+    override suspend fun getStationByTag(uid: String): String {
+        Log.d("StationRepositoryImpl", "Q ,PASOOO")
+
+        val response = stationApi.getStationByTag(uid)
+        Log.d("StationRepositoryImpl", "PAPI MIRALO VIEB ${response.id}")
+        return response.id
+    }
 
 }

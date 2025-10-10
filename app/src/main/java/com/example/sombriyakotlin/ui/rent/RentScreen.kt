@@ -39,7 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.feature.rent.NfcScanStrategy
-import com.example.sombriyakotlin.ui.account.ContentCard
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.navigation.Routes
 import com.example.sombriyakotlin.ui.rent.Scan.QrScannerScreen
@@ -57,18 +56,17 @@ fun CardRent(navController: NavController) {
 
     LaunchedEffect(rentState) {
         if (rentState is RentViewModel.RentState.Success) {
-            navController.navigate(Routes.HOME) {
+            navController.navigate(Routes.MAIN) {
                 popUpTo(Routes.RENT) { inclusive = true }
             }
         }
     }
 
-    // ——— NFC strategy ———
     var strategy: ScanStrategy? by remember { mutableStateOf(null) }
     val nfc by remember {
         mutableStateOf(
             NfcScanStrategy { stationId ->
-                Log.d("Rent", "➡️ onTagDetected($stationId)")
+                Log.d("Rent", "onTagDetected($stationId)")
                 rentViewModel.handleScan(stationId)
             }
         )
@@ -76,56 +74,56 @@ fun CardRent(navController: NavController) {
 
     DisposableEffect(Unit) {
         onDispose {
-            Log.d("Rent", "🧹 CardRent dispose -> stop NFC si estaba activo")
+            Log.d("Rent", "stop NFC si estaba activo")
             try { strategy?.stop(activity) } catch (_: Exception) {}
         }
     }
 
-    // Diálogo si hay alquiler activo
-    var showActiveDialog by remember { mutableStateOf(false) }
-    LaunchedEffect(hasActive) { showActiveDialog = hasActive }
+    // pop up hay alquiler activo
+    var showActivePopUp by remember { mutableStateOf(false) }
+    LaunchedEffect(hasActive) { showActivePopUp = hasActive }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Box(Modifier.weight(1f).fillMaxSize()) {
             ContentCard(Modifier.matchParentSize())
 
-            // FAB NFC (sin bloqueo)
+            // FAB NFC
             BotonNFC(
-                onClick = {
-                    Log.d("Rent", "🖱️ FAB clicado. strategy=$strategy")
+                onClick = @androidx.annotation.RequiresPermission(android.Manifest.permission.VIBRATE) {
+                    Log.d("Rent", "FAB clicado. strategy=$strategy")
 
                     if (!isNfcSupported(activity)) {
                         toast(activity, "Este dispositivo no soporta NFC")
-                        Log.d("Rent", "❌ NFC no soportado")
+                        Log.d("Rent", "NFC no soportado")
                         return@BotonNFC
                     }
                     if (!isNfcEnabled(activity)) {
-                        Log.d("Rent", "⚠️ NFC apagado -> abre ajustes")
+                        Log.d("Rent", "NFC apagado")
                         openNfcSettings(activity)
                         toast(activity, "Activa NFC y vuelve a intentarlo")
                         return@BotonNFC
                     }
 
                     if (strategy == null) {
-                        Log.d("Rent", "🔛 Activando NFC ReaderMode…")
+                        Log.d("Rent", "Activando NFC ReaderMode…")
                         try {
                             nfc.start(activity)
                             strategy = nfc
-                            Log.d("Rent", "✅ NFC Activado")
+                            Log.d("Rent", "NFC fucnionaaaaaaaaaa")
                             toast(activity, "NFC activado. Acerca la tarjeta…")
                         } catch (e: Exception) {
-                            Log.e("Rent", "❌ Error activando NFC", e)
+                            Log.e("Rent", "NFC NO FUCNIONA", e)
                             toast(activity, "Error activando NFC")
                         }
                     } else {
-                        Log.d("Rent", "🛑 Desactivando NFC ReaderMode…")
+                        Log.d("Rent", "Desactivando")
                         try {
                             strategy?.stop(activity)
                             strategy = null
-                            Log.d("Rent", "✅ NFC Desactivado")
+                            Log.d("Rent", "NFC DESACTIVADOOOOOOOOOOOOO")
                             toast(activity, "NFC desactivado")
                         } catch (e: Exception) {
-                            Log.e("Rent", "❌ Error desactivando NFC", e)
+                            Log.e("Rent", "Error desactivandoooooooooooooooop", e)
                         }
                     }
                 },
@@ -136,26 +134,22 @@ fun CardRent(navController: NavController) {
         }
     }
 
-    // ——— Diálogo de alquiler activo ———
-    if (showActiveDialog) {
-        AlquilerActivoDialog(
+    // Pop up alquiler activo
+    if (showActivePopUp) {
+        AlquilerActivoPopUp(
             onIngresar = {
                 rentViewModel.setReturnIntent()
-                showActiveDialog = false
+                showActivePopUp = false
 
-                // 🔑 Asegura que el próximo toque del FAB active NFC
                 strategy = null
 
                 toast(activity, "Modo devolución activado. Acerca la tarjeta a la base…")
             },
             onNo = {
-                showActiveDialog = false
-                navController.navigate(Routes.HOME) {
-                    popUpTo(Routes.RENT) { inclusive = true }
-                    launchSingleTop = true
-                }
+                showActivePopUp = false
+                navController.navigate(Routes.MAIN)
             },
-            onDismiss = { showActiveDialog = false }
+            onDismiss = { showActivePopUp = false }
         )
     }
 }
@@ -166,7 +160,7 @@ fun ContentCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun AlquilerActivoDialog(
+fun AlquilerActivoPopUp(
     onIngresar: () -> Unit,
     onNo: () -> Unit,
     onDismiss: () -> Unit
