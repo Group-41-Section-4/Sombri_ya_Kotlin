@@ -34,7 +34,7 @@ class SingUpViewModel @Inject constructor (
                 //    Asegúrate de que tu clase `User` y `UserDto` tengan el campo para la contraseña.
                 //    Debería ser algo como:
                 //    val user = User(id = 0, name = name, email = email, password = pass)
-                val user = User(id = "", name = name, email = email) // <-- ¡MODIFICA ESTO!
+                val user = User(id = "", name = name, email = email, password = pass) // <-- ¡MODIFICA ESTO!
                 
                 val createdUser = userUseCases.createUserUseCase.invoke(user)
                 _signUpState.value = SignUpState.Success(createdUser)

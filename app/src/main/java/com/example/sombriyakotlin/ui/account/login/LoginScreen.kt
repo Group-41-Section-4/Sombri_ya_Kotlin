@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sombriyakotlin.ui.account.login.LoginViewModel.LoginState
+import com.example.sombriyakotlin.ui.account.signInWithGoogleOption
 
 @Composable
 fun LoginScreen(
@@ -174,6 +175,10 @@ fun LoginScreen(
                         fontSize = 22.sp,
                         letterSpacing = (-0.26f).sp
                     )
+                }
+
+                Button(onClick = { signInWithGoogleOption}) {
+                    Text(text = "Iniciar Sesión con Google")
                 }
             }
         }
