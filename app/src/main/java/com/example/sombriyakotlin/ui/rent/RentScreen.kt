@@ -232,7 +232,7 @@ fun TopBar(navController : NavController){
     TopAppBar(
         title = { Text("") },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(R.color.primary),
+            containerColor = colorResource(R.color.BlueInterface),
             navigationIconContentColor = Color.Black
         ),
         navigationIcon = {

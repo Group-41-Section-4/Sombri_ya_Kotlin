@@ -65,12 +65,7 @@ fun MainContent(navController: NavController,
 
     val context = LocalContext.current
 
-    // Permisos launcher
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { perms ->
-        // Nada explícito aquí: cuando se concede, el collector de locationState empezará a emitir
-    }
+
 
     // verificar permiso actual
     var hasLocationPermission by remember {
