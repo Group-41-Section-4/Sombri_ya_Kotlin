@@ -1,8 +1,10 @@
 package com.example.sombriyakotlin.ui.account.signup
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.OffsetMapping
@@ -44,11 +47,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.ui.account.signup.SingUpViewModel.SignUpState
 
 /**
  * Vista de Registro
  */
+//@SuppressLint("ResourceAsColor")
 @Composable
 fun SignUpScreen(
     onNavigateBack: () -> Unit = {},
@@ -70,42 +75,42 @@ fun SignUpScreen(
             }
             is SignUpState.Error -> {
                 // Muestra un Snackbar, Toast o un diálogo con el error
-                // scaffoldState.snackbarHostState.showSnackbar((signUpState as SignUpState.Error).message)
+                //scaffoldState.snackbarHostState.showSnackbar((signUpState as SignUpState.Error).message)
             }
             else -> { /* No hacer nada en Idle o Loading */ }
         }
     }
 
     // Lienzo base
-    Box(
+    Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF28BCEF)) // azul de fondo
+            .background(colorResource(R.color.BlueInterface)), // azul de fondo
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
         // Marca superior
         Text(
             text = "Sombri-Ya",
             color = Color(0xFF001242),
-            fontSize = 48.sp,
+            fontSize = 36.sp,
             fontWeight = FontWeight.ExtraBold,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 50.dp)
+            modifier = Modifier.padding(top = 50.dp)
         )
 
         // -------- Tarjeta centrada vertical/horizontal --------
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 96.dp),
-            contentAlignment = Alignment.Center
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center,
+
         ) {
             Card(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .wrapContentHeight(),
                 shape = RoundedCornerShape(45.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+//                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFDFD))
             ) {
                 Column(
@@ -138,7 +143,7 @@ fun SignUpScreen(
                     Box(
                         modifier = Modifier
                             .padding(top = 12.dp, bottom = 8.dp)
-                            .size(56.dp)
+//                            .size(56.dp)
                             .shadow(6.dp, RoundedCornerShape(8.dp), clip = false)
                             .clip(RoundedCornerShape(8.dp))
                             .background(Color.White),
@@ -182,34 +187,36 @@ fun SignUpScreen(
                         modifier = Modifier.fillMaxWidth(),
                         isPassword = true
                     )
+
+                    // -------- Botón rojo anclado abajo --------
+                    Button(
+                        onClick = {
+                            viewModel.registerUser(name, email, pass)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFF4645),
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(1000.dp),
+                        enabled = signUpState != SignUpState.Loading,
+                        modifier = Modifier.padding(top = 15.dp)
+//                .height(44.dp)
+//                .fillMaxWidth(0.74f) // ancho relativo (similar a 230px/393px)
+                    ) {
+                        if (signUpState == SignUpState.Loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.Gray
+                            )
+                        } else {
+                            Text("Seguir", fontSize = 18.sp)
+                        }
+                    }
                 }
+
             }
         }
 
-        // -------- Botón rojo anclado abajo --------
-        Button(
-            onClick = {
-                // ¡CORREGIDO! Ahora pasamos la contraseña al ViewModel.
-                viewModel.registerUser(name, email, pass)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFF4645),
-                contentColor = Color.White
-            ),
-            shape = RoundedCornerShape(1000.dp),
-            enabled = signUpState != SignUpState.Loading,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 24.dp)
-                .height(44.dp)
-                .fillMaxWidth(0.74f) // ancho relativo (similar a 230px/393px)
-        ) {
-            if (signUpState == SignUpState.Loading) {
-                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-            } else {
-                Text("Seguir", fontSize = 18.sp)
-            }
-        }
     }
 }
 
