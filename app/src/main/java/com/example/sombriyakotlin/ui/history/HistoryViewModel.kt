@@ -92,20 +92,17 @@ class HistoryViewModel @Inject constructor(
                 Log.d("HistoryVM", "Rentas obtenidas: ${rentals.size}")
 
                 val mapped = rentals.mapNotNull { r ->
-                    // 1. Parsear el tiempo de inicio
                     val start = parseIso(r.startedAt)
                     if (start == null) {
                         Log.w("HistoryVM", "Renta ID ${r.id} omitida: startedAt es inválido.")
                         return@mapNotNull null
                     }
 
-                    // 2. Usar la duración del DTO si es válida, si no, calcularla
                     val durationMin = r.durationMinutes.takeIf { it >= 0 } ?: run {
                         val end = parseIso(r.endedAt)
                         if (end != null) max(0, ((end.time - start.time) / 60000L).toInt()) else 0
                     }
 
-                    // ** 3. Mapeo a la clase HistoryUiItem SÓLO con lo necesario para la tarjeta **
                     HistoryUiItem(
                         id = r.id,
                         date = formatDateEs(start),
@@ -113,7 +110,6 @@ class HistoryViewModel @Inject constructor(
                         time = formatTime(start)
                     )
                 }.sortedByDescending { h ->
-                    // 4. Ordenar: reconstruimos la fecha/hora de inicio para ordenar de más reciente a más antigua
                     parseIso("${h.date} ${h.time}")?.time ?: 0L
                 }
 

@@ -33,7 +33,6 @@ class RentalRepositoryImpl @Inject constructor(
 
 
     override suspend fun endRental(rental: Rental): Rental {
-        local.clear()
         Log.d("RENT", "Previo Response: $rental")
         val response = rentalApi.endRental(rental.toEndDto())
         Log.d("RENT", "Despues Response: $response")
