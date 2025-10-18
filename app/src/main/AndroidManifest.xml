@@ -24,6 +24,7 @@
             android:value="${GOOGLE_MAPS_API_KEY}" />
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="nosensor"
             android:exported="true"
             android:theme="@style/Theme.SombriYaKotlin"
             android:launchMode="singleTop">
