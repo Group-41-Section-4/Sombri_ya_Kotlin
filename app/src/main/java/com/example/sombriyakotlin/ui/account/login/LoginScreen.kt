@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sombriyakotlin.ui.account.login.LoginViewModel.LoginState
-import com.example.sombriyakotlin.ui.account.signInWithGoogleOption
+//import com.example.sombriyakotlin.ui.account.signInWithGoogleOption
 
 @Composable
 fun LoginScreen(
@@ -109,7 +109,7 @@ fun LoginScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Person,
-                        contentDescription = "person",
+                        contentDescription = "personIcon",
                         tint = Color(0xFF001242),
                         modifier = Modifier.size(50.dp)
                     )
@@ -177,7 +177,7 @@ fun LoginScreen(
                     )
                 }
 
-                Button(onClick = { signInWithGoogleOption}) {
+                Button(onClick = { }) { //signInWithGoogleOption
                     Text(text = "Iniciar Sesión con Google")
                 }
             }
@@ -186,8 +186,9 @@ fun LoginScreen(
         // Texto "Sombri-Ya" inferior → (l:140, t:699)
         Text(
             text = "Sombri-Ya",
-            color = Color(0xFFFFFAFA),
+            color = Color(0xFF001242),
             fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
 //            modifier = Modifier.offset(x = 140.dp, y = 699.dp)
         )
@@ -195,12 +196,12 @@ fun LoginScreen(
         // Slogan → (l:65, t:754) w:263
         Text(
             text = "Ahorra tiempo y mantente seco en cualquier trayecto",
-            color = Color(0xFFFFFAFA),
+            color = Color(0xFFFFFDFD),
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier
-//                .offset(x = 65.dp, y = 754.dp)
-                .padding(horizontal = 16.dp)        )
+                .padding(horizontal = 36.dp)
+        )
     }
 }
 
