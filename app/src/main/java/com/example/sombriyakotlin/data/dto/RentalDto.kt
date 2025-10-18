@@ -91,9 +91,10 @@ fun Rental.toRequestDto(): RentalRequestDto {
 
 // Dominio -> DTO de fin de renta
 fun Rental.toEndDto(): EndRentalDto {
+    Log.d("RENT", "Response: $this")
     val request = EndRentalDto(
         user_id = userId,
-        station_end_id = stationStartId // si tienes stationEndId, cámbialo aquí
+        station_end_id = stationStartId
     )
     return request
 }

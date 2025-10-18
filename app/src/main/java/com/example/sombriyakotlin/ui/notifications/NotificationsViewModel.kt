@@ -35,7 +35,6 @@ class NotificationsViewModel @Inject constructor(
     private fun nextId(prefix: String) =
         "$prefix-${System.currentTimeMillis()}-${Random.nextInt(0, 999)}"
 
-    // Intenta formatear ISO8601 (p. ej. "2025-10-04T19:10:02.922Z") a "hh:mm a"
     private fun formatIsoToHourMinute(iso: String?): String {
         if (iso.isNullOrBlank()) return nowLabel()
         return try {

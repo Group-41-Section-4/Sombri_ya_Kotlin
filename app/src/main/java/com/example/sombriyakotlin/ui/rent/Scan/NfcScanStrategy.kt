@@ -74,7 +74,7 @@ class NfcScanStrategy(
         }
         firing = true
 
-        val uid = "acadc4ef-f5b3-4ab8-9ab5-58f1161f0799"//uidOf(tag)
+        val uid = uidOf(tag)
         val techs = tag.techList.joinToString()
         Log.d("NFC", "✅ Tag detectado - UID=$uid")
         Log.d("NFC", "💾 Tecnologías disponibles: $techs")
