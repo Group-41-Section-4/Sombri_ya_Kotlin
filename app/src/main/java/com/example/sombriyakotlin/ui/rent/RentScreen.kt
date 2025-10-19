@@ -24,7 +24,8 @@ import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.navigation.Routes
 import com.example.sombriyakotlin.feature.rent.NfcScanner // 🔹 Nuevo import (ver nota abajo)
 import com.example.sombriyakotlin.ui.rent.scan.QrScannerScreen
-
+import android.app.AlertDialog
+import android.content.Context
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardRent(navController: NavController) {
@@ -34,15 +35,12 @@ fun CardRent(navController: NavController) {
     val rentViewModel: RentViewModel = hiltViewModel()
     val rentState by rentViewModel.rentState.collectAsStateWithLifecycle()
     val hasActive by rentViewModel.hasActive.collectAsStateWithLifecycle()
+    var showReservaPopup by remember { mutableStateOf(false) }
+    var navigateToMain by remember { mutableStateOf(false) }
+
+
 
     // 🔹 Efecto: si se completa la reserva, regresar al MAIN
-    LaunchedEffect(rentState) {
-        if (rentState is RentViewModel.RentState.Success) {
-            navController.navigate(Routes.MAIN) {
-                popUpTo(Routes.RENT) { inclusive = true }
-            }
-        }
-    }
 
     // 🔹 Estado NFC
     var nfcEnabled by remember { mutableStateOf(false) }
@@ -51,6 +49,7 @@ fun CardRent(navController: NavController) {
             onTagDetected = { tagId ->
                 Log.d("Rent", "Tag detectado: $tagId")
                 rentViewModel.handleScanNfc(tagId)
+
             },
             onError = { errorMsg ->
                 toast(activity, errorMsg)
@@ -62,6 +61,20 @@ fun CardRent(navController: NavController) {
         onDispose {
             Log.d("Rent", "Deteniendo NFC al salir de la pantalla…")
             nfcScanner.stop(activity)
+        }
+    }
+    LaunchedEffect(rentState) {
+        if (rentState is RentViewModel.RentState.Success) {
+            showReservaPopup = true
+        }
+    }
+    if (navigateToMain) {
+        // Esta navegación se hace fuera del árbol composable
+        LaunchedEffect(Unit) {
+            navController.navigate(Routes.MAIN) {
+                popUpTo(Routes.RENT) { inclusive = true }
+            }
+            navigateToMain = false
         }
     }
 
@@ -113,7 +126,14 @@ fun CardRent(navController: NavController) {
             )
         }
     }
-
+    if (showReservaPopup) {
+        PopUpReservaCreated(onDismiss = {
+            showReservaPopup = false
+            nfcEnabled = false
+            rentViewModel.reset()
+            navigateToMain = true
+        })
+    }
     // 🔹 Pop-up: alquiler activo
     if (showActivePopUp) {
         AlquilerActivoPopUp(
@@ -195,6 +215,7 @@ private fun toast(activity: Activity, msg: String) {
     android.widget.Toast.makeText(activity, msg, android.widget.Toast.LENGTH_SHORT).show()
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(navController: NavController) {
@@ -216,6 +237,20 @@ fun TopBar(navController: NavController) {
         }
     )
 }
+@Composable
+fun PopUpReservaCreated(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Reserva realizada") },
+        text = { Text("Reserva realizada con éxito") },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("OK")
+            }
+        }
+    )
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

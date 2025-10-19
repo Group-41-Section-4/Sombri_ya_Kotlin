@@ -79,8 +79,7 @@ class NfcScanner(
 
         val uid = uidOf(tag)
         val techs = tag.techList.joinToString()
-        Log.d("NFC", "✅ Tag detectado - UID=$uid")
-        Log.d("NFC", "💾 Tecnologías disponibles: $techs")
+        Log.d("NFC", "Tag detectado - UID=$uid")
 
         // Feedback inmediato
         beep(180)
@@ -146,9 +145,7 @@ class NfcScanner(
         safeStop(activity)
     }
 
-    fun onNewIntent(intent: Intent) {
-        Log.d("NFC", "onNewIntent llamado (no usado en ReaderMode)")
-    }
+
 
     private fun safeStop(activity: Activity) {
         if (!enabled) return
@@ -162,9 +159,5 @@ class NfcScanner(
         }
     }
 
-    // 🖥️ Composable opcional
-    @Composable
-    fun Render() {
-        Text("Acerca una tarjeta o tag NFC…")
-    }
+
 }
