@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -166,14 +167,17 @@ fun SignUpScreen(
         // -------- Tarjeta centrada vertical/horizontal --------
         Box(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+            ,
             contentAlignment = Alignment.Center,
 
         ) {
             Card(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .shadow(8.dp, RoundedCornerShape(50.dp), clip = false)
+                ,
                 shape = RoundedCornerShape(45.dp),
 //                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFDFD))
