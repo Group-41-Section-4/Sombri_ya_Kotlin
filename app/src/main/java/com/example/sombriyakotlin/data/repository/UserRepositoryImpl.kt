@@ -1,9 +1,11 @@
 package com.example.sombriyakotlin.data.repository
 
+import android.util.Log
 import com.example.sombriyakotlin.data.api.UserApi
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.dto.toDomain
 import com.example.sombriyakotlin.data.dto.toDto
+import com.example.sombriyakotlin.domain.model.CreateUser
 import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.model.UserHistory
 import com.example.sombriyakotlin.domain.repository.UserRepository
@@ -14,9 +16,12 @@ class UserRepositoryImpl @Inject constructor(
     private val userApi: UserApi,
     private val userLocalDataSource: UserLocalDataSource
 ) : UserRepository {
-    override suspend fun createUser(user: User): User {
-        val userDto = userApi.createUser(user.toDto())
-        val domainUser = userDto.toDomain()
+    override suspend fun createUser(user: CreateUser): User {
+        Log.d("UserRepositoryImpl", "Creando usuario con datos: $user")
+        val respuestaUserDto = userApi.createUser(user.toDto())
+        Log.d("UserRepositoryImpl", "Respuesta del servidor: $respuestaUserDto")
+        val domainUser = respuestaUserDto.toDomain()
+        Log.d("UserRepositoryImpl", "Usuario registrado: $domainUser")
         userLocalDataSource.saveUser(domainUser)
         return domainUser
     }
