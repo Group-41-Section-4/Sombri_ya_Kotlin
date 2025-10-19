@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sombriyakotlin.ui.account.login.LoginViewModel.LoginState
+import com.example.sombriyakotlin.ui.popup.SomenthingWentWrongPopUp
+
 //import com.example.sombriyakotlin.ui.account.signInWithGoogleOption
 
 @Composable
@@ -38,6 +40,9 @@ fun LoginScreen(
 
     val loginState by viewModel.loginState.collectAsState()
 
+    var errorMessage by remember { mutableStateOf("Algo salió mal :(") }
+    var showErrorDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(loginState) {
         when (loginState) {
             is LoginState.Success -> {
@@ -46,8 +51,9 @@ fun LoginScreen(
             }
             is LoginState.Error -> {
                 // Muestra un Snackbar, Toast o un diálogo con el error
-                // scaffoldState.snackbarHostState.showSnackbar((signUpState as SignUpState.Error).message)
-            }
+                val msg = (loginState as? LoginState.Error)?.message ?: "Algo salió mal :("
+                errorMessage = msg
+                showErrorDialog = true            }
             else -> { /* No hacer nada en Idle o Loading */ }
         }
     }
@@ -59,7 +65,8 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
 
-    ) {
+    )
+    {
 
         // --- Título "Sombri-Ya" (arriba)
         Text(
@@ -174,7 +181,7 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Button(modifier = Modifier.fillMaxWidth(),colors= ButtonColors(Color(0xFF001242),Color(0xFF001242),Color(0xFF001242),Color(0xFF001242)), onClick = {viewModel.loginUser("5e1a88f1-55c5-44d0-87bb-44919f9f4202")})
+                    Button(modifier = Modifier.fillMaxWidth(),colors= ButtonColors(Color(0xFF001242),Color(0xFF001242),Color(0xFF001242),Color(0xFF001242)), onClick = {viewModel.loginUser(email,pass)})
                     {
                         Text(
                             text = "Iniciar Sesión",
@@ -224,6 +231,12 @@ fun LoginScreen(
                     .padding(horizontal = 36.dp)
             )
         }
+
+        SomenthingWentWrongPopUp(
+            show = showErrorDialog,
+            message = errorMessage,
+            onDismiss = { showErrorDialog = false }
+        )
     }
 }
 

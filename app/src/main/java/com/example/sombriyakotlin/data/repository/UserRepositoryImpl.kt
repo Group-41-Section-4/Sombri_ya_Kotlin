@@ -6,6 +6,7 @@ import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.dto.toDomain
 import com.example.sombriyakotlin.data.dto.toDto
 import com.example.sombriyakotlin.domain.model.CreateUser
+import com.example.sombriyakotlin.domain.model.LogInUser
 import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.model.UserHistory
 import com.example.sombriyakotlin.domain.repository.UserRepository
@@ -32,6 +33,13 @@ class UserRepositoryImpl @Inject constructor(
         val userDto = userApi.getUser(userId)
         val domainUser = userDto.toDomain()
         userLocalDataSource.saveUser(domainUser)
+        return domainUser
+    }
+
+    override suspend fun logInUser(credentials: LogInUser): User {
+        val respuestaUserDto = userApi.logInUser(credentials.toDto())
+        val domainUser = respuestaUserDto.toDomain()
+        //userLocalDataSource.saveUser(domainUser)
         return domainUser
     }
 

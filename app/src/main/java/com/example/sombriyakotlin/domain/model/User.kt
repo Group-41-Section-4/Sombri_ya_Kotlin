@@ -17,6 +17,11 @@ data class CreateUser (
 
     )
 
+data class LogInUser (
+    val email: String = "",
+    val password: String = "",
+)
+
 data class UserHistory (
     val totalDistance: Double = 0.0,
 

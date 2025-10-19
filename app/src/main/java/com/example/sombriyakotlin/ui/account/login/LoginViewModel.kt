@@ -3,6 +3,7 @@ package com.example.sombriyakotlin.ui.account.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sombriyakotlin.domain.model.LogInUser
 import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,11 +28,12 @@ class LoginViewModel @Inject constructor(
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
 
-    fun loginUser(userId: String) {
+    fun loginUser(email: String,password: String) {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
             try {
-                val loggedInUser = userUseCases.refreshUserUseCase(userId)
+                val credentials = LogInUser(email, password)
+                val loggedInUser = userUseCases.logInUserUseCases(credentials)
                 _loginState.value = LoginState.Success(loggedInUser)
                 Log.e("LoginViewModel", "bien: ${loggedInUser.id}")
             } catch (e: Exception) {
