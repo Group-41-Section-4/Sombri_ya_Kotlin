@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.ui.rent.Scan
+package com.example.sombriyakotlin.ui.rent
 
 import android.annotation.SuppressLint
 import android.os.Build

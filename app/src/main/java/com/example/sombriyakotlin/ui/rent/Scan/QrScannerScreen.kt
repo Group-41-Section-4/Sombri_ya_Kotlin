@@ -30,7 +30,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.sombriyakotlin.ui.rent.RentViewModel
-import com.example.sombriyakotlin.ui.rent.Scan.QrViewModel
+import com.example.sombriyakotlin.ui.rent.QrViewModel
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -43,7 +43,7 @@ fun QrScannerScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val qrCode by viewModel.qrCode.collectAsState()
 
-    // 🔹 Cada vez que se detecta un código QR, procesamos la reserva
+    // Cada vez que se detecta un código QR, procesamos la reserva
     LaunchedEffect(qrCode) {
         qrCode?.let { stationId ->
             Log.d("RENT", "Código QR detectado: $stationId")
@@ -70,7 +70,7 @@ fun QrScannerScreen(
         if (!hasCameraPermission) launcher.launch(Manifest.permission.CAMERA)
     }
 
-    // 🔹 UI principal del escáner
+
     Box(modifier = modifier.fillMaxSize()) {
         if (hasCameraPermission) {
             // Vista de la cámara
@@ -114,7 +114,7 @@ fun QrScannerScreen(
                 modifier = Modifier.fillMaxSize()
             )
 
-            // Overlay con la máscara de enfoque
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()

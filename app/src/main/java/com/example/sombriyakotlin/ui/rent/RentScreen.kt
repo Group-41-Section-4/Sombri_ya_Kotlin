@@ -22,10 +22,8 @@ import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.navigation.Routes
-import com.example.sombriyakotlin.feature.rent.NfcScanner // 🔹 Nuevo import (ver nota abajo)
+import com.example.sombriyakotlin.feature.rent.Scan.NfcScanner // 🔹 Nuevo import (ver nota abajo)
 import com.example.sombriyakotlin.ui.rent.scan.QrScannerScreen
-import android.app.AlertDialog
-import android.content.Context
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardRent(navController: NavController) {
@@ -37,10 +35,12 @@ fun CardRent(navController: NavController) {
     val hasActive by rentViewModel.hasActive.collectAsStateWithLifecycle()
     var showReservaPopup by remember { mutableStateOf(false) }
     var navigateToMain by remember { mutableStateOf(false) }
+    var showActivePopUp by remember { mutableStateOf(false) }
+    var showDevolucionPopup by remember { mutableStateOf(false) }   // 🆕
+    var suppressActivePopup by remember { mutableStateOf(false) }   // 🆕 evita el flash
 
 
 
-    // 🔹 Efecto: si se completa la reserva, regresar al MAIN
 
     // 🔹 Estado NFC
     var nfcEnabled by remember { mutableStateOf(false) }
@@ -48,7 +48,7 @@ fun CardRent(navController: NavController) {
         NfcScanner(
             onTagDetected = { tagId ->
                 Log.d("Rent", "Tag detectado: $tagId")
-                rentViewModel.handleScanNfc(tagId)
+                rentViewModel.handleScan(tagId)
 
             },
             onError = { errorMsg ->
@@ -61,11 +61,22 @@ fun CardRent(navController: NavController) {
         onDispose {
             Log.d("Rent", "Deteniendo NFC al salir de la pantalla…")
             nfcScanner.stop(activity)
+            suppressActivePopup = false
         }
     }
     LaunchedEffect(rentState) {
         if (rentState is RentViewModel.RentState.Success) {
-            showReservaPopup = true
+            try { nfcScanner.stop(activity) } catch (_: Exception) {}
+            showActivePopUp = false
+            suppressActivePopup = true
+            val endedAt = (rentState as RentViewModel.RentState.Success).rental.endedAt
+            if (!endedAt.isNullOrBlank()) {
+                // Devolución exitosa
+                showDevolucionPopup = true
+            } else {
+                // Reserva exitosa
+                showReservaPopup = true
+            }
         }
     }
     if (navigateToMain) {
@@ -78,10 +89,9 @@ fun CardRent(navController: NavController) {
         }
     }
 
-    // 🔹 Pop-up: alquiler activo
-    var showActivePopUp by remember { mutableStateOf(false) }
-    LaunchedEffect(hasActive) { showActivePopUp = hasActive }
-
+    LaunchedEffect(hasActive, showReservaPopup, showDevolucionPopup, suppressActivePopup) {
+        showActivePopUp = hasActive && !showReservaPopup && !showDevolucionPopup && !suppressActivePopup
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         Box(Modifier.weight(1f).fillMaxSize()) {
             // 🔹 QR Scanner embebido
@@ -126,6 +136,18 @@ fun CardRent(navController: NavController) {
             )
         }
     }
+
+    if (showDevolucionPopup) {
+        PopUpDevolucionExitosa(onDismiss = {
+            showDevolucionPopup = false
+            nfcEnabled = false
+            rentViewModel.reset()
+            // normalmente navegas al main después de devolver
+            navigateToMain = true
+        })
+    }
+
+
     if (showReservaPopup) {
         PopUpReservaCreated(onDismiss = {
             showReservaPopup = false
@@ -134,8 +156,9 @@ fun CardRent(navController: NavController) {
             navigateToMain = true
         })
     }
+
     // 🔹 Pop-up: alquiler activo
-    if (showActivePopUp) {
+    if (showActivePopUp && !showReservaPopup && !showDevolucionPopup) {
         AlquilerActivoPopUp(
             onIngresar = {
                 rentViewModel.setReturnIntent()
@@ -243,6 +266,19 @@ fun PopUpReservaCreated(onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text("Reserva realizada") },
         text = { Text("Reserva realizada con éxito") },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("OK")
+            }
+        }
+    )
+}
+@Composable
+fun PopUpDevolucionExitosa(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Devolución realizada") },
+        text = { Text("Has devuelto la sombrilla con éxito.") },
         confirmButton = {
             TextButton(onClick = onDismiss) {
                 Text("OK")
