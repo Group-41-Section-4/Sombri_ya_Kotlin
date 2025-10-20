@@ -3,6 +3,7 @@ package com.example.sombriyakotlin.ui.account.signup
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sombriyakotlin.domain.model.CreateUser
 import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,13 +31,10 @@ class SingUpViewModel @Inject constructor (
         viewModelScope.launch {
             _signUpState.value = SignUpState.Loading
             try {
-                // 2. AÑADE LA CONTRASEÑA AL OBJETO User
-                //    Asegúrate de que tu clase `User` y `UserDto` tengan el campo para la contraseña.
-                //    Debería ser algo como:
-                //    val user = User(id = 0, name = name, email = email, password = pass)
-                val user = User(id = "", name = name, email = email) // <-- ¡MODIFICA ESTO!
+                val user = CreateUser( name = name, email = email, password = pass)
                 
                 val createdUser = userUseCases.createUserUseCase.invoke(user)
+                Log.d("SignUpViewModel", "Usuario registrado: $createdUser")
                 _signUpState.value = SignUpState.Success(createdUser)
             } catch (e: Exception) {
                 // 3. AÑADIMOS UN LOG PARA VER EL ERROR EN LOGCAT
