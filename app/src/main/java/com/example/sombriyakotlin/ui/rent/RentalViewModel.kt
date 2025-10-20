@@ -97,6 +97,7 @@ class RentViewModel @Inject constructor(
 
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
                 _rentState.value = RentState.Success(created)
+                Log.d("RENTANDO","XD ${_rentState.value}")
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {
                     val body = e.response()?.errorBody()?.string()
@@ -179,11 +180,14 @@ class RentViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d("RENT", "Terminar renta")
             _rentState.value = RentState.Loading
+            Log.d("ClosingRent", "${_rentState.value}")
             try {
-                val current = rentalUseCases.getCurrentRentalUseCase().first() ?: run {
-                    _rentState.value = RentState.Error("No hay un alquiler activo")
+                val current = rentalUseCases.getCurrentRentalUseCase().first()
+                if (current == null) {
+                    _rentState.value = RentState.Error("No hay alquiler activo")
                     return@launch
                 }
+                Log.d("ClosingRent", "${current}")
 
                 val user = userUseCases.getUserUseCase().first() ?: run {
                     _rentState.value = RentState.Error("Usuario no autenticado")
@@ -202,9 +206,15 @@ class RentViewModel @Inject constructor(
                     authType = current.authType ?: "nfc" // opcional: conservar/forzar tipo
                 )
 
+                Log.d("DEVOLUCION", "Antes de enviar: $rentalToEnd")
                 val ended = rentalUseCases.endRentalUseCase.invoke(rentalToEnd)
-                Log.d("DEVOLUCION","Se devolvio la sombrilla")
-                _rentState.value = RentState.Success(ended)
+                Log.d("DEVOLUCION", "Respuesta del backend: $ended")
+                val finalRental = if (ended.endedAt.isNullOrBlank()) {
+                    ended.copy(endedAt = rentalToEnd.endedAt)
+                } else ended
+
+                Log.d("DEVOLUCION", "Se devolvio la sombrilla con endedAt=${finalRental.endedAt}")
+                _rentState.value = RentState.Success(finalRental)
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {
                     val body = e.response()?.errorBody()?.string()

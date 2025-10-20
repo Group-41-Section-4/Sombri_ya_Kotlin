@@ -36,7 +36,7 @@ class NfcScanner(
     private fun uidOf(tag: Tag): String =
         tag.id?.joinToString(":") { "%02X".format(it) } ?: "NO_UID"
 
-    // 🔔 Sonido corto
+    // Sonido corto
     private fun beep(ms: Int = 150) {
         mainHandler.post {
             try {
@@ -45,7 +45,7 @@ class NfcScanner(
         }
     }
 
-    // 📳 Vibración corta
+    // Vibración corta
     @RequiresPermission(Manifest.permission.VIBRATE)
     private fun buzz(activity: Activity?, ms: Long = 60) {
         if (activity == null) return
@@ -59,7 +59,7 @@ class NfcScanner(
         } catch (_: Exception) { }
     }
 
-    // 🏷️ Callback principal cuando se detecta un tag NFC
+    // 🏷Callback principal cuando se detecta un tag NFC
     private val readerCallback = NfcAdapter.ReaderCallback @androidx.annotation.RequiresPermission(
         android.Manifest.permission.VIBRATE
     ) { tag: Tag? ->
@@ -140,7 +140,7 @@ class NfcScanner(
         buzz(activity, 50)
     }
 
-    // 🛑 Detiene la lectura NFC
+    //  Detiene la lectura NFC
     fun stop(activity: Activity) {
         safeStop(activity)
     }
@@ -151,9 +151,9 @@ class NfcScanner(
         if (!enabled) return
         try {
             adapter?.disableReaderMode(activity)
-            Log.d("NFC", "🛑 ReaderMode DISABLED")
+            Log.d("NFC", "ReaderMode DISABLED")
         } catch (e: Exception) {
-            Log.e("NFC", "❌ Error al desactivar ReaderMode", e)
+            Log.e("NFC", "Error al desactivar ReaderMode", e)
         } finally {
             enabled = false
         }

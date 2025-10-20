@@ -26,7 +26,7 @@ class RentalRepositoryImpl @Inject constructor(
 
 
         val domain = response.toDomain()
-        local.saveCurrent(domain)           // ⬅️ Guarda localmente la renta “activa”
+        local.saveCurrent(domain)
         return domain
         }
 

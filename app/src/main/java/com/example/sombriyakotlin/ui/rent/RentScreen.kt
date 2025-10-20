@@ -69,9 +69,12 @@ fun CardRent(navController: NavController) {
             try { nfcScanner.stop(activity) } catch (_: Exception) {}
             showActivePopUp = false
             suppressActivePopup = true
-            val endedAt = (rentState as RentViewModel.RentState.Success).rental.endedAt
+            val endedAt = ( rentState as RentViewModel.RentState.Success).rental.endedAt
+            Log.d("SE CERROOO","Cerrada ${rentState}")
+            Log.d("SE CERROOO","Cerrada ${endedAt} ")
             if (!endedAt.isNullOrBlank()) {
                 // Devolución exitosa
+                Log.d("SE CERROOO","xd")
                 showDevolucionPopup = true
             } else {
                 // Reserva exitosa
@@ -142,7 +145,6 @@ fun CardRent(navController: NavController) {
             showDevolucionPopup = false
             nfcEnabled = false
             rentViewModel.reset()
-            // normalmente navegas al main después de devolver
             navigateToMain = true
         })
     }
