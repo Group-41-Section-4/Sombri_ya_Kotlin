@@ -166,7 +166,6 @@ fun CardRent(navController: NavController) {
                 rentViewModel.setReturnIntent()
                 showActivePopUp = false
                 nfcEnabled = false
-                toast(activity, "Modo devolución activado. Acerca la tarjeta…")
             },
             onNo = {
                 showActivePopUp = false
