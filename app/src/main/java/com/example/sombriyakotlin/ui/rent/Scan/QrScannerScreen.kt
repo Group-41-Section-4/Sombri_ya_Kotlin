@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.ui.rent.Scan
+package com.example.sombriyakotlin.ui.rent.scan
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -30,6 +30,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.sombriyakotlin.ui.rent.RentViewModel
+import com.example.sombriyakotlin.ui.rent.QrViewModel
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -42,17 +43,15 @@ fun QrScannerScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val qrCode by viewModel.qrCode.collectAsState()
 
+    // Cada vez que se detecta un código QR, procesamos la reserva
     LaunchedEffect(qrCode) {
         qrCode?.let { stationId ->
-            //rentViewModel.setStartQrIntent()
-            Log.d("RENT", "Se incia proceso ${stationId}")
+            Log.d("RENT", "Código QR detectado: $stationId")
             rentViewModel.handleScan(stationId)
         }
     }
 
-
-
-
+    // 🔹 Manejo del permiso de cámara
     var hasCameraPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
@@ -71,8 +70,10 @@ fun QrScannerScreen(
         if (!hasCameraPermission) launcher.launch(Manifest.permission.CAMERA)
     }
 
+
     Box(modifier = modifier.fillMaxSize()) {
         if (hasCameraPermission) {
+            // Vista de la cámara
             AndroidView(
                 factory = { ctx ->
                     val previewView = PreviewView(ctx)
@@ -113,7 +114,7 @@ fun QrScannerScreen(
                 modifier = Modifier.fillMaxSize()
             )
 
-            // Overlay con máscara transparente
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -127,21 +128,15 @@ fun QrScannerScreen(
 
                         onDrawWithContent {
                             drawContent()
-
-                            // Fondo oscuro
-                            drawRect(Color.Black.copy(alpha = 0.6f))
-
-                            // Recorte transparente
-                            drawRoundRect(
+                            drawRect(Color.Black.copy(alpha = 0.6f)) // Fondo oscuro
+                            drawRoundRect( // Área transparente
                                 color = Color.Transparent,
                                 topLeft = rect.topLeft,
                                 size = rect.size,
                                 cornerRadius = cornerRadius,
                                 blendMode = BlendMode.Clear
                             )
-
-                            // Borde blanco punteado
-                            drawRoundRect(
+                            drawRoundRect( // Borde punteado
                                 color = Color.White,
                                 topLeft = rect.topLeft,
                                 size = rect.size,
@@ -155,7 +150,7 @@ fun QrScannerScreen(
                     }
             )
 
-            // Texto superior
+            // Texto de ayuda
             Text(
                 text = "Apunta la cámara al código QR",
                 color = Color.White,
@@ -166,7 +161,7 @@ fun QrScannerScreen(
                     .padding(top = 48.dp)
             )
 
-            // Texto con el QR detectado
+            // Mostrar el QR detectado
             qrCode?.let {
                 Text(
                     text = "QR detectado: $it",
@@ -189,4 +184,3 @@ fun QrScannerScreen(
         }
     }
 }
-

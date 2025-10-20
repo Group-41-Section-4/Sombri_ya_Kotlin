@@ -3,30 +3,12 @@ package com.example.sombriyakotlin.ui.rent
 import android.app.Activity
 import android.nfc.NfcAdapter
 import android.util.Log
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,12 +20,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
-import com.example.sombriyakotlin.feature.rent.NfcScanStrategy
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.navigation.Routes
-import com.example.sombriyakotlin.ui.rent.Scan.QrScannerScreen
-import com.example.sombriyakotlin.ui.rent.Scan.ScanStrategy
-
+import com.example.sombriyakotlin.feature.rent.Scan.NfcScanner // 🔹 Nuevo import (ver nota abajo)
+import com.example.sombriyakotlin.ui.rent.scan.QrScannerScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardRent(navController: NavController) {
@@ -53,77 +33,103 @@ fun CardRent(navController: NavController) {
     val rentViewModel: RentViewModel = hiltViewModel()
     val rentState by rentViewModel.rentState.collectAsStateWithLifecycle()
     val hasActive by rentViewModel.hasActive.collectAsStateWithLifecycle()
+    var showReservaPopup by remember { mutableStateOf(false) }
+    var navigateToMain by remember { mutableStateOf(false) }
+    var showActivePopUp by remember { mutableStateOf(false) }
+    var showDevolucionPopup by remember { mutableStateOf(false) }   // 🆕
+    var suppressActivePopup by remember { mutableStateOf(false) }   // 🆕 evita el flash
 
-    LaunchedEffect(rentState) {
-        if (rentState is RentViewModel.RentState.Success) {
-            navController.navigate(Routes.MAIN) {
-                popUpTo(Routes.RENT) { inclusive = true }
-            }
-        }
-    }
 
-    var strategy: ScanStrategy? by remember { mutableStateOf(null) }
-    val nfc by remember {
-        mutableStateOf(
-            NfcScanStrategy { tagId ->
-                Log.d("Rent", "onTagDetected($tagId)")
-                rentViewModel.handleScanNfc(tagId)
+
+
+    // 🔹 Estado NFC
+    var nfcEnabled by remember { mutableStateOf(false) }
+    val nfcScanner = remember {
+        NfcScanner(
+            onTagDetected = { tagId ->
+                Log.d("Rent", "Tag detectado: $tagId")
+                rentViewModel.handleScan(tagId)
+
+            },
+            onError = { errorMsg ->
+                toast(activity, errorMsg)
             }
         )
     }
 
     DisposableEffect(Unit) {
         onDispose {
-            Log.d("Rent", "stop NFC si estaba activo")
-            try { strategy?.stop(activity) } catch (_: Exception) {}
+            Log.d("Rent", "Deteniendo NFC al salir de la pantalla…")
+            nfcScanner.stop(activity)
+            suppressActivePopup = false
+        }
+    }
+    LaunchedEffect(rentState) {
+        if (rentState is RentViewModel.RentState.Success) {
+            try { nfcScanner.stop(activity) } catch (_: Exception) {}
+            showActivePopUp = false
+            suppressActivePopup = true
+            val endedAt = ( rentState as RentViewModel.RentState.Success).rental.endedAt
+            Log.d("SE CERROOO","Cerrada ${rentState}")
+            Log.d("SE CERROOO","Cerrada ${endedAt} ")
+            if (!endedAt.isNullOrBlank()) {
+                // Devolución exitosa
+                Log.d("SE CERROOO","xd")
+                showDevolucionPopup = true
+            } else {
+                // Reserva exitosa
+                showReservaPopup = true
+            }
+        }
+    }
+    if (navigateToMain) {
+        // Esta navegación se hace fuera del árbol composable
+        LaunchedEffect(Unit) {
+            navController.navigate(Routes.MAIN) {
+                popUpTo(Routes.RENT) { inclusive = true }
+            }
+            navigateToMain = false
         }
     }
 
-    // pop up hay alquiler activo
-    var showActivePopUp by remember { mutableStateOf(false) }
-    LaunchedEffect(hasActive) { showActivePopUp = hasActive }
-
+    LaunchedEffect(hasActive, showReservaPopup, showDevolucionPopup, suppressActivePopup) {
+        showActivePopUp = hasActive && !showReservaPopup && !showDevolucionPopup && !suppressActivePopup
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         Box(Modifier.weight(1f).fillMaxSize()) {
-            ContentCard(Modifier.matchParentSize())
+            // 🔹 QR Scanner embebido
+            QrScannerScreen(modifier = Modifier.matchParentSize())
 
-            // FAB NFC
+            // 🔹 Botón flotante NFC
             BotonNFC(
-                onClick = @androidx.annotation.RequiresPermission(android.Manifest.permission.VIBRATE) {
-                    Log.d("Rent", "FAB clicado. strategy=$strategy")
-
+                onClick = {
                     if (!isNfcSupported(activity)) {
                         toast(activity, "Este dispositivo no soporta NFC")
-                        Log.d("Rent", "NFC no soportado")
-                        return@BotonNFC
-                    }
-                    if (!isNfcEnabled(activity)) {
-                        Log.d("Rent", "NFC apagado")
-                        openNfcSettings(activity)
-                        toast(activity, "Activa NFC y vuelve a intentarlo")
                         return@BotonNFC
                     }
 
-                    if (strategy == null) {
-                        Log.d("Rent", "Activando NFC ReaderMode…")
+                    if (!isNfcEnabled(activity)) {
+                        toast(activity, "Activa NFC en los ajustes del sistema")
+                        openNfcSettings(activity)
+                        return@BotonNFC
+                    }
+
+                    if (!nfcEnabled) {
                         try {
-                            nfc.start(activity)
-                            strategy = nfc
-                            Log.d("Rent", "NFC fucnionaaaaaaaaaa")
+                            nfcScanner.start(activity)
                             toast(activity, "NFC activado. Acerca la tarjeta…")
+                            nfcEnabled = true
                         } catch (e: Exception) {
-                            Log.e("Rent", "NFC NO FUCNIONA", e)
-                            toast(activity, "Error activando NFC")
+                            Log.e("Rent", "Error activando NFC", e)
+                            toast(activity, "Error al activar NFC")
                         }
                     } else {
-                        Log.d("Rent", "Desactivando")
                         try {
-                            strategy?.stop(activity)
-                            strategy = null
-                            Log.d("Rent", "NFC DESACTIVADOOOOOOOOOOOOO")
+                            nfcScanner.stop(activity)
                             toast(activity, "NFC desactivado")
+                            nfcEnabled = false
                         } catch (e: Exception) {
-                            Log.e("Rent", "Error desactivandoooooooooooooooop", e)
+                            Log.e("Rent", "Error desactivando NFC", e)
                         }
                     }
                 },
@@ -134,16 +140,32 @@ fun CardRent(navController: NavController) {
         }
     }
 
-    // Pop up alquiler activo
-    if (showActivePopUp) {
+    if (showDevolucionPopup) {
+        PopUpDevolucionExitosa(onDismiss = {
+            showDevolucionPopup = false
+            nfcEnabled = false
+            rentViewModel.reset()
+            navigateToMain = true
+        })
+    }
+
+
+    if (showReservaPopup) {
+        PopUpReservaCreated(onDismiss = {
+            showReservaPopup = false
+            nfcEnabled = false
+            rentViewModel.reset()
+            navigateToMain = true
+        })
+    }
+
+    // 🔹 Pop-up: alquiler activo
+    if (showActivePopUp && !showReservaPopup && !showDevolucionPopup) {
         AlquilerActivoPopUp(
             onIngresar = {
                 rentViewModel.setReturnIntent()
                 showActivePopUp = false
-
-                strategy = null
-
-                toast(activity, "Modo devolución activado. Acerca la tarjeta a la base…")
+                nfcEnabled = false
             },
             onNo = {
                 showActivePopUp = false
@@ -155,27 +177,22 @@ fun CardRent(navController: NavController) {
 }
 
 @Composable
-fun ContentCard(modifier: Modifier = Modifier) {
-    QrScannerScreen(modifier = modifier)
-}
-
-@Composable
 fun AlquilerActivoPopUp(
     onIngresar: () -> Unit,
     onNo: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    androidx.compose.material3.AlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Tienes un alquiler activo") },
         text = { Text("¿Quieres ingresar a dejar tu sombrilla ahora?") },
         confirmButton = {
-            androidx.compose.material3.TextButton(onClick = onIngresar) {
+            TextButton(onClick = onIngresar) {
                 Text("Ingresar a dejar sombrilla")
             }
         },
         dismissButton = {
-            androidx.compose.material3.TextButton(onClick = onNo) {
+            TextButton(onClick = onNo) {
                 Text("No")
             }
         }
@@ -183,7 +200,7 @@ fun AlquilerActivoPopUp(
 }
 
 @Composable
-fun BotonNFC(onClick: () -> Unit, modifier: Modifier = Modifier){
+fun BotonNFC(onClick: () -> Unit, modifier: Modifier = Modifier) {
     ExtendedFloatingActionButton(
         onClick = onClick,
         icon = {
@@ -204,15 +221,11 @@ fun BotonNFC(onClick: () -> Unit, modifier: Modifier = Modifier){
 }
 
 // Utils
-private fun isNfcSupported(activity: Activity): Boolean {
-    val adapter = NfcAdapter.getDefaultAdapter(activity)
-    return adapter != null
-}
+private fun isNfcSupported(activity: Activity): Boolean =
+    NfcAdapter.getDefaultAdapter(activity) != null
 
-private fun isNfcEnabled(activity: Activity): Boolean {
-    val adapter = NfcAdapter.getDefaultAdapter(activity)
-    return adapter?.isEnabled == true
-}
+private fun isNfcEnabled(activity: Activity): Boolean =
+    NfcAdapter.getDefaultAdapter(activity)?.isEnabled == true
 
 private fun openNfcSettings(activity: Activity) {
     try {
@@ -226,9 +239,10 @@ private fun toast(activity: Activity, msg: String) {
     android.widget.Toast.makeText(activity, msg, android.widget.Toast.LENGTH_SHORT).show()
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(navController : NavController){
+fun TopBar(navController: NavController) {
     TopAppBar(
         title = { Text("") },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -247,6 +261,33 @@ fun TopBar(navController : NavController){
         }
     )
 }
+@Composable
+fun PopUpReservaCreated(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Reserva realizada") },
+        text = { Text("Reserva realizada con éxito") },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("OK")
+            }
+        }
+    )
+}
+@Composable
+fun PopUpDevolucionExitosa(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Devolución realizada") },
+        text = { Text("Has devuelto la sombrilla con éxito.") },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("OK")
+            }
+        }
+    )
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
