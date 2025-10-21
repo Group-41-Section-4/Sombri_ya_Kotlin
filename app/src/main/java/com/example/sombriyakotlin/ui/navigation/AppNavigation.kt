@@ -14,11 +14,7 @@ import com.example.sombriyakotlin.ui.main.CardStations
 import com.example.sombriyakotlin.ui.main.MainWithDrawer
 import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.ui.rent.MainRenta
-<<<<<<< HEAD
-import com.example.sombriyakotlin.ui.voice.VoiceScreen
-=======
 import androidx.navigation.NavOptionsBuilder
->>>>>>> 221c31c (feat: Refactor navigation logic and drawer state)
 
 // Definimos las rutas de navegación
 object Routes {
@@ -63,6 +59,28 @@ fun NavHostController.navigateSingleTop(
     }
 }
 
+/**
+ * Safe navigation that prevents navigating to the current screen
+ */
+fun NavHostController.navigateTo(route: String) {
+    if (currentBackStackEntry?.destination?.route != route) {
+        navigateSingleTop(route)
+    }
+}
+
+/**
+ * Navigation with popUpTo functionality
+ */
+fun NavHostController.navigateAndPopUpTo(
+    route: String,
+    popUpTo: String,
+    inclusive: Boolean = false
+) {
+    if (currentBackStackEntry?.destination?.route != route) {
+        navigateSingleTop(route, popUpTo, inclusive)
+    }
+}
+
 @Composable
 fun AppNavigation(navController: NavHostController) {
     NavHost(
@@ -72,12 +90,12 @@ fun AppNavigation(navController: NavHostController) {
         composable(Routes.LOGIN) {
             LoginScreen(
                 onNavigateToSignUp = {
-                    navController.navigate(Routes.SIGNUP)
+                    navController.navigateTo(Routes.SIGNUP)
                 },
                 onContinue = {
                     // Navegar a MAIN limpiando la pantalla de login del backstack
-                    navController.navigateSingleTop(
-                        Routes.MAIN,
+                    navController.navigateAndPopUpTo(
+                        route = Routes.MAIN,
                         popUpTo = Routes.LOGIN,
                         inclusive = true
                     )
@@ -92,22 +110,18 @@ fun AppNavigation(navController: NavHostController) {
                 },
                 onContinue = {
                     // Ir a MAIN y limpiar la pantalla de signup del backstack
-                    navController.navigateSingleTop(
-                        Routes.MAIN,
+                    navController.navigateAndPopUpTo(
+                        route = Routes.MAIN,
                         popUpTo = Routes.SIGNUP,
                         inclusive = true
                     )
-                },
-
-                )
+                }
+            )
         }
 
 
         composable(Routes.HOME) {
-
-            CardHome(
-                navController
-            )
+            CardHome(navController)
         }
 
         composable(Routes.MAIN) {
@@ -115,7 +129,7 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable(Routes.RENT) {
-            MainRenta(navController,navController)
+            MainRenta(navController , navController)
         }
 
         composable(Routes.STATIONS) {
@@ -129,9 +143,11 @@ fun AppNavigation(navController: NavHostController) {
         composable(Routes.NOTIFICATIONS) {
             NotificationsScreen(navController)
         }
+
         composable(Routes.HISTORY) {
             HistoryScreen(navController)
         }
+
         composable(Routes.PAYMENT_METHODS) {
             paymentMethopdsCard(navController)
         }
