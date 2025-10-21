@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.navigation.Routes
@@ -291,8 +292,8 @@ fun PopUpDevolucionExitosa(onDismiss: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainRenta(navController: NavController) {
-    AppLayout(navController = navController) {
+fun MainRenta(navController: NavController,navHostController: NavHostController) {
+    AppLayout(navController = navController,navHostController) {
         CardRent(navController)
     }
 }
