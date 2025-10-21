@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.ui.rent.TopBar
 import com.example.sombriyakotlin.ui.inferiorbar.Bar
 import kotlinx.coroutines.launch
@@ -27,13 +28,30 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppLayout(
     navController: NavController,
-    content: @Composable () -> Unit
+    navHostController: NavHostController,
+    content: @Composable () -> Unit,
+
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+<<<<<<< HEAD
     Box(modifier = Modifier.fillMaxSize()) {
         // -- Main content -- //
+=======
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = false,
+        drawerContent = {
+            AppDrawer(
+                navController = navHostController,
+                scope = scope,
+                onCloseDrawer = { drawerState.close() },
+                drawerState = drawerState
+            )
+        }
+    ) {
+>>>>>>> 221c31c (feat: Refactor navigation logic and drawer state)
         Scaffold(
             topBar = { TopBar(navController) },
             bottomBar = {

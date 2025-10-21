@@ -1,27 +1,47 @@
 package com.example.sombriyakotlin.ui.layout
 
+<<<<<<< HEAD
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+=======
+import androidx.activity.compose.BackHandler
+>>>>>>> 221c31c (feat: Refactor navigation logic and drawer state)
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+<<<<<<< HEAD
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
+=======
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+>>>>>>> 221c31c (feat: Refactor navigation logic and drawer state)
 import com.example.sombriyakotlin.ui.navigation.Routes
+import com.example.sombriyakotlin.ui.navigation.navigateSingleTop
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDrawer(
-    navController: NavController,
+    navController: NavHostController,
     scope: CoroutineScope,
+    drawerState: DrawerState,
     onCloseDrawer: suspend () -> Unit
 ) {
+    // Obtenemos la ruta actual para marcar la opción seleccionada
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination?.route
+
+    BackHandler(enabled = drawerState.isOpen) {
+        scope.launch { drawerState.close() }
+    }
+
     ModalDrawerSheet {
         Box(
             modifier = Modifier
@@ -34,43 +54,43 @@ fun AppDrawer(
 
         NavigationDrawerItem(
             label = { Text("Perfil") },
-            selected = false,
+            selected = currentRoute == Routes.PROFILE,
             onClick = {
                 scope.launch {
                     onCloseDrawer()
-                    navController.navigate(Routes.PROFILE)
+                    navController.navigateSingleTop(Routes.PROFILE)
                 }
             }
         )
 
         NavigationDrawerItem(
             label = { Text("Estaciones") },
-            selected = false,
+            selected = currentRoute == Routes.STATIONS,
             onClick = {
                 scope.launch {
                     onCloseDrawer()
-                    navController.navigate(Routes.STATIONS)
+                    navController.navigateSingleTop(Routes.STATIONS)
                 }
             }
         )
 
         NavigationDrawerItem(
             label = { Text("Métodos de pago") },
-            selected = false,
+            selected = currentRoute == Routes.PAYMENT_METHODS,
             onClick = {
                 scope.launch {
                     onCloseDrawer()
-                    navController.navigate(Routes.PAYMENT_METHODS)
+                    navController.navigateSingleTop(Routes.PAYMENT_METHODS)
                 }
             }
         )
         NavigationDrawerItem(
             label = { Text("Historial") },
-            selected = false,
+            selected = currentRoute == Routes.HISTORY,
             onClick = {
                 scope.launch {
                     onCloseDrawer()
-                    navController.navigate(Routes.HISTORY)
+                    navController.navigateSingleTop(Routes.HISTORY)
                 }
             }
         )
