@@ -302,7 +302,12 @@ fun SignUpScreen(
                     // -------- Botón rojo anclado abajo --------
                     Button(
                         onClick = {
+                            nameTouched = true
+                            emailTouched = true
+                            passTouched = true
+                            confirmTouched = true
                             submitAttempted = true
+
                             if (validateAll()) {
                                 // todo OK -> llamar al viewModel
                                 viewModel.registerUser(name, email, pass)
