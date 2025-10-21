@@ -39,7 +39,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun logInUser(credentials: LogInUser): User {
         val respuestaUserDto = userApi.logInUser(credentials.toDto())
         val domainUser = respuestaUserDto.toDomain()
-        //userLocalDataSource.saveUser(domainUser)
+        userLocalDataSource.saveUser(domainUser)
         return domainUser
     }
 
