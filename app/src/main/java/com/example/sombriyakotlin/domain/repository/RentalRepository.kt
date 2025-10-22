@@ -13,5 +13,7 @@ interface RentalRepository {
     fun currentRental(): Flow<Rental?>
     suspend fun clearCurrentRental()
     suspend fun getRentalsHystoryByUserAndStatus(userId: String,state: String): List<History>
+
+    suspend fun setRentalCurrent(rental:Rental)
 }
 
