@@ -29,8 +29,7 @@ class RentViewModel @Inject constructor(
         data class Error(val message: String) : RentState()
     }
 
-    enum class ScanIntent { START, RETURN, STARTQR } // START/RETURN para NFC, STARTQR para QR
-
+    enum class ScanIntent { START, RETURN, STARTQR,RETURNQR } // START/RETURN para NFC, STARTQR para QR
     private val _rentState = MutableStateFlow<RentState>(RentState.Idle)
     val rentState: StateFlow<RentState> = _rentState
 
@@ -38,9 +37,11 @@ class RentViewModel @Inject constructor(
     val scanIntent: StateFlow<ScanIntent> = _scanIntent
 
     fun setReturnIntent()   { _scanIntent.value = ScanIntent.RETURN }
-    fun setStartIntent()    { _scanIntent.value = ScanIntent.START }
-    fun setStartQrIntent()  { _scanIntent.value = ScanIntent.STARTQR }
+    fun setQr(){
+        if (_scanIntent.value == ScanIntent.START){_scanIntent.value = ScanIntent.STARTQR}
+        else if(_scanIntent.value == ScanIntent.RETURN) {_scanIntent.value = ScanIntent.RETURNQR}
 
+    }
     // ---- Alquiler activo desde local (puede ser null) ----
     val activeRental: StateFlow<Rental?> =
         rentalUseCases.getCurrentRentalUseCase() // Flow<Rental?>
@@ -120,7 +121,18 @@ class RentViewModel @Inject constructor(
                         val stationId = "16fdfe43-72a3-496e-8d80-7cb5071cff8e"
                         endCurrentRental(stationId)
                     }
-                    ScanIntent.STARTQR -> createReservationIdStation(input)
+                    ScanIntent.STARTQR -> {
+                        Log.d("WTFFFF", "QRRRRRRRRRRRR")
+                        createReservationIdStation(input)
+                    }
+
+                    ScanIntent.RETURNQR -> {
+                        Log.d("WTFFFF", "Se empieza a devolver la sombrilla")
+
+                        endCurrentRental(input)
+                        Log.d("WTFFFF", "Se devolvio")
+
+                    }
                 }
             } catch (e: Exception) {
                 error(e.message ?: "Error procesando escaneo")

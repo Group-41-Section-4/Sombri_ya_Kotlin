@@ -95,7 +95,7 @@ fun CardRent(navController: NavController) {
     LaunchedEffect(showReservaPopup, showDevolucionPopup, suppressActivePopup) {
         // Consultar directamente si hay una renta activa
         val active = rentViewModel.checkActiveRental()
-        Log.d("UI_POPUP", "¿Mostrar popup activo? ${active}")
+        Log.d("UI_POPUP", "¿Mostrar popup activo? ${active} (active=$active)")
 
         showActivePopUp = active && !showReservaPopup && !showDevolucionPopup && !suppressActivePopup
         Log.d("UI_POPUP", "¿Mostrar popup activo? $showActivePopUp (active=$active)")
