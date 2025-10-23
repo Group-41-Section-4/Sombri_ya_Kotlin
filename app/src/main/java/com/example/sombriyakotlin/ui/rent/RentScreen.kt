@@ -92,11 +92,18 @@ fun CardRent(navController: NavController) {
         }
     }
 
-    LaunchedEffect(hasActive, showReservaPopup, showDevolucionPopup, suppressActivePopup) {
-        showActivePopUp = hasActive && !showReservaPopup && !showDevolucionPopup && !suppressActivePopup
+    LaunchedEffect(showReservaPopup, showDevolucionPopup, suppressActivePopup) {
+        // Consultar directamente si hay una renta activa
+        val active = rentViewModel.checkActiveRental()
+        Log.d("UI_POPUP", "¿Mostrar popup activo? ${active}")
+
+        showActivePopUp = active && !showReservaPopup && !showDevolucionPopup && !suppressActivePopup
+        Log.d("UI_POPUP", "¿Mostrar popup activo? $showActivePopUp (active=$active)")
     }
     Column(modifier = Modifier.fillMaxSize()) {
-        Box(Modifier.weight(1f).fillMaxSize()) {
+        Box(Modifier
+            .weight(1f)
+            .fillMaxSize()) {
             // 🔹 QR Scanner embebido
             QrScannerScreen(modifier = Modifier.matchParentSize())
 
