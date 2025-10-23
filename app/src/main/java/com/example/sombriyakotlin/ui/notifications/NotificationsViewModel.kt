@@ -1,9 +1,11 @@
 package com.example.sombriyakotlin.feature.notifications
 
+import android.content.Context
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sombriyakotlin.NotificationHelper
 import com.example.sombriyakotlin.domain.model.Notification
 import com.example.sombriyakotlin.domain.model.NotificationType
 import com.example.sombriyakotlin.domain.repository.WeatherRepository
@@ -51,14 +53,15 @@ class NotificationsViewModel @Inject constructor(
 
     /** ----------------- API pública para la UI ----------------- */
 
-    fun clearAll() { _notifications.value = emptyList() }
+    fun clearAll() {
+        _notifications.value = emptyList()
+    }
 
     fun removeById(id: String) {
-        // fix: estaba filtrando al revés
         _notifications.value = _notifications.value.filterNot { it.id == id }
     }
 
-    fun onScreenOpened(lastLocation: Location? = null) {
+    fun onScreenOpened(context: Context, lastLocation: Location? = null) {
         loadUserRentalsAsNotifications()
 
         // Uniandes por defecto si no nos pasan ubicación
@@ -66,7 +69,9 @@ class NotificationsViewModel @Inject constructor(
             latitude = 4.6015
             longitude = -74.0662
         }
-        checkWeatherAt(defaultLocation)
+
+        val loc = lastLocation ?: defaultLocation
+        checkWeatherAt(context, loc)
     }
 
     /** ----------------- ALQUILERES DEL BACKEND ----------------- */
@@ -145,31 +150,28 @@ class NotificationsViewModel @Inject constructor(
 
     /** ----------------- CLIMA ----------------- */
 
-    fun checkWeatherAt(location: Location) {
+    fun checkWeatherAt(context: Context, location: Location) {
         viewModelScope.launch {
             val pop = weatherRepository
                 .getFirstPopPercent(location.latitude, location.longitude)
                 ?: return@launch
 
             if (pop > 30) {
-                _notifications.value = _notifications.value + Notification(
+                val newNotif = Notification(
                     id = nextId("w"),
                     type = NotificationType.WEATHER,
                     title = "Alerta de Lluvia",
                     message = "Hay $pop% de probabilidad de lluvia en las próximas horas.",
                     time = nowLabel()
                 )
-            }
-            else{
+                _notifications.value = _notifications.value + newNotif
 
-                    _notifications.value = _notifications.value + Notification(
-                        id = nextId("w"),
-                        type = NotificationType.WEATHER,
-                        title = "Alerta de Lluvia",
-                        message = "Hay $pop% de probabilidad de lluvia en las próximas horas.",
-                        time = nowLabel()
-                    )
-
+                // 🔔 Notificación del sistema
+                NotificationHelper.showNotification(
+                    context,
+                    title = newNotif.title,
+                    message = newNotif.message
+                )
             }
         }
     }
@@ -179,6 +181,7 @@ class NotificationsViewModel @Inject constructor(
     private var autoJob: Job? = null
 
     fun bindLocationAuto(
+        context: Context,
         locationFlow: Flow<Location?>,
         minMinutesBetweenCalls: Long = 60
     ) {
@@ -189,7 +192,7 @@ class NotificationsViewModel @Inject constructor(
                 val now = System.currentTimeMillis()
                 if (now - lastCallAt < minMinutesBetweenCalls * 60_000) return@collect
                 lastCallAt = now
-                checkWeatherAt(loc)
+                checkWeatherAt(context, loc)
             }
         }
     }
