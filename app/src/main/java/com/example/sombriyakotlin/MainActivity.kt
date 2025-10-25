@@ -21,10 +21,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        askNotificationPermission()
         super.onCreate(savedInstanceState)
 
         // Pedir permiso
-        askNotificationPermission()
+
+
 
         setContent {
             SombriYaKotlinTheme {
