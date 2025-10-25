@@ -5,24 +5,37 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.util.Log
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+
 import com.example.sombriyakotlin.data.location.GPSManager
 import dagger.hilt.android.HiltAndroidApp
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.sombriyakotlin.worker.WeatherWorker
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
 @HiltAndroidApp
-class SombriYaKotlinApp : Application(){
+class SombriYaKotlinApp : Application() {
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
     override fun onCreate() {
         super.onCreate()
+        Log.d("EMPIEZAAPP", "si se inicio la app")
         GPSManager.initialize(this)
         createNotificationChannel(this)
         scheduleWeatherCheck(this)
+        Log.d("EMPIEZAAPP", "Se llamo todo correctamente")
     }
+
     private fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -34,6 +47,20 @@ class SombriYaKotlinApp : Application(){
             manager.createNotificationChannel(channel)
         }
     }
+
+    fun getWorkManagerConfiguration(): Configuration {
+        return Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .setMinimumLoggingLevel(Log.DEBUG)
+            .build()
+    }
+
+    private fun scheduleWeatherCheck(context: Context) {
+        val workRequest = OneTimeWorkRequestBuilder<WeatherWorker>().build()
+        WorkManager.getInstance(context).enqueue(workRequest)
+        Log.d("SEPROGRAMO", "SSSS")
+    }
+    /*
     private fun scheduleWeatherCheck(context: Context) {
         val workRequest = PeriodicWorkRequestBuilder<WeatherWorker>(
             3, TimeUnit.HOURS // cada 3 horas
@@ -50,5 +77,6 @@ class SombriYaKotlinApp : Application(){
             ExistingPeriodicWorkPolicy.UPDATE,
             workRequest
         )
-    }
+    }*/
 }
+
