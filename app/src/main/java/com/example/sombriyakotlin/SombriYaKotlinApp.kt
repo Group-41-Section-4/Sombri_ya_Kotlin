@@ -11,6 +11,7 @@ import androidx.work.Configuration
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import com.example.sombriyakotlin.data.location.GPSManager
 import dagger.hilt.android.HiltAndroidApp
@@ -38,22 +39,18 @@ class SombriYaKotlinApp : Application(), Configuration.Provider {
         scheduleWeatherCheck(this)
         Log.d("EMPIEZAAPP", "Se llamo todo correctamente")
     }
-    private fun createNotificationChannel() {
+    private fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelId = "default_channel_id"
-            val channelName = "Notificaciones generales"
-            val channelDescription = "Canal para las notificaciones del sistema"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-
-            val channel = NotificationChannel(channelId, channelName, importance).apply {
-                description = channelDescription
-            }
-
-            val manager = getSystemService(NotificationManager::class.java)
+            val channel = NotificationChannel(
+                "weather_channel",
+                "Clima",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val manager = context.getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
     }
-}
+
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()

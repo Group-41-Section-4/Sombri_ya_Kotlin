@@ -89,6 +89,9 @@ dependencies {
 
 
 
+    // Implementation para workmanager
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+
     // Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
     ksp("com.google.dagger:hilt-compiler:2.51.1")

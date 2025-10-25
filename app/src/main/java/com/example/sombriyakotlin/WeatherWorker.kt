@@ -1,8 +1,12 @@
 package com.example.sombriyakotlin.worker
 
 import android.annotation.SuppressLint
+
 import android.content.Context
 import android.location.Location
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import kotlinx.coroutines.runBlocking
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
@@ -24,7 +28,12 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
+import com.example.sombriyakotlin.domain.usecase.weather.WeatherUseCases
+import com.example.sombriyakotlin.feature.notifications.NotificationsViewModel
 
+class WeatherWorker(
+    private val context: Context,
+    workerParams: WorkerParameters,
 @HiltWorker
 class WeatherWorker @AssistedInject constructor(
     @Assisted private val context: Context,
