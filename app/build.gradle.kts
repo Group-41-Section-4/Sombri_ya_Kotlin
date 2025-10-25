@@ -5,7 +5,6 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
-    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -91,6 +90,12 @@ dependencies {
 
     // Implementation para workmanager
     implementation("androidx.work:work-runtime-ktx:2.9.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+
+
 
     // Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
@@ -116,6 +121,7 @@ dependencies {
 
     //------ Voice -----
     implementation("com.google.accompanist:accompanist-permissions:0.36.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
 }
 

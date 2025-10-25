@@ -1,21 +1,10 @@
-package com.example.sombriyakotlin.worker
-
-import android.annotation.SuppressLint
+package com.example.sombriyakotlin
 
 import android.content.Context
-import android.location.Location
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.runBlocking
 import android.util.Log
-import androidx.hilt.work.HiltWorker
-import androidx.work.CoroutineWorker
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.WorkerParameters
-import com.example.sombriyakotlin.NotificationHelper
-import com.example.sombriyakotlin.domain.model.Notification
-import com.example.sombriyakotlin.domain.model.NotificationType
 import com.example.sombriyakotlin.domain.repository.WeatherRepository
 import com.google.android.gms.location.LocationServices
 import dagger.assisted.Assisted
@@ -28,12 +17,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
-import com.example.sombriyakotlin.domain.usecase.weather.WeatherUseCases
-import com.example.sombriyakotlin.feature.notifications.NotificationsViewModel
 
-class WeatherWorker(
-    private val context: Context,
-    workerParams: WorkerParameters,
 @HiltWorker
 class WeatherWorker @AssistedInject constructor(
     @Assisted private val context: Context,
