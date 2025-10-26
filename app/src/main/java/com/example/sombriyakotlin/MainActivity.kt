@@ -29,9 +29,13 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
+            val navController = rememberNavController()
             SombriYaKotlinTheme {
-                val navController = rememberNavController()
-                AppNavigation(navController = navController)
+                //cardRent(navController = rememberNavController())
+                //paymentMethopdsCard(navController)
+
+                //HistoryScreen(navController =navController )
+                AppNavigation(navController = navController, false)
             }
         }
     }

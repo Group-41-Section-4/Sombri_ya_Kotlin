@@ -14,18 +14,13 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.getValue
@@ -33,16 +28,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
+import com.example.sombriyakotlin.ui.layout.TopBarMini
 
+/*TODO migrar a domain*/
 data class CardData(
     val brand: String,
     val number: String,
@@ -53,7 +49,7 @@ data class CardData(
 //@Preview
 @Composable
 fun paymentMethopdsCard(
-    navController: NavController,
+    navController: NavHostController,
     onBackClick: () -> Unit= {},
     onAddClick: () -> Unit= {},
     onManageMethodsClick: () -> Unit= {},
@@ -62,7 +58,7 @@ fun paymentMethopdsCard(
     Scaffold (
 
         topBar = { topBar(
-
+            navController,
             onBackClick ={navController.navigate("main")},
             onAddClick= onAddClick,
         ) }
@@ -126,20 +122,14 @@ fun paymentMethopdsCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable()
 fun topBar(
+    navController: NavHostController,
     onBackClick: () -> Unit,
     onAddClick: () -> Unit,
 ){
-    TopAppBar(
-        title = { Text("Métodos de Pago") },
-        navigationIcon = {
-            IconButton(onClick = { onBackClick() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Atrás"
-                )
-            }
-        },
-        actions = {
+    TopBarMini(
+        navController = navController,
+        title = "Métodos de Pago",
+        content = {
             IconButton(onClick = { onAddClick() }) {
                 Image(
                     painter = painterResource(id = R.drawable.add_circle),
@@ -148,11 +138,7 @@ fun topBar(
                 )
 
             }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(R.color.primary),
-            titleContentColor = Color.Black
-        )
+        }
     )
 }
 

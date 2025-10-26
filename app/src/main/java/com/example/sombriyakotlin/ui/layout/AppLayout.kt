@@ -20,8 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.example.sombriyakotlin.ui.rent.TopBar
-import com.example.sombriyakotlin.ui.inferiorbar.Bar
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,10 +51,10 @@ fun AppLayout(
     ) {
 >>>>>>> 221c31c (feat: Refactor navigation logic and drawer state)
         Scaffold(
-            topBar = { TopBar(navController) },
+            topBar = { TopBar(navHostController) },
             bottomBar = {
                 Bar(
-                    navController = navController,
+                    navController = navHostController,
                     onMenuClick = {
                         scope.launch {
                             if (drawerState.isClosed) drawerState.open()
