@@ -16,8 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,8 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,19 +44,20 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
+import com.example.sombriyakotlin.ui.layout.TopBarMini
+import com.example.sombriyakotlin.ui.navigation.Routes
 import kotlin.math.sin
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardProfile(navController: NavController, viewModel: ProfileScreenViewModel = hiltViewModel()) {
+fun CardProfile(navController: NavHostController, viewModel: ProfileScreenViewModel = hiltViewModel()) {
     Column {
-        TopBar(navController)
+        TopBarMini(navController, "Perfil")
         ContentCard(
             modifier = Modifier.fillMaxWidth(),
             navController = navController,
@@ -71,35 +68,9 @@ fun CardProfile(navController: NavController, viewModel: ProfileScreenViewModel 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(navController: NavController){
-    TopAppBar(
-        title = {
-            Text(
-                "Cuenta",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(R.color.primary),
-            navigationIconContentColor = Color.Black
-        ),
-        navigationIcon = {
-            IconButton(onClick = { navController.navigate("main") }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Atrás"
-                )
-            }
-        }
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 fun ContentCard(
     modifier: Modifier = Modifier,
-    navController: NavController,
+    navController: NavHostController,
     viewModel: ProfileScreenViewModel
 ) {
     var openDialogName by rememberSaveable { mutableStateOf(false) }
@@ -176,7 +147,8 @@ fun ContentCard(
                 Text(
                     "Contraseña",
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(end = 150.dp)
+                    modifier = Modifier
+                        .padding(end = 150.dp)
                         .align(Alignment.Start)
                 )
             },
@@ -243,8 +215,11 @@ fun ContentCard(
         //
         Button(
             onClick = {
-                /*Hace falta borrar el usuario del estado*/
-                navController.navigate("home")
+                /* TODO Hace falta borrar el usuario del estado*/
+                navController.navigate(Routes.AUTH_GRAPH) {
+                    popUpTo(Routes.MAIN_GRAPH) { inclusive = true }
+                    launchSingleTop = true
+                }
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.red),

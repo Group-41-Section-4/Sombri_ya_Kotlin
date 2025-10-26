@@ -7,20 +7,19 @@ import androidx.navigation.compose.composable
 import com.example.sombriyakotlin.feature.history.HistoryScreen
 import com.example.sombriyakotlin.feature.notifications.NotificationsScreen
 import com.example.sombriyakotlin.ui.account.CardProfile
-import com.example.sombriyakotlin.ui.account.login.LoginScreen
-import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
-import com.example.sombriyakotlin.ui.home.CardHome
 import com.example.sombriyakotlin.ui.main.CardStations
 import com.example.sombriyakotlin.ui.main.MainWithDrawer
 import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.ui.rent.MainRenta
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.navigation
+import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
+import com.example.sombriyakotlin.ui.account.navigation.authGraph
 
 // Definimos las rutas de navegación
 object Routes {
-    const val LOGIN = "login"
-    const val SIGNUP = "signup"
-    const val HOME = "home"
+    const val AUTH_GRAPH = "auth_graph"
+    const val MAIN_GRAPH = "main_graph"
 
     const val MAIN = "main"
 
@@ -36,118 +35,61 @@ object Routes {
     const val HISTORY = "history"
 }
 
-/**
- * Helper mínimo para navegar evitando duplicados (launchSingleTop) y opcionalmente hacer popUpTo.
- * Uso:
- *  navController.navigateSingleTop(Routes.MAIN, popUpTo = Routes.LOGIN, inclusive = true)
- */
-fun NavHostController.navigateSingleTop(
-    route: String,
-    popUpTo: String? = null,
-    inclusive: Boolean = false,
-    builder: (NavOptionsBuilder.() -> Unit)? = null
-) {
-    this.navigate(route) {
-        launchSingleTop = true
-        restoreState = true
-        // Si se especifica popUpTo, lo aplicamos (útil para limpiar auth después del login)
-        if (popUpTo != null) {
-            popUpTo(popUpTo) { this.inclusive = inclusive; saveState = true }
+
+fun NavHostController.safeNavigate(route: String, baseRoute: String) {
+    if (currentBackStackEntry?.destination?.route != route) {
+        navigate(route) {
+            popUpTo(baseRoute) { inclusive = false }
+            launchSingleTop = true
         }
-        builder?.invoke(this)
-    }
-}
-
-/**
- * Safe navigation that prevents navigating to the current screen
- */
-fun NavHostController.navigateTo(route: String) {
-    if (currentBackStackEntry?.destination?.route != route) {
-        navigateSingleTop(route)
-    }
-}
-
-/**
- * Navigation with popUpTo functionality
- */
-fun NavHostController.navigateAndPopUpTo(
-    route: String,
-    popUpTo: String,
-    inclusive: Boolean = false
-) {
-    if (currentBackStackEntry?.destination?.route != route) {
-        navigateSingleTop(route, popUpTo, inclusive)
     }
 }
 
 @Composable
-fun AppNavigation(navController: NavHostController) {
+fun AppNavigation(navController: NavHostController,
+    isLoggedIn: Boolean) {
     NavHost(
         navController = navController,
-        startDestination = Routes.HOME
+        startDestination = if (isLoggedIn) Routes.MAIN_GRAPH else Routes.AUTH_GRAPH
     ) {
-        composable(Routes.LOGIN) {
-            LoginScreen(
-                onNavigateToSignUp = {
-                    navController.navigateTo(Routes.SIGNUP)
-                },
-                onContinue = {
-                    // Navegar a MAIN limpiando la pantalla de login del backstack
-                    navController.navigateAndPopUpTo(
-                        route = Routes.MAIN,
-                        popUpTo = Routes.LOGIN,
-                        inclusive = true
-                    )
-                }
-            )
+        navigation(
+            route = Routes.AUTH_GRAPH,
+            startDestination = AuthRoutes.SPLASH
+        ) {
+            authGraph(navController)
         }
+        navigation(
+            route = Routes.MAIN_GRAPH,
+            startDestination = Routes.MAIN
+        ) {
 
-        composable(Routes.SIGNUP) {
-            SignUpScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onContinue = {
-                    // Ir a MAIN y limpiar la pantalla de signup del backstack
-                    navController.navigateAndPopUpTo(
-                        route = Routes.MAIN,
-                        popUpTo = Routes.SIGNUP,
-                        inclusive = true
-                    )
-                }
-            )
-        }
+            composable(Routes.MAIN) {
+                MainWithDrawer(navController, navController)
+            }
 
-        composable(Routes.HOME) {
-            CardHome(navController)
-        }
+            composable(Routes.RENT) {
+                MainRenta(navController , navController)
+            }
 
-        composable(Routes.MAIN) {
-            MainWithDrawer(navController, navController)
-        }
+            composable(Routes.STATIONS) {
+                CardStations(navController)
+            }
 
-        composable(Routes.RENT) {
-            MainRenta(navController , navController)
-        }
+            composable(Routes.PROFILE) {
+                CardProfile(navController)
+            }
 
-        composable(Routes.STATIONS) {
-            CardStations(navController)
-        }
+            composable(Routes.NOTIFICATIONS) {
+                NotificationsScreen(navController)
+            }
 
-        composable(Routes.PROFILE) {
-            CardProfile(navController)
-        }
+            composable(Routes.HISTORY) {
+                HistoryScreen(navController)
+            }
 
-        composable(Routes.NOTIFICATIONS) {
-            NotificationsScreen(navController)
-        }
-
-        composable(Routes.HISTORY) {
-            HistoryScreen(navController)
-        }
-
-        composable(Routes.PAYMENT_METHODS) {
-            paymentMethopdsCard(navController)
+            composable(Routes.PAYMENT_METHODS) {
+                paymentMethopdsCard(navController)
+            }
         }
     }
 }

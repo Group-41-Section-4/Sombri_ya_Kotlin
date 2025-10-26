@@ -4,14 +4,10 @@ import android.app.Activity
 import android.nfc.NfcAdapter
 import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -248,27 +244,6 @@ private fun toast(activity: Activity, msg: String) {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar(navController: NavController) {
-    TopAppBar(
-        title = { Text("") },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(R.color.BlueInterface),
-            navigationIconContentColor = Color.Black
-        ),
-        navigationIcon = {
-            IconButton(onClick = { navController.navigate("notifications") }) {
-                Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "notificaciones")
-            }
-        },
-        actions = {
-            IconButton(onClick = { navController.navigate("profile") }) {
-                Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = "Perfil")
-            }
-        }
-    )
-}
 @Composable
 fun PopUpReservaCreated(onDismiss: () -> Unit) {
     AlertDialog(

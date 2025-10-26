@@ -16,7 +16,7 @@ import com.example.sombriyakotlin.R
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.sombriyakotlin.ui.navigation.Routes
-import com.example.sombriyakotlin.ui.navigation.navigateSingleTop
+import com.example.sombriyakotlin.ui.navigation.safeNavigate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -52,7 +52,7 @@ fun AppDrawer(
             onClick = {
                 scope.launch {
                     onCloseDrawer()
-                    navController.navigateSingleTop(Routes.PROFILE)
+                    navController.safeNavigate(Routes.PROFILE, Routes.MAIN)
                 }
             }
         )
@@ -63,7 +63,7 @@ fun AppDrawer(
             onClick = {
                 scope.launch {
                     onCloseDrawer()
-                    navController.navigateSingleTop(Routes.STATIONS)
+                    navController.safeNavigate(Routes.STATIONS, Routes.MAIN)
                 }
             }
         )
@@ -74,7 +74,7 @@ fun AppDrawer(
             onClick = {
                 scope.launch {
                     onCloseDrawer()
-                    navController.navigateSingleTop(Routes.PAYMENT_METHODS)
+                    navController.safeNavigate(Routes.PAYMENT_METHODS, Routes.MAIN)
                 }
             }
         )
@@ -84,7 +84,7 @@ fun AppDrawer(
             onClick = {
                 scope.launch {
                     onCloseDrawer()
-                    navController.navigateSingleTop(Routes.HISTORY)
+                    navController.safeNavigate(Routes.HISTORY, Routes.MAIN)
                 }
             }
         )
