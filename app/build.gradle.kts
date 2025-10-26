@@ -104,7 +104,7 @@ dependencies {
     implementation("androidx.camera:camera-view:1.2.3")
 
     // --- ML Kit Barcode Scanning ---
-    implementation("com.google.mlkit:barcode-scanning:17.0.2")
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
     // --- Google Auth --------
     implementation("androidx.credentials:credentials:1.3.0")
