@@ -15,6 +15,7 @@ import com.example.sombriyakotlin.ui.main.MainWithDrawer
 import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.ui.rent.CardRent
 import com.example.sombriyakotlin.ui.rent.MainRenta
+import com.example.sombriyakotlin.ui.voice.VoiceScreen
 
 // Definimos las rutas de navegación
 object Routes {
@@ -34,6 +35,7 @@ object Routes {
 
     const val NOTIFICATIONS = "notifications"
     const val HISTORY = "history"
+    const val VOICE = "voice"
 }
 
 @Composable
@@ -98,6 +100,9 @@ fun AppNavigation(navController: NavHostController) {
         }
         composable(Routes.PAYMENT_METHODS) {
             paymentMethopdsCard(navController)
+        }
+        composable(Routes.VOICE){
+            VoiceScreen(navController)
         }
 
     }
