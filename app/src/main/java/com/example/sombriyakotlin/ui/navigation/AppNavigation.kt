@@ -7,14 +7,14 @@ import androidx.navigation.compose.composable
 import com.example.sombriyakotlin.feature.history.HistoryScreen
 import com.example.sombriyakotlin.feature.notifications.NotificationsScreen
 import com.example.sombriyakotlin.ui.account.CardProfile
-import com.example.sombriyakotlin.ui.account.login.LoginScreen
-import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
-import com.example.sombriyakotlin.ui.home.CardHome
 import com.example.sombriyakotlin.ui.main.CardStations
 import com.example.sombriyakotlin.ui.main.MainWithDrawer
 import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.ui.rent.MainRenta
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.navigation
+import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
+import com.example.sombriyakotlin.ui.account.navigation.authGraph
 
 // Definimos las rutas de navegación
 object Routes {
@@ -33,29 +33,9 @@ object Routes {
 
     const val NOTIFICATIONS = "notifications"
     const val HISTORY = "history"
+    const val VOICE = "voice"
 }
 
-/**
- * Helper mínimo para navegar evitando duplicados (launchSingleTop) y opcionalmente hacer popUpTo.
- * Uso:
- *  navController.navigateSingleTop(Routes.MAIN, popUpTo = Routes.LOGIN, inclusive = true)
- */
-fun NavHostController.navigateSingleTop(
-    route: String,
-    popUpTo: String? = null,
-    inclusive: Boolean = false,
-    builder: (NavOptionsBuilder.() -> Unit)? = null
-) {
-    this.navigate(route) {
-        launchSingleTop = true
-        restoreState = true
-        // Si se especifica popUpTo, lo aplicamos (útil para limpiar auth después del login)
-        if (popUpTo != null) {
-            popUpTo(popUpTo) { this.inclusive = inclusive; saveState = true }
-        }
-        builder?.invoke(this)
-    }
-}
 
 fun NavHostController.safeNavigate(route: String, baseRoute: String) {
     if (currentBackStackEntry?.destination?.route != route) {
@@ -111,10 +91,9 @@ fun AppNavigation(navController: NavHostController,
             composable(Routes.PAYMENT_METHODS) {
                 paymentMethopdsCard(navController)
             }
+            composable(Routes.VOICE){
+                VoiceScreen(navController)
+            }
         }
-        composable(Routes.VOICE){
-            VoiceScreen(navController)
-        }
-
     }
 }

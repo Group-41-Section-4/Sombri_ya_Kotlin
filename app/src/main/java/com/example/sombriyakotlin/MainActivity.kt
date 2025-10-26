@@ -24,15 +24,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("QUEPASO","www")
         askNotificationPermission()
-
-
-        // Pedir permiso
-
-
-
         super.onCreate(savedInstanceState)
-
-
 
 
         setContent {
