@@ -81,7 +81,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0") // OkHttp moderno
 
     // Implementation para workmanager
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    implementation("androidx.work:work-runtime-ktx:2.9  .1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.hilt:hilt-work:1.2.0")

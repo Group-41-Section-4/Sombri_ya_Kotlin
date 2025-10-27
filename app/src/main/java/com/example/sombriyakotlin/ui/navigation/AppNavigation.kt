@@ -96,7 +96,7 @@ fun AppNavigation(navController: NavHostController,
                 paymentMethopdsCard(navController)
             }
             composable(Routes.VOICE){
-                VoiceScreen(navController)
+                VoiceScreen(navController,navController)
             }
         }
     }

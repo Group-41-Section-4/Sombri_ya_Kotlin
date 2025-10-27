@@ -17,11 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
+import com.example.sombriyakotlin.ui.layout.AppLayout
 
 @Composable
 fun VoiceScreen(
     navController: NavController,
+    navHostController: NavHostController,
     viewModel: VoiceViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -32,7 +35,7 @@ fun VoiceScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            Log.d("Voice", "🎤 Permiso concedido, empezando a escuchar...")
+            Log.d("Voice", "PERSMISO VOXZZZZZZZZZZZZ")
             viewModel.startListening(
                 context = context,
                 onFinished = { hasStarted = false },
@@ -44,11 +47,11 @@ fun VoiceScreen(
             )
             hasStarted = true
         } else {
-            Log.e("Voice", "🚫 Permiso de micrófono denegado")
+            Log.e("Voice", "LO NEGAROOOOOOOOOOON")
         }
     }
 
-    //  Lanzar automáticamente al entrar
+    // al iniciar'¿
     LaunchedEffect(Unit) {
         val permissionCheck = ContextCompat.checkSelfPermission(
             context,
@@ -71,22 +74,27 @@ fun VoiceScreen(
         }
     }
 
-    // UI simple mientras escucha
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    // 🔹 Usamos AppLayout para mantener top bar, bottom bar y drawer
+    AppLayout(
+        navController = navController,
+        navHostController = navHostController
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.umbrella_fill), // pon tu recurso aquí
-            contentDescription = "Micrófono",
-            modifier = Modifier.size(120.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = if (hasStarted) "Escuchando..." else "Procesando...",
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.umbrella_fill),
+                contentDescription = "Micrófono",
+                modifier = Modifier.size(120.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = if (hasStarted) "Escuchando..." else "Procesando...",
+            )
+        }
     }
 }

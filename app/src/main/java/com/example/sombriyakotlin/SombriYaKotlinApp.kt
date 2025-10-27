@@ -19,7 +19,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.sombriyakotlin.WeatherWorker
+import com.example.sombriyakotlin.data.worker.WeatherWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 

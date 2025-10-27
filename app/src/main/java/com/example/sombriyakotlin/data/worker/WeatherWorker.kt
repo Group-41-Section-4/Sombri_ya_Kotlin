@@ -1,59 +1,48 @@
-package com.example.sombriyakotlin
+package com.example.sombriyakotlin.data.worker
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
-import androidx.work.Worker
-import androidx.work.WorkerParameters
-import kotlinx.coroutines.runBlocking
 import android.util.Log
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.WorkerParameters
+import com.example.sombriyakotlin.NotificationHelper
 import com.example.sombriyakotlin.domain.model.Notification
 import com.example.sombriyakotlin.domain.model.NotificationType
-import com.example.sombriyakotlin.domain.repository.WeatherRepository
 import com.google.android.gms.location.LocationServices
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
-@HiltWorker
-class WeatherWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters,
-    private val weatherRepository: WeatherRepository
-) : CoroutineWorker(appContext, workerParams) {
+class WeatherWorker (context: Context, workerParams: WorkerParameters)
+    : CoroutineWorker(context, workerParams) {
 
     private fun nowLabel(): String =
         SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
 
     private fun nextId(prefix: String) =
-        "$prefix-${System.currentTimeMillis()}-${Random.nextInt(0, 999)}"
+        "$prefix-${System.currentTimeMillis()}-${Random.Default.nextInt(0, 999)}"
 
-    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+    override suspend fun doWork(): Result {
         Log.d("SANTAFE", "Entró a doWork()")
         try {
-            Log.d("SANTAFE", "✅ Worker ejecutándose")
+            Log.d("SANTAFE", " Worker ejecutándose")
 
             val location = getLastKnownLocation(applicationContext)
             if (location == null) {
-                Log.e("SANTAFE", "❌ No se pudo obtener la ubicación")
-                return@withContext Result.retry()
+                Log.e("SANTAFE", "No se pudo obtener la ubicación")
+                return Result.retry()
             }
 
-            val pop = weatherRepository.getFirstPopPercent(location.latitude, location.longitude)
+            val pop = weatherCall(location)
             if (pop == null) {
-                Log.e("SANTAFE", "❌ No se obtuvo POP del repositorio")
-                return@withContext Result.retry()
+                Log.e("SANTAFE", "No se obtuvo POP del repositorio")
+                return Result.retry()
             }
 
             Log.d("SANTAFE", "🌦 Probabilidad de lluvia: $pop%")
@@ -66,12 +55,14 @@ class WeatherWorker @AssistedInject constructor(
                     message = "Hay un $pop% de probabilidad de lluvia en las próximas horas.",
                     time = nowLabel()
                 )
-
                 NotificationHelper.showNotification(
                     applicationContext,
                     title = newNotif.title,
                     message = newNotif.message
                 )
+            }
+            else{
+                Log.d("SANTAFE","c murio")
             }
 
             // Reprogramar el siguiente chequeo dentro de 5 minutos
@@ -88,7 +79,10 @@ class WeatherWorker @AssistedInject constructor(
             Result.retry()
         }
     }
+    private suspend fun weatherCall(location: Location){
 
+        return weatherRepository.getFirstPopPercent(location.latitude, location.longitude)
+    }
     @SuppressLint("MissingPermission")
     private suspend fun getLastKnownLocation(context: Context): Location? {
         val fused = LocationServices.getFusedLocationProviderClient(context)

@@ -51,7 +51,7 @@ class VoiceViewModel @Inject constructor(
                     when {
                         "iniciar reserva" in spokenText ||
                                 ("empezar" in spokenText && "reserva" in spokenText) -> {
-                            // Lanza una coroutine para poder usar collect
+                            // Es necesario lanzar una courutine para
                             viewModelScope.launch {
                                 rentalUseCases.getCurrentRentalUseCase()
                                     .collect { rental ->
