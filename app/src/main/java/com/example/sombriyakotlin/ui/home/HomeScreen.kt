@@ -18,13 +18,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
+import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
+import com.example.sombriyakotlin.ui.navigation.safeNavigate
 
 @OptIn(ExperimentalMaterial3Api::class)
 //@Preview()
 @Composable
-fun CardHome(navController: NavController) {
+fun CardHome(navController: NavHostController) {
     Surface(modifier = Modifier.fillMaxSize(),
         color= colorResource(id=R.color.BlueInterface),
     ) {
@@ -43,7 +45,7 @@ fun CardHome(navController: NavController) {
                     .fillMaxWidth(0.8f)
                     .fillMaxHeight(0.3f)
                 ,
-                onClick = { navController.navigate("login") },
+                onClick = { navController.safeNavigate("login", AuthRoutes.SPLASH) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.HomeBlue),
                     contentColor = Color.White,
