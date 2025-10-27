@@ -1,4 +1,6 @@
 package com.example.sombriyakotlin.ui.layout
+
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 
 import androidx.compose.foundation.layout.Box
@@ -82,7 +84,6 @@ fun AppDrawer(
         NavigationDrawerItem(
             label = { Text("Historial") },
             selected = currentRoute == Routes.HISTORY,
-            onClick = {
                 scope.launch {
                     onCloseDrawer()
                     navController.safeNavigate(Routes.HISTORY, Routes.MAIN)

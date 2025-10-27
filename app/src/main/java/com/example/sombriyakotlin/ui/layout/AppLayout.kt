@@ -29,7 +29,7 @@ fun AppLayout(
     navHostController: NavHostController,
     content: @Composable () -> Unit,
 
-    ) {
+) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 

@@ -47,6 +47,16 @@ fun NavHostController.safeNavigate(route: String, baseRoute: String) {
     }
 }
 
+
+fun NavHostController.safeNavigate(route: String, baseRoute: String) {
+    if (currentBackStackEntry?.destination?.route != route) {
+        navigate(route) {
+            popUpTo(baseRoute) { inclusive = false }
+            launchSingleTop = true
+        }
+    }
+}
+
 @Composable
 fun AppNavigation(navController: NavHostController,
     isLoggedIn: Boolean) {
