@@ -21,13 +21,13 @@ class MainActivity : ComponentActivity() {
 
         //enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
             SombriYaKotlinTheme {
                 //cardRent(navController = rememberNavController())
-                val navController = rememberNavController()
                 //paymentMethopdsCard(navController)
 
                 //HistoryScreen(navController =navController )
-                AppNavigation(navController = navController)
+                AppNavigation(navController = navController, false)
             }
         }
     }

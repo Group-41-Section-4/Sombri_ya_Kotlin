@@ -19,15 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.sombriyakotlin.ui.rent.TopBar
-import com.example.sombriyakotlin.ui.inferiorbar.Bar
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppLayout(
     navController: NavController,
-    content: @Composable () -> Unit
+    navHostController: NavHostController,
+    content: @Composable () -> Unit,
+
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -35,10 +36,10 @@ fun AppLayout(
     Box(modifier = Modifier.fillMaxSize()) {
         // -- Main content -- //
         Scaffold(
-            topBar = { TopBar(navController) },
+            topBar = { TopBar(navHostController) },
             bottomBar = {
                 Bar(
-                    navController = navController,
+                    navController = navHostController,
                     onMenuClick = {
                         scope.launch {
                             if (drawerState.isClosed) drawerState.open()
@@ -96,9 +97,10 @@ fun AppLayout(
                     .width(280.dp)
             ) {
                 AppDrawer(
-                    navController = navController,
+                    navController = navHostController,
                     scope = scope,
-                    onCloseDrawer = { scope.launch { drawerState.close() } }
+                    onCloseDrawer = { drawerState.close() },
+                    drawerState = drawerState
                 )
             }
         }
