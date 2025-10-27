@@ -40,6 +40,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="androidx.work.WorkManagerInitializer"
+            android:value="false" />
     </application>
-
 </manifest>

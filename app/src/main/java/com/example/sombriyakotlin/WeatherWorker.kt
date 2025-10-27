@@ -20,10 +20,10 @@ import kotlin.random.Random
 
 @HiltWorker
 class WeatherWorker @AssistedInject constructor(
-    @Assisted private val context: Context,
+    @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val weatherRepository: WeatherRepository
-) : CoroutineWorker(context, workerParams) {
+) : CoroutineWorker(appContext, workerParams) {
 
     private fun nowLabel(): String =
         SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
@@ -32,10 +32,11 @@ class WeatherWorker @AssistedInject constructor(
         "$prefix-${System.currentTimeMillis()}-${Random.nextInt(0, 999)}"
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        Log.d("SANTAFE", "Entró a doWork()")
         try {
             Log.d("SANTAFE", "✅ Worker ejecutándose")
 
-            val location = getLastKnownLocation(context)
+            val location = getLastKnownLocation(applicationContext)
             if (location == null) {
                 Log.e("SANTAFE", "❌ No se pudo obtener la ubicación")
                 return@withContext Result.retry()
@@ -59,7 +60,7 @@ class WeatherWorker @AssistedInject constructor(
                 )
 
                 NotificationHelper.showNotification(
-                    context,
+                    applicationContext,
                     title = newNotif.title,
                     message = newNotif.message
                 )
@@ -70,7 +71,7 @@ class WeatherWorker @AssistedInject constructor(
                 .setInitialDelay(5, TimeUnit.MINUTES)
                 .build()
 
-            WorkManager.getInstance(context).enqueue(nextWork)
+            WorkManager.getInstance(applicationContext).enqueue(nextWork)
             Log.d("SANTAFE", "🔁 Siguiente ejecución programada")
 
             Result.success()

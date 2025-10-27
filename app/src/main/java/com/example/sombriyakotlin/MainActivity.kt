@@ -24,6 +24,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("QUEPASO","www")
         askNotificationPermission()
+        askLocationPermission()
         super.onCreate(savedInstanceState)
 
 
@@ -53,7 +54,15 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
+    private fun askLocationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
     /**
      * Resultado de la solicitud del permiso
      */

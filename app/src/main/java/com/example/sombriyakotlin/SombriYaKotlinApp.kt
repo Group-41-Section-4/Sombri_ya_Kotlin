@@ -37,6 +37,13 @@ class SombriYaKotlinApp : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .setMinimumLoggingLevel(Log.DEBUG)
+            .build()
+
+
     override fun onCreate() {
         super.onCreate()
         Log.d("EMPIEZAAPP", "si se inicio la app")
@@ -58,13 +65,6 @@ class SombriYaKotlinApp : Application(), Configuration.Provider {
     }
 
 
-    override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .build()
-
-
     private fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -83,6 +83,7 @@ class SombriYaKotlinApp : Application(), Configuration.Provider {
         Log.d("SEPROGRAMO", "✅ Se programó el WeatherWorker")
     }
 }
+
     /*
     private fun scheduleWeatherCheck(context: Context) {
         val workRequest = PeriodicWorkRequestBuilder<WeatherWorker>(
