@@ -94,5 +94,15 @@ fun AppDrawer(
                 }
             }
         )
+        NavigationDrawerItem(
+            label = { Text("Accion por voz") },
+            selected = currentRoute == Routes.VOICE,
+            onClick = {
+                scope.launch {
+                    onCloseDrawer()
+                    navController.safeNavigate(Routes.VOICE , Routes.MAIN)
+                }
+            }
+        )
     }
 }

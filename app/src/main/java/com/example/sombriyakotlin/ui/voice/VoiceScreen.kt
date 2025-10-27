@@ -27,7 +27,7 @@ fun VoiceScreen(
     val context = LocalContext.current
     var hasStarted by remember { mutableStateOf(false) }
 
-    // 🔐 Launcher para pedir permiso de micrófono
+    // Launcher para pedir permiso de micrófono
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -48,7 +48,7 @@ fun VoiceScreen(
         }
     }
 
-    // 🔄 Lanzar automáticamente al entrar
+    //  Lanzar automáticamente al entrar
     LaunchedEffect(Unit) {
         val permissionCheck = ContextCompat.checkSelfPermission(
             context,
@@ -71,7 +71,7 @@ fun VoiceScreen(
         }
     }
 
-    // 🖼️ UI simple mientras escucha
+    // UI simple mientras escucha
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,7 +80,7 @@ fun VoiceScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.umbrella_fill), // ⚠️ pon tu recurso aquí
+            painter = painterResource(id = R.drawable.umbrella_fill), // pon tu recurso aquí
             contentDescription = "Micrófono",
             modifier = Modifier.size(120.dp)
         )

@@ -31,6 +31,8 @@ import com.example.sombriyakotlin.ui.main.LocationViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(navController: NavController) {
+    val notificationsVM: NotificationsViewModel = hiltViewModel()
+
     TopAppBar(
         title = {
             Text(
@@ -44,7 +46,9 @@ fun TopBar(navController: NavController) {
             navigationIconContentColor = Color.Black
         ),
         navigationIcon = {
-            IconButton(onClick = { navController.navigate("main") }) {
+            IconButton(onClick = {
+                notificationsVM.clearAll()
+                navController.navigate("main") }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
             }
         }

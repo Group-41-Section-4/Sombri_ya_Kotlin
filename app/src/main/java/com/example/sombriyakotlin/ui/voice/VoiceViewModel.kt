@@ -2,6 +2,11 @@ package com.example.sombriyakotlin.ui.voice
 
 import android.content.Context
 import android.content.Intent
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
@@ -21,7 +26,6 @@ import javax.inject.Inject
 @HiltViewModel
 class VoiceViewModel @Inject constructor(
     private val rentalUseCases: RentalUseCases,
-    private val userUseCases: UserUseCases,
 ) : ViewModel() {
     private var speechRecognizer: SpeechRecognizer? = null
 
@@ -47,19 +51,28 @@ class VoiceViewModel @Inject constructor(
                     when {
                         "iniciar reserva" in spokenText ||
                                 ("empezar" in spokenText && "reserva" in spokenText) -> {
-                            val rent = rentalUseCases.getCurrentRentalUseCase
-                            Log.d("WATTTT", "rent: $rent")
-                            if (rent != null) {
-                                    Log.d("Voice", "Renta activa:")
-                                } else {
-                                    onNavigateToRent()
-                                    Log.d("Voice", "No hay renta activa")
-                                }
+                            // Lanza una coroutine para poder usar collect
+                            viewModelScope.launch {
+                                rentalUseCases.getCurrentRentalUseCase()
+                                    .collect { rental ->
+                                        Log.d("WATTTT", "Rental actual: $rental")
 
+                                        if (rental != null) {
+                                            Log.d("Voice", "Renta activa: $rental")
+                                        } else {
+                                            onNavigateToRent()
+                                            Log.d("Voice", "No hay renta activa")
+                                        }
+                                    }
+                            }
                         }
 
                         "terminar reserva" in spokenText ||
                                 ("finalizar" in spokenText && "reserva" in spokenText) -> {
+                            // TODO: intentar que al ingresr a terminar reserva, se salte el pop up
+                            Log.d("Voice", "Terminar reserva")
+                                    onNavigateToRent()
+
 
                         }
 
@@ -67,6 +80,7 @@ class VoiceViewModel @Inject constructor(
                             Log.d("Voice", "Comando no reconocido")
                         }
                     }
+
                     onFinished()
                 }
 

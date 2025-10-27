@@ -173,6 +173,24 @@ class NotificationsViewModel @Inject constructor(
                     message = newNotif.message
                 )
             }
+            else{
+                val newNotif = Notification(
+                    id = nextId("w"),
+                    type = NotificationType.WEATHER,
+                    title = "Alerta de Lluvia",
+                    message = "Hay $pop% de probabilidad de lluvia en las próximas horas.",
+                    time = nowLabel()
+                )
+                _notifications.value = _notifications.value + newNotif
+
+                // 🔔 Notificación del sistema
+                NotificationHelper.showNotification(
+                    context,
+                    title = newNotif.title,
+                    message = newNotif.message
+                )
+
+            }
         }
     }
 
