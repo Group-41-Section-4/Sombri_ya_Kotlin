@@ -29,27 +29,12 @@ fun AppLayout(
     navHostController: NavHostController,
     content: @Composable () -> Unit,
 
-) {
+    ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-<<<<<<< HEAD
     Box(modifier = Modifier.fillMaxSize()) {
         // -- Main content -- //
-=======
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        gesturesEnabled = false,
-        drawerContent = {
-            AppDrawer(
-                navController = navHostController,
-                scope = scope,
-                onCloseDrawer = { drawerState.close() },
-                drawerState = drawerState
-            )
-        }
-    ) {
->>>>>>> 221c31c (feat: Refactor navigation logic and drawer state)
         Scaffold(
             topBar = { TopBar(navHostController) },
             bottomBar = {
@@ -112,12 +97,12 @@ fun AppLayout(
                     .width(280.dp)
             ) {
                 AppDrawer(
-                    navController = navController,
+                    navController = navHostController,
                     scope = scope,
-                    onCloseDrawer = { scope.launch { drawerState.close() } }
+                    onCloseDrawer = { drawerState.close() },
+                    drawerState = drawerState
                 )
             }
         }
     }
 }
-

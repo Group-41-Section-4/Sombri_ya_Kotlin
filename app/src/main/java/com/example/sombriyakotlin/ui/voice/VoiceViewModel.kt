@@ -58,6 +58,7 @@ class VoiceViewModel @Inject constructor(
                                         Log.d("WATTTT", "Rental actual: $rental")
 
                                         if (rental != null) {
+                                            onNavigateToRent()
                                             Log.d("Voice", "Renta activa: $rental")
                                         } else {
                                             onNavigateToRent()

@@ -1,12 +1,10 @@
 package com.example.sombriyakotlin.ui.layout
-
-<<<<<<< HEAD
 import androidx.compose.foundation.background
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-=======
+
 import androidx.activity.compose.BackHandler
->>>>>>> 221c31c (feat: Refactor navigation logic and drawer state)
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -14,13 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-<<<<<<< HEAD
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
-=======
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
->>>>>>> 221c31c (feat: Refactor navigation logic and drawer state)
 import com.example.sombriyakotlin.ui.navigation.Routes
 import com.example.sombriyakotlin.ui.navigation.safeNavigate
 import kotlinx.coroutines.CoroutineScope

@@ -15,6 +15,7 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.navigation
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
 import com.example.sombriyakotlin.ui.account.navigation.authGraph
+import com.example.sombriyakotlin.ui.voice.VoiceScreen
 
 // Definimos las rutas de navegación
 object Routes {

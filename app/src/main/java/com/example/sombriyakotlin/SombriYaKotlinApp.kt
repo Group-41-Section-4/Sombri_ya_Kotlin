@@ -9,13 +9,7 @@ import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
-import android.os.Build
-import android.util.Log
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
+
 
 import com.example.sombriyakotlin.data.location.GPSManager
 import dagger.hilt.android.HiltAndroidApp
@@ -25,10 +19,10 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.sombriyakotlin.worker.WeatherWorker
+import com.example.sombriyakotlin.WeatherWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Inject
+
 
 
 @HiltAndroidApp
@@ -65,17 +59,7 @@ class SombriYaKotlinApp : Application(), Configuration.Provider {
     }
 
 
-    private fun createNotificationChannel(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                "weather_channel",
-                "Clima",
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            val manager = context.getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
-        }
-    }
+
 
     private fun scheduleWeatherCheck(context: Context) {
         val workRequest = OneTimeWorkRequestBuilder<WeatherWorker>().build()
