@@ -36,7 +36,6 @@ class MainActivity : ComponentActivity() {
             SombriYaKotlinTheme {
                 //cardRent(navController = rememberNavController())
                 //paymentMethopdsCard(navController)
-
                 //HistoryScreen(navController =navController )
                 AppNavigation(navController = navController, false)
             }

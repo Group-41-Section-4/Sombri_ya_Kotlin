@@ -2,10 +2,8 @@ package com.example.sombriyakotlin.ui.layout
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -98,6 +96,17 @@ fun AppDrawer(
                 scope.launch {
                     onCloseDrawer()
                     navController.safeNavigate(Routes.VOICE , Routes.MAIN)
+                }
+            }
+        )
+
+        NavigationDrawerItem(
+            label = { Text("Sombri-IA") },
+            selected = currentRoute == Routes.CHATBOT,
+            onClick = {
+                scope.launch {
+                    onCloseDrawer()
+                    navController.safeNavigate(Routes.CHATBOT, Routes.MAIN)
                 }
             }
         )

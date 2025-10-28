@@ -5,9 +5,11 @@ import com.example.sombriyakotlin.data.api.RentalApi
 import com.example.sombriyakotlin.data.api.UserApi
 import com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
+import com.example.sombriyakotlin.data.repository.ChatbotRepositoryImpl
 import com.example.sombriyakotlin.data.repository.RentalRepositoryImpl
 import com.example.sombriyakotlin.data.repository.StationRepositoryImpl
 import com.example.sombriyakotlin.data.repository.UserRepositoryImpl
+import com.example.sombriyakotlin.domain.repository.ChatbotRepository
 import com.example.sombriyakotlin.domain.repository.RentalRepository
 import com.example.sombriyakotlin.domain.repository.StationRepository
 import com.example.sombriyakotlin.domain.repository.UserRepository
@@ -26,8 +28,8 @@ import javax.inject.Singleton
 abstract class RepositoryModule {
 
     companion object {
-
-        @Provides @Singleton
+        @Provides
+        @Singleton
         fun provideUserRepository(
             userApi: UserApi,
             userLocalDataSource: UserLocalDataSource
@@ -42,15 +44,17 @@ abstract class RepositoryModule {
         @Provides
         @Singleton
         fun provideWeatherRepository(): WeatherRepository {
-            return WeatherRepositoryImpl(apiKey = BuildConfig.OWM_API_KEY)
+            return WeatherRepositoryImpl(apiKey = com.example.sombriyakotlin.BuildConfig.OWM_API_KEY)
         }
-        // Si luego actualizas tu impl para recibir OkHttpClient:
-        // fun provideWeatherRepository(client: OkHttpClient, @Named("OWM_API_KEY") apiKey: String)
-        //     = WeatherRepositoryImpl(client, apiKey)
+
+        @Provides
+        @Singleton
+        fun provideChatRepository(): ChatbotRepository{
+            return ChatbotRepositoryImpl()
+        }
     }
 
-    @Binds @Singleton
-    abstract fun bindStationRepository(
-        impl: StationRepositoryImpl
-    ): StationRepository
+    @Binds
+    @Singleton
+    abstract fun bindStationRepository(stationRepositoryImpl: StationRepositoryImpl): StationRepository
 }

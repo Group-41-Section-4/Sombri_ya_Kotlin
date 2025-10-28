@@ -15,6 +15,7 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.navigation
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
 import com.example.sombriyakotlin.ui.account.navigation.authGraph
+import com.example.sombriyakotlin.ui.chatbot.ChatbotScreen
 import com.example.sombriyakotlin.ui.voice.VoiceScreen
 
 // Definimos las rutas de navegación
@@ -35,10 +36,10 @@ object Routes {
     const val NOTIFICATIONS = "notifications"
     const val HISTORY = "history"
     const val VOICE = "voice"
+
+    const val CHATBOT = "chatbot"
+
 }
-
-
-
 
 
 fun NavHostController.safeNavigate(route: String, baseRoute: String) {
@@ -97,6 +98,10 @@ fun AppNavigation(navController: NavHostController,
             }
             composable(Routes.VOICE){
                 VoiceScreen(navController,navController)
+            }
+
+            composable(Routes.CHATBOT){
+                ChatbotScreen(navController)
             }
         }
     }
