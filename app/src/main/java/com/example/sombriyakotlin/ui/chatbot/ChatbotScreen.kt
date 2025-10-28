@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +23,7 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,7 +69,9 @@ fun ChatbotScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(color = colorResource(id = R.color.EstacionCard)),
+            .background(color = colorResource(id = R.color.EstacionCard))
+            .navigationBarsPadding()
+            .imePadding(),
         verticalArrangement = Arrangement.Bottom
     )
     {
@@ -74,7 +79,8 @@ fun ChatbotScreen(
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
-                .padding(top=50.dp)
+//                .padding(top=50.dp)
+
                 .fillMaxWidth(),
             state = listState,
             contentPadding = PaddingValues(8.dp),
@@ -90,7 +96,7 @@ fun ChatbotScreen(
 
         when (uiState) {
             is ChatbotViewModel.ChatState.Loading -> {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth(),colorResource(R.color.HomeBlue))
             }
             else -> { /* nada */ }
         }
@@ -113,7 +119,8 @@ fun ChatbotScreen(
                 singleLine = false,
                 maxLines = 2,                         // límite de líneas para evitar crecer demasiado
                 textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
-            )
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = colorResource(R.color.HomeBlue))
+                )
 
             val isLoading = uiState is ChatbotViewModel.ChatState.Loading
             Button({

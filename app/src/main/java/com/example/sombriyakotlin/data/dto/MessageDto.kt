@@ -36,7 +36,8 @@ data class ChatRequest(
 )
 
 fun Message.toDto(): MessageDto = MessageDto (
-    content = content
+    content = content,
+    role = if (isUser) "user" else "assistant"
 )
 
 fun MessageDto.toDomain(): Message = Message (

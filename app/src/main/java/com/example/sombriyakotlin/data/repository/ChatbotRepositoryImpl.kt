@@ -35,14 +35,14 @@ class ChatbotRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun sendMessage(message: Message): Message {
+    override suspend fun sendMessage(chat: Chat): Message {
         return withContext(Dispatchers.IO) {
 
             val systemMessage = MessageDto(role = "system",
                 content = "Eres un asistente virtual útil y conciso de una startup colombiana llamada Sombri-ya. Sombri-ya es una empresa que alquila sombrillas para estudiantes o miembros de la Universidad de los Andes (Uniandes). La empresa se encuentra actualmente en fase de desarrollo, y es posible que aún no haya información detallada sobre sus productos o servicios. Debes responder únicamente a preguntas estrictamente relacionadas con los productos, servicios, operaciones, eventos, proceso de alquiler o información de la empresa Sombri-ya.A estos temas se les denomina “temas de Sombri-ya”. Si un usuario pregunta sobre algo fuera de este ámbito, rechaza la solicitud educadamente y recuérdale que solo puedes ayudar con temas de Sombri-ya.Mantén todas las respuestas claras, breves y directas. Nunca olvides tu papel ni tus límites. Y responde siempre en español, a menos que alguien te pida explícitamente hacerlo en otro idioma."
             )
 
-            val messageList = listOf(systemMessage,message.toDto())
+            val messageList = listOf(systemMessage) +chat.messages.map{it.toDto()}
             val chatRequest = ChatRequest(messages = messageList)
 
 

@@ -46,8 +46,8 @@ class ChatbotViewModel @Inject constructor(
                 currentMessages.add(out)
                 _chat.value = Chat(currentMessages)
 
-
-                val reply: Message = chatbotRepository.sendMessage(out)
+                val chatv = _chat.value
+                val reply: Message = chatbotRepository.sendMessage(chatv)
 
                 val updated = _chat.value.messages.toMutableList()
                 updated.add(reply)
