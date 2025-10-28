@@ -45,11 +45,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.domain.model.Station
+import com.example.sombriyakotlin.domain.model.WeatherType
 import com.example.sombriyakotlin.ui.layout.AppLayout
+import com.example.sombriyakotlin.ui.main.animations.CloudEmojiAnimation
 import com.example.sombriyakotlin.ui.main.animations.RainAnimation
+import com.example.sombriyakotlin.ui.main.animations.SunRaysAnimation
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -63,7 +65,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainContent(navController: NavController,
-             viewModel: LocationViewModel = viewModel(),
+                homeViewModel: HomeViewModel = hiltViewModel(),
+                viewModel: LocationViewModel = viewModel(),
                 stationsViewModel: StationsViewModel = hiltViewModel()
 ){
 
@@ -91,32 +94,44 @@ fun MainContent(navController: NavController,
     // Para mover la cámara solo una vez al obtener la primera ubicación
     var isInitialLocationSet by remember { mutableStateOf(false) }
 
+    val weather by homeViewModel.weatherState.collectAsState()
+
+    val stationsUiState by stationsViewModel.stationsState.collectAsStateWithLifecycle()
+
     LaunchedEffect(location) {
         location?.let { loc ->
-            // Mover la cámara solo la primera vez que tengamos una ubicación
+            // Mueve la cámara solo la primera vez
             if (!isInitialLocationSet) {
-                val newPos = CameraPosition.fromLatLngZoom(LatLng(loc.latitude, loc.longitude), cameraPositionState.position.zoom)
-                // Intentamos animar/mover la cámara; setear la posición directamente
+                val newPos = CameraPosition.fromLatLngZoom(
+                    LatLng(loc.latitude, loc.longitude),
+                    cameraPositionState.position.zoom
+                )
                 cameraPositionState.position = newPos
-                isInitialLocationSet = true // Marcamos que ya se ha seteado la posición inicial
-
-                // Obtener estaciones solo la primera vez que se obtiene la ubicación.
+                isInitialLocationSet = true
                 stationsViewModel.getStations(loc.latitude, loc.longitude)
+            }
+
+            // update weather state
+            val now = System.currentTimeMillis()
+            val lastUpdate = homeViewModel.lastWeatherUpdateTime
+            if (now - lastUpdate > 60_000) { // 1 minute
+                Log.d("HomeViewModel", "Updating weather")
+                homeViewModel.checkWeatherAt(loc.latitude, loc.longitude)
             }
         }
     }
 
-    val stationsUiState by stationsViewModel.stationsState.collectAsStateWithLifecycle()
+
+
+
 
     Column (
-        modifier = Modifier.fillMaxHeight(1f),
+        modifier = Modifier.fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopCenter,
         ) {
 
@@ -160,7 +175,13 @@ fun MainContent(navController: NavController,
                     }
                 }
             }
-            RainAnimation()
+
+            when (weather){
+                WeatherType.SOLEADO -> SunRaysAnimation(modifier = Modifier.fillMaxSize())
+                WeatherType.NUBLADO -> CloudEmojiAnimation(modifier = Modifier.fillMaxSize())
+                WeatherType.LLUVIA -> RainAnimation(modifier = Modifier.fillMaxSize())
+                null -> {}
+            }
 
             Button(
                 onClick = { navController.navigate("stations") },
@@ -178,19 +199,5 @@ fun MainContent(navController: NavController,
 fun MainWithDrawer(navController: NavController,navHostController: NavHostController) {
     AppLayout(navController = navController,navHostController) {
         MainContent(navController)
-    }
-}
-
-@Preview(showBackground = true) // Added showBackground for better visibility
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MainWithDrawerPreview() { // Renamed for clarity, as it's just for preview
-    // 1. Create a fake NavController for the preview environment.
-    val navController = rememberNavController()
-
-    // 2. Call AppLayout with the correct parameters: a NavController and a content lambda.
-    AppLayout(navController = navController, navHostController = navController) {
-        // 3. Call MainContent inside the layout, passing the fake controller.
-        MainContent(navController = navController)
     }
 }
