@@ -3,7 +3,9 @@ package com.example.sombriyakotlin.ui.rent
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sombriyakotlin.domain.model.PedometerRepository
 import com.example.sombriyakotlin.domain.model.Rental
+import com.example.sombriyakotlin.domain.model.StartPedometer
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +21,10 @@ import javax.inject.Inject
 class RentViewModel @Inject constructor(
     private val rentalUseCases: RentalUseCases,
     private val userUseCases: UserUseCases,
+    private val repo: PedometerRepository
 ) : ViewModel() {
+
+    private val start = StartPedometer(repo)
 
     // ---- UI State ----
     sealed class RentState {
@@ -99,6 +104,7 @@ class RentViewModel @Inject constructor(
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
                 _rentState.value = RentState.Success(created)
                 Log.d("RENTANDO", "Renta creada: ${_rentState.value}")
+                start()
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {
                     val body = e.response()?.errorBody()?.string()
@@ -158,6 +164,7 @@ class RentViewModel @Inject constructor(
 
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
                 success(created)
+                start()
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {
                     val body = e.response()?.errorBody()?.string()
