@@ -191,7 +191,12 @@ fun LoginScreen(
                     }
 
 
-                    Button(modifier = Modifier.fillMaxWidth(), colors= ButtonColors(Color(0xFF001242),Color(0xFF001242),Color(0xFF001242),Color(0xFF001242)), onClick = { }) { //signInWithGoogleOption
+                    Button(modifier = Modifier.fillMaxWidth(),
+                        colors= ButtonColors(Color(0xFF001242),
+                            Color(0xFF001242),
+                            Color(0xFF001242),
+                            Color(0xFF001242)),
+                        onClick = { }) { //signInWithGoogleOption
                         Text(
                             text = "Iniciar Sesión con Google",
                             color = Color.White,
