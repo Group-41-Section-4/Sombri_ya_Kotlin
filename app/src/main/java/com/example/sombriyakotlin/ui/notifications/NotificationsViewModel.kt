@@ -19,12 +19,16 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val rentalUseCases: RentalUseCases,
-    private val userUseCases: UserUseCases
+    private val userUseCases: UserUseCases,
+    @ApplicationContext private val context: Context   // 👈 agregado
+
 ) : ViewModel() {
 
     private val _notifications = MutableStateFlow<List<Notification>>(emptyList())
@@ -152,11 +156,14 @@ class NotificationsViewModel @Inject constructor(
 
     fun checkWeatherAt(context: Context, location: Location) {
         viewModelScope.launch {
+            Log.d("JULIANICEN","xd")
             val pop = weatherRepository
                 .getFirstPopPercent(location.latitude, location.longitude)
                 ?: return@launch
-
+            Log.d("JULIANICEN","MUERE")
             if (pop > 30) {
+                Log.d("JULIANICEN","QUE PASO")
+
                 val newNotif = Notification(
                     id = nextId("w"),
                     type = NotificationType.WEATHER,
@@ -166,7 +173,7 @@ class NotificationsViewModel @Inject constructor(
                 )
                 _notifications.value = _notifications.value + newNotif
 
-                // 🔔 Notificación del sistema
+                //  Notificación del sistema
                 NotificationHelper.showNotification(
                     context,
                     title = newNotif.title,
@@ -174,6 +181,7 @@ class NotificationsViewModel @Inject constructor(
                 )
             }
             else{
+                Log.d("JULIANICEN","QUE PASO")
                 val newNotif = Notification(
                     id = nextId("w"),
                     type = NotificationType.WEATHER,

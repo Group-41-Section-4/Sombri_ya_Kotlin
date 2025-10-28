@@ -1,96 +1,122 @@
 package com.example.sombriyakotlin.data.worker
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.location.Location
 import android.util.Log
 import androidx.work.CoroutineWorker
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.example.sombriyakotlin.BuildConfig
 import com.example.sombriyakotlin.NotificationHelper
-import com.example.sombriyakotlin.domain.model.Notification
-import com.example.sombriyakotlin.domain.model.NotificationType
-import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.concurrent.TimeUnit
-import kotlin.random.Random
+import com.example.sombriyakotlin.data.datasource.*
+import com.example.sombriyakotlin.data.datasource.stations.StationsCacheLocalDataSource
+import com.example.sombriyakotlin.data.repository.StationsCacheRepository
+import com.example.sombriyakotlin.dataStore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
+import kotlin.math.*
 
-class WeatherWorker (context: Context, workerParams: WorkerParameters)
-    : CoroutineWorker(context, workerParams) {
+class WeatherWorker(
+    appContext: Context,
+    params: WorkerParameters
+) : CoroutineWorker(appContext, params) {
 
-    private fun nowLabel(): String =
-        SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-
-    private fun nextId(prefix: String) =
-        "$prefix-${System.currentTimeMillis()}-${Random.Default.nextInt(0, 999)}"
+    private val client by lazy { OkHttpClient() }
 
     override suspend fun doWork(): Result {
-        Log.d("SANTAFE", "Entró a doWork()")
-        try {
-            Log.d("SANTAFE", " Worker ejecutándose")
+        Log.d("WeatherWorker", "⚙️ doWork() START")
 
-            val location = getLastKnownLocation(applicationContext)
-            if (location == null) {
-                Log.e("SANTAFE", "No se pudo obtener la ubicación")
-                return Result.retry()
+        val lat = inputData.getDouble("lat", Double.NaN)
+        val lon = inputData.getDouble("lon", Double.NaN)
+        Log.d("WeatherWorker", "inputData lat=$lat lon=$lon")
+
+        if (lat.isNaN() || lon.isNaN()) {
+            Log.e("WeatherWorker", " Faltan lat/lon en inputData")
+            return Result.failure()
+        }
+
+        val baseUrl = (BuildConfig.OWM_API_URL ?: "").trimEnd('/')
+        val apiKey = BuildConfig.OWM_API_KEY ?: ""
+        if (baseUrl.isBlank() || apiKey.isBlank()) {
+            Log.e("WeatherWorker", " OWM_API_URL / OWM_API_KEY vacíos en BuildConfig")
+            return Result.failure()
+        }
+
+        val url = "$baseUrl/forecast?lat=$lat&lon=$lon&appid=$apiKey&lang=es&units=metric"
+        Log.d("WeatherWorker", " URL: $url")
+
+        return try {
+            // POP
+            val pop = withContext(Dispatchers.IO) {
+                val req = Request.Builder().url(url).get().build()
+                client.newCall(req).execute().use { resp ->
+                    if (!resp.isSuccessful) {
+                        Log.e("WeatherWorker", "HTTP ${resp.code}")
+                        return@withContext null
+                    }
+                    val body = resp.body?.string()
+                    if (body.isNullOrBlank()) return@withContext null
+                    val json = JSONObject(body)
+                    val list = json.optJSONArray("list") ?: return@withContext null
+                    if (list.length() == 0) return@withContext null
+                    val first = list.getJSONObject(0)
+                    val pop0to1 = first.optDouble("pop", 0.0)
+                    (pop0to1 * 100).toInt()
+                }
             }
 
-            val pop = weatherCall(location)
             if (pop == null) {
-                Log.e("SANTAFE", "No se obtuvo POP del repositorio")
+                Log.e("WeatherWorker", "No se pudo obtener POP del forecast")
                 return Result.retry()
             }
 
-            Log.d("SANTAFE", "🌦 Probabilidad de lluvia: $pop%")
+            Log.d("WeatherWorker", " POP=$pop%")
 
-            if (pop > 30) {
-                val newNotif = Notification(
-                    id = nextId("w"),
-                    type = NotificationType.WEATHER,
-                    title = "Alerta de lluvia",
-                    message = "Hay un $pop% de probabilidad de lluvia en las próximas horas.",
-                    time = nowLabel()
-                )
+            //  Cargar estaciones cacheadas con TTL
+            val cacheRepo = StationsCacheRepository(
+                StationsCacheLocalDataSource(applicationContext.dataStore)
+            )
+            val cachedStations = cacheRepo.getCachedStationsFreshOrEmpty()
+
+            //  Buscar la estación más cercana
+            val nearest = cachedStations.minByOrNull {
+                distanceMeters(lat, lon, it.latitude, it.longitude)
+            }
+
+            //  Mostrar notificación personalizada
+            if (pop < 30) {
+                val message = if (nearest != null)
+                    "Hay $pop% de probabilidad de lluvia. Alquila en ${nearest.name}."
+                else
+                    "Hay $pop% de probabilidad de lluvia en tu zona. Revisa las estaciones disponibles."
+
                 NotificationHelper.showNotification(
                     applicationContext,
-                    title = newNotif.title,
-                    message = newNotif.message
+                    title = "Alerta de lluvia ☔",
+                    message = message
                 )
+                Log.d("WeatherWorker", "🔔 Notificación mostrada: $message")
+            } else {
+                Log.d("WeatherWorker", "🌤 POP bajo, no se notifica")
             }
-            else{
-                Log.d("SANTAFE","c murio")
-            }
-
-            // Reprogramar el siguiente chequeo dentro de 5 minutos
-            val nextWork = OneTimeWorkRequestBuilder<WeatherWorker>()
-                .setInitialDelay(5, TimeUnit.MINUTES)
-                .build()
-
-            WorkManager.getInstance(applicationContext).enqueue(nextWork)
-            Log.d("SANTAFE", "🔁 Siguiente ejecución programada")
 
             Result.success()
+
         } catch (e: Exception) {
-            Log.d("SANTAFE", "💥 Error en worker: ${e.message}", e)
+            Log.e("WeatherWorker", "❌ Excepción en doWork", e)
             Result.retry()
         }
     }
-    private suspend fun weatherCall(location: Location){
 
-        return weatherRepository.getFirstPopPercent(location.latitude, location.longitude)
-    }
-    @SuppressLint("MissingPermission")
-    private suspend fun getLastKnownLocation(context: Context): Location? {
-        val fused = LocationServices.getFusedLocationProviderClient(context)
-        return try {
-            fused.lastLocation.await()
-        } catch (e: Exception) {
-            Log.d("SANTAFE", "⚠️ Error obteniendo ubicación: ${e.message}")
-            null
-        }
+    /** Calcula distancia entre dos coordenadas (Haversine) */
+    private fun distanceMeters(aLat: Double, aLon: Double, bLat: Double, bLon: Double): Double {
+        val R = 6371000.0
+        val dLat = Math.toRadians(bLat - aLat)
+        val dLon = Math.toRadians(bLon - aLon)
+        val lat1 = Math.toRadians(aLat)
+        val lat2 = Math.toRadians(bLat)
+        val h = sin(dLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(dLon / 2).pow(2.0)
+        return 2 * R * asin(sqrt(h))
     }
 }

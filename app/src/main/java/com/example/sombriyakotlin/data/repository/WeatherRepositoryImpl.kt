@@ -1,6 +1,8 @@
 // app/src/main/java/com/example/sombriyakotlin/feature/notifications/data/WeatherRepositoryImpl.kt
 package com.example.sombriyakotlin.feature.notifications.data
 
+import android.util.Log
+import com.example.sombriyakotlin.BuildConfig
 import com.example.sombriyakotlin.domain.repository.WeatherRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,13 +16,17 @@ class WeatherRepositoryImpl @Inject constructor(
 ) : WeatherRepository {
 
     private val client = OkHttpClient()
+    private val baseUrl = BuildConfig.OWM_API_URL
 
     override suspend fun getFirstPopPercent(lat: Double, lon: Double): Int? =
         withContext(Dispatchers.IO) {
-            val url = "https://api.openweathermap.org/data/2.5/forecast" +
-                    "?lat=$lat&lon=$lon&appid=$apiKey&lang=es&units=metric"
+            val url = "${baseUrl}forecast?lat=$lat&lon=$lon&appid=$apiKey&lang=es&units=metric"
+
+            Log.d("WEATHER_REPO", "URL final: $url")
 
             val req = Request.Builder().url(url).get().build()
+            Log.d("WEATHER_REPO", "WORKSl")
+
             client.newCall(req).execute().use { resp ->
                 if (!resp.isSuccessful) return@use null
                 val body = resp.body?.string() ?: return@use null // OkHttp 4.x
