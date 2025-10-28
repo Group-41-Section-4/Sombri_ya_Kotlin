@@ -53,6 +53,25 @@ fun CardRent(navController: NavController) {
             }
         )
     }
+    LaunchedEffect(Unit) {
+        if (isNfcSupported(activity)) {
+            if (isNfcEnabled(activity)) {
+                try {
+                    nfcScanner.start(activity)
+                    nfcEnabled = true
+                    toast(activity, "NFC activado automáticamente. Acerca la tarjeta…")
+                } catch (e: Exception) {
+                    Log.e("Rent", "Error activando NFC", e)
+                    toast(activity, "Error al activar NFC automáticamente")
+                }
+            } else {
+                toast(activity, "Activa NFC en los ajustes del sistema")
+                openNfcSettings(activity)
+            }
+        } else {
+            toast(activity, "Este dispositivo no soporta NFC")
+        }
+    }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -103,7 +122,7 @@ fun CardRent(navController: NavController) {
             .fillMaxSize()) {
             // 🔹 QR Scanner embebido
             QrScannerScreen(modifier = Modifier.matchParentSize())
-
+            /*
             // 🔹 Botón flotante NFC
             BotonNFC(
                 onClick = {
@@ -141,6 +160,8 @@ fun CardRent(navController: NavController) {
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 80.dp)
             )
+
+             */
         }
     }
 
