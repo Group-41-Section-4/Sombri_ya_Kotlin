@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -85,6 +84,17 @@ fun AppDrawer(
                 scope.launch {
                     onCloseDrawer()
                     navController.safeNavigate(Routes.HISTORY, Routes.MAIN)
+                }
+            }
+        )
+
+        NavigationDrawerItem(
+            label = { Text("Sombri-IA") },
+            selected = currentRoute == Routes.CHATBOT,
+            onClick = {
+                scope.launch {
+                    onCloseDrawer()
+                    navController.safeNavigate(Routes.CHATBOT, Routes.MAIN)
                 }
             }
         )

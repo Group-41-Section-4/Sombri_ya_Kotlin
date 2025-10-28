@@ -8,8 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.example.sombriyakotlin.feature.history.HistoryScreen
-import com.example.sombriyakotlin.feature.notifications.NotificationsScreen
 import com.example.sombriyakotlin.ui.navigation.AppNavigation
 import com.example.sombriyakotlin.ui.theme.SombriYaKotlinTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,7 +23,6 @@ class MainActivity : ComponentActivity() {
             SombriYaKotlinTheme {
                 //cardRent(navController = rememberNavController())
                 //paymentMethopdsCard(navController)
-
                 //HistoryScreen(navController =navController )
                 AppNavigation(navController = navController, false)
             }
