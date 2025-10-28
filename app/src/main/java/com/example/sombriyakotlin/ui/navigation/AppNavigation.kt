@@ -38,14 +38,7 @@ object Routes {
 }
 
 
-fun NavHostController.safeNavigate(route: String, baseRoute: String) {
-    if (currentBackStackEntry?.destination?.route != route) {
-        navigate(route) {
-            popUpTo(baseRoute) { inclusive = false }
-            launchSingleTop = true
-        }
-    }
-}
+
 
 
 fun NavHostController.safeNavigate(route: String, baseRoute: String) {

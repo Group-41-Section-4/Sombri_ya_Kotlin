@@ -84,6 +84,7 @@ fun AppDrawer(
         NavigationDrawerItem(
             label = { Text("Historial") },
             selected = currentRoute == Routes.HISTORY,
+            onClick = {
                 scope.launch {
                     onCloseDrawer()
                     navController.safeNavigate(Routes.HISTORY, Routes.MAIN)
