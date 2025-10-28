@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,9 +45,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.domain.model.Station
 import com.example.sombriyakotlin.ui.layout.AppLayout
+import com.example.sombriyakotlin.ui.main.animations.RainAnimation
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -157,6 +160,8 @@ fun MainContent(navController: NavController,
                     }
                 }
             }
+            RainAnimation()
+
             Button(
                 onClick = { navController.navigate("stations") },
                 modifier = Modifier.padding(top = 5.dp),
@@ -173,5 +178,19 @@ fun MainContent(navController: NavController,
 fun MainWithDrawer(navController: NavController,navHostController: NavHostController) {
     AppLayout(navController = navController,navHostController) {
         MainContent(navController)
+    }
+}
+
+@Preview(showBackground = true) // Added showBackground for better visibility
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainWithDrawerPreview() { // Renamed for clarity, as it's just for preview
+    // 1. Create a fake NavController for the preview environment.
+    val navController = rememberNavController()
+
+    // 2. Call AppLayout with the correct parameters: a NavController and a content lambda.
+    AppLayout(navController = navController, navHostController = navController) {
+        // 3. Call MainContent inside the layout, passing the fake controller.
+        MainContent(navController = navController)
     }
 }
