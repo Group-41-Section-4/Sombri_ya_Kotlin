@@ -8,6 +8,7 @@ import com.example.sombriyakotlin.domain.model.Rental
 import com.example.sombriyakotlin.domain.model.StartPedometer
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
+import com.example.sombriyakotlin.ui.PedometerManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -21,10 +22,24 @@ import javax.inject.Inject
 class RentViewModel @Inject constructor(
     private val rentalUseCases: RentalUseCases,
     private val userUseCases: UserUseCases,
-    private val repo: PedometerRepository
+    private val manager: PedometerManager
 ) : ViewModel() {
 
-    private val start = StartPedometer(repo)
+    fun startPedometerFromOtherScreen() {
+        viewModelScope.launch {
+            try {
+                manager.startIfNeeded()
+            } catch (e: Exception) {
+                Log.e("OtherVM", "start failed", e)
+            }
+        }
+    }
+
+    fun stopPedometerFromOtherScreen() {
+        viewModelScope.launch {
+            manager.stopIfNeeded()
+        }
+    }
 
     // ---- UI State ----
     sealed class RentState {
@@ -104,7 +119,7 @@ class RentViewModel @Inject constructor(
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
                 _rentState.value = RentState.Success(created)
                 Log.d("RENTANDO", "Renta creada: ${_rentState.value}")
-                start()
+                startPedometerFromOtherScreen()
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {
                     val body = e.response()?.errorBody()?.string()
@@ -164,7 +179,7 @@ class RentViewModel @Inject constructor(
 
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
                 success(created)
-                start()
+                startPedometerFromOtherScreen()
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {
                     val body = e.response()?.errorBody()?.string()
@@ -210,6 +225,7 @@ class RentViewModel @Inject constructor(
                 } else ended
 
                 Log.d("RENT", "Renta finalizada correctamente")
+                stopPedometerFromOtherScreen()
                 _rentState.value = RentState.Success(finalRental)
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {
