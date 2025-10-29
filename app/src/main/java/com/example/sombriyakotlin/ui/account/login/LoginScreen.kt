@@ -42,6 +42,8 @@ fun LoginScreen(
 
     var errorMessage by remember { mutableStateOf("Algo salió mal :(") }
     var showErrorDialog by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
+
 
     LaunchedEffect(loginState) {
         when (loginState) {
@@ -54,6 +56,10 @@ fun LoginScreen(
                 val msg = (loginState as? LoginState.Error)?.message ?: "Algo salió mal :("
                 errorMessage = msg
                 showErrorDialog = true            }
+            is LoginState.Loading -> {
+                isLoading=true
+
+            }
             else -> { /* No hacer nada en Idle o Loading */ }
         }
     }
@@ -181,13 +187,21 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Button(modifier = Modifier.fillMaxWidth(),colors= ButtonColors(Color(0xFF001242),Color(0xFF001242),Color(0xFF001242),Color(0xFF001242)), onClick = {viewModel.loginUser(email,pass)})
+                    Button(modifier = Modifier.fillMaxWidth(),colors= ButtonColors(Color(0xFF001242),Color(0xFF001242),Color(0xFF001242),Color(0xFF001242)), onClick = {viewModel.loginUser(email,pass)}, enabled = !isLoading)
                     {
-                        Text(
-                            text = "Iniciar Sesión",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                        )
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Text(
+                                text = "Iniciar Sesión",
+                                color = Color.White,
+                                fontSize = 20.sp
+                            )
+                        }
                     }
 
 
