@@ -1,12 +1,18 @@
 package com.example.sombriyakotlin.ui.account.login
 
 import android.util.Log
+import androidx.credentials.Credential
+import androidx.credentials.CustomCredential
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sombriyakotlin.domain.model.LogInUser
 import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -58,5 +64,36 @@ class LoginViewModel @Inject constructor(
             rentalUseCases.setCurrentRentalUseCase.invoke(rentals[0])
             Log.d("RENTALSLOGIN", "Se ha actualizado la renta con exito")
         }
+    }
+
+    fun handleSignIn(credential: Credential, auth:  FirebaseAuth) {
+        // Check if credential is of type Google ID
+        if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+            // Create Google ID Token
+            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+
+            // Sign in to Firebase with using the token
+            firebaseAuthWithGoogle(googleIdTokenCredential.idToken, auth)
+        } else {
+            Log.w("LoginViewModel", "Credential is not of type Google ID!")
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String, auth:  FirebaseAuth) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener() { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d("LoginViewModel", "signInWithCredential:success")
+                    val user = auth.currentUser
+                    Log.d("LoginViewModel", "User: $user")
+//                    updateUI(user)
+                } else {
+                    // If sign in fails, display a message to the user
+                    Log.w("LoginViewModel", "signInWithCredential:failure", task.exception)
+//                    updateUI(null)
+                }
+            }
     }
 }

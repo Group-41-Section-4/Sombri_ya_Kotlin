@@ -17,7 +17,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.sombriyakotlin"
-        minSdk = 22
+        minSdk = 23
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -117,8 +117,13 @@ dependencies {
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
     // Google Auth / Credentials
+    implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
+    implementation("com.google.firebase:firebase-auth")
+
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+// Use the latest stable version
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     // Permisos
@@ -135,6 +140,7 @@ dependencies {
 
 
 }
+apply(plugin = "com.google.gms.google-services")
 
 secrets {
     propertiesFileName = "secrets.properties"
