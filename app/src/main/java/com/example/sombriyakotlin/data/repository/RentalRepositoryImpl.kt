@@ -54,6 +54,9 @@ class RentalRepositoryImpl @Inject constructor(
     override suspend fun clearCurrentRental() {
         local.clear()
     }
+    override suspend fun setRentalCurrent(rental:Rental){
+        local.saveCurrent(rental)
+    }
 
 
 }

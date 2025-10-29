@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Umbrella
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,39 +16,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
-// Eliminamos imports innecesarios
+import com.example.sombriyakotlin.ui.layout.TopBarMini
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HistoryTopBar(navController: NavController) {
-    TopAppBar(
-        title = {
-            Text(
-                "Historial",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(R.color.primary),
-            navigationIconContentColor = Color.Black
-        ),
-        navigationIcon = {
-            IconButton(onClick = { navController.navigate("main") }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
-            }
-        }
-    )
-}
+
 
 @Composable
 fun HistoryScreen(
-    navController: NavController
+    navController: NavHostController
 ) {
     val historyVM: HistoryViewModel = hiltViewModel()
 
@@ -65,7 +42,7 @@ fun HistoryScreen(
 
     Scaffold(
         containerColor = Bg,
-        topBar = { HistoryTopBar(navController) },
+        topBar = { TopBarMini(navController, "Historial") },
 
         ) { inner ->
         Box(

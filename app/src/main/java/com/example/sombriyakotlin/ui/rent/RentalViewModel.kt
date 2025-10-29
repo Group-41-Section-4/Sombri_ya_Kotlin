@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sombriyakotlin.domain.model.Rental
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
-import com.example.sombriyakotlin.domain.usecase.stations.StationsUseCases
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -20,7 +19,6 @@ import javax.inject.Inject
 class RentViewModel @Inject constructor(
     private val rentalUseCases: RentalUseCases,
     private val userUseCases: UserUseCases,
-    private val stationUseCases: StationsUseCases
 ) : ViewModel() {
 
     // ---- UI State ----
@@ -31,8 +29,7 @@ class RentViewModel @Inject constructor(
         data class Error(val message: String) : RentState()
     }
 
-    enum class ScanIntent { START, RETURN, STARTQR } // START/RETURN para NFC, STARTQR para QR
-
+    enum class ScanIntent { START, RETURN, STARTQR,RETURNQR } // START/RETURN para NFC, STARTQR para QR
     private val _rentState = MutableStateFlow<RentState>(RentState.Idle)
     val rentState: StateFlow<RentState> = _rentState
 
@@ -40,9 +37,11 @@ class RentViewModel @Inject constructor(
     val scanIntent: StateFlow<ScanIntent> = _scanIntent
 
     fun setReturnIntent()   { _scanIntent.value = ScanIntent.RETURN }
-    fun setStartIntent()    { _scanIntent.value = ScanIntent.START }
-    fun setStartQrIntent()  { _scanIntent.value = ScanIntent.STARTQR }
+    fun setQr(){
+        if (_scanIntent.value == ScanIntent.START){_scanIntent.value = ScanIntent.STARTQR}
+        else if(_scanIntent.value == ScanIntent.RETURN) {_scanIntent.value = ScanIntent.RETURNQR}
 
+    }
     // ---- Alquiler activo desde local (puede ser null) ----
     val activeRental: StateFlow<Rental?> =
         rentalUseCases.getCurrentRentalUseCase() // Flow<Rental?>
@@ -54,10 +53,23 @@ class RentViewModel @Inject constructor(
             .map { it?.let(::isRentalActive) == true }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    /**
+     * Determina si una renta sigue activa
+     */
     private fun isRentalActive(r: Rental): Boolean {
         val status = r.status.orEmpty().lowercase(Locale.ROOT)
         val statusActivos = setOf("ongoing", "active", "started", "reserved")
         return r.endedAt == null && (status.isBlank() || status in statusActivos)
+    }
+
+    /**
+     * Permite consultar directamente si hay una renta activa.
+     */
+    suspend fun checkActiveRental(): Boolean {
+        val current = rentalUseCases.getCurrentRentalUseCase().first()
+        val active = current?.let(::isRentalActive) == true
+        Log.d("RENT_CHECK", "¿Hay renta activa?: $active (renta=$current)")
+        return active
     }
 
     fun reset()            { _rentState.value = RentState.Idle }
@@ -65,21 +77,10 @@ class RentViewModel @Inject constructor(
     fun success(created: Rental) { _rentState.value = RentState.Success(created) }
     fun error(message: String)   { _rentState.value = RentState.Error(message) }
 
-    // ---------------- NFC ----------------
+    // ---------------- CREAR RENTA ----------------
 
-    /**
-     * Maneja el escaneo por NFC.
-     * Recibe el UID del tag, resuelve stationId y decide según scanIntent.
-     */
-
-
-    /**
-     * Crea una reserva de alquiler usando el UID del tag NFC.
-     * Aquí se corrige el bug: se usa el tagUid real en lugar de un UID fijo.
-     */
     fun createReservation(tagUid: String) {
         viewModelScope.launch {
-
             _rentState.value = RentState.Loading
             try {
                 val user = userUseCases.getUserUseCase().first() ?: run {
@@ -87,7 +88,7 @@ class RentViewModel @Inject constructor(
                     return@launch
                 }
 
-                val stationId = "16fdfe43-72a3-496e-8d80-7cb5071cff8e" //stationUseCases.getStationByTagUseCase.invoke(tagUid)
+                val stationId = "16fdfe43-72a3-496e-8d80-7cb5071cff8e"
 
                 val rental = Rental(
                     userId = user.id,
@@ -97,7 +98,7 @@ class RentViewModel @Inject constructor(
 
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
                 _rentState.value = RentState.Success(created)
-                Log.d("RENTANDO","XD ${_rentState.value}")
+                Log.d("RENTANDO", "Renta creada: ${_rentState.value}")
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {
                     val body = e.response()?.errorBody()?.string()
@@ -110,33 +111,27 @@ class RentViewModel @Inject constructor(
 
     // ---------------- QR ----------------
 
-    /**
-     * Maneja escaneo por QR recibiendo directamente el stationId.
-     */
-    /**
-     * Maneja un escaneo único:
-     * - START / RETURN  -> el parámetro es UID (NFC)   -> resolver stationId y delegar
-     * - STARTQR         -> el parámetro es stationId (QR) -> delegar directo
-     */
     fun handleScan(input: String) {
         viewModelScope.launch {
             try {
                 when (_scanIntent.value) {
-                    ScanIntent.START -> {
-
-                        createReservation(input)
-                    }
+                    ScanIntent.START -> createReservation(input)
                     ScanIntent.RETURN -> {
-                        Log.d("WTFFFF", "Se empieza a devolver la sombrilla")
-
-                        val stationId = "16fdfe43-72a3-496e-8d80-7cb5071cff8e"//stationUseCases.getStationByTagUseCase.invoke(input)
+                        Log.d("RENT", "Iniciando devolución por NFC")
+                        val stationId = "16fdfe43-72a3-496e-8d80-7cb5071cff8e"
                         endCurrentRental(stationId)
-                        Log.d("WTFFFF", "Se devolvio")
-
                     }
                     ScanIntent.STARTQR -> {
-                        // QR inicio: input es stationId
+                        Log.d("WTFFFF", "QRRRRRRRRRRRR")
                         createReservationIdStation(input)
+                    }
+
+                    ScanIntent.RETURNQR -> {
+                        Log.d("WTFFFF", "Se empieza a devolver la sombrilla")
+
+                        endCurrentRental(input)
+                        Log.d("WTFFFF", "Se devolvio")
+
                     }
                 }
             } catch (e: Exception) {
@@ -145,9 +140,8 @@ class RentViewModel @Inject constructor(
         }
     }
 
-
     fun createReservationIdStation(stationId: String) {
-        Log.d("RENT", "Se empieza a crear la renta (QR)")
+        Log.d("RENT", "Creando renta por QR")
         viewModelScope.launch {
             loading()
             try {
@@ -174,20 +168,18 @@ class RentViewModel @Inject constructor(
         }
     }
 
-    // ---------------- END RENTAL ----------------
+    // ---------------- TERMINAR RENTA ----------------
 
     fun endCurrentRental(stationId: String) {
         viewModelScope.launch {
-            Log.d("RENT", "Terminar renta")
+            Log.d("RENT", "Terminando renta...")
             _rentState.value = RentState.Loading
-            Log.d("ClosingRent", "${_rentState.value}")
             try {
                 val current = rentalUseCases.getCurrentRentalUseCase().first()
                 if (current == null) {
                     _rentState.value = RentState.Error("No hay alquiler activo")
                     return@launch
                 }
-                Log.d("ClosingRent", "${current}")
 
                 val user = userUseCases.getUserUseCase().first() ?: run {
                     _rentState.value = RentState.Error("Usuario no autenticado")
@@ -196,24 +188,21 @@ class RentViewModel @Inject constructor(
 
                 val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                 val endDate = sdf.format(Date())
-                Log.d("DEVOLUCION","Proceso de devoluciooon")
 
                 val rentalToEnd = current.copy(
                     userId = user.id,
                     stationStartId = stationId,
                     endedAt = endDate,
                     status = "completed",
-                    authType = current.authType ?: "nfc" // opcional: conservar/forzar tipo
+                    authType = current.authType ?: "nfc"
                 )
 
-                Log.d("DEVOLUCION", "Antes de enviar: $rentalToEnd")
                 val ended = rentalUseCases.endRentalUseCase.invoke(rentalToEnd)
-                Log.d("DEVOLUCION", "Respuesta del backend: $ended")
                 val finalRental = if (ended.endedAt.isNullOrBlank()) {
                     ended.copy(endedAt = rentalToEnd.endedAt)
                 } else ended
 
-                Log.d("DEVOLUCION", "Se devolvio la sombrilla con endedAt=${finalRental.endedAt}")
+                Log.d("RENT", "Renta finalizada correctamente")
                 _rentState.value = RentState.Success(finalRental)
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {

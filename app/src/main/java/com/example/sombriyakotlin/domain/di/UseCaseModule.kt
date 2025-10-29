@@ -1,8 +1,12 @@
 package com.example.sombriyakotlin.domain.di
 
+import com.example.sombriyakotlin.domain.repository.ChatbotRepository
 import com.example.sombriyakotlin.domain.repository.StationRepository
 import com.example.sombriyakotlin.domain.repository.RentalRepository
 import com.example.sombriyakotlin.domain.repository.UserRepository
+import com.example.sombriyakotlin.domain.usecase.chatbot.ChatbotUseCases
+import com.example.sombriyakotlin.domain.usecase.chatbot.GetChatHistoryUseCase
+import com.example.sombriyakotlin.domain.usecase.chatbot.SendMessageUseCase
 import com.example.sombriyakotlin.domain.usecase.stations.GetStationsUseCase
 import com.example.sombriyakotlin.domain.usecase.stations.StationsUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
@@ -47,7 +51,8 @@ object UseCaseModule {
             endRentalUseCase = EndRentalUseCase(repo),
             getRentalsUserUseCase = GetRentalUserUseCase(repo),
             getRentalsHystoryUserUseCase = getRentalsHystoryUserUseCase(repo),
-            getCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.GetCurrentRentalUseCase(repo)
+            getCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.GetCurrentRentalUseCase(repo),
+            setCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.SetCurrentRentalUseCase(repo)
         )
     }
 
@@ -59,4 +64,16 @@ object UseCaseModule {
             GetStationByTagUseCase(repo)
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideChatbotUseCases(repo: ChatbotRepository): ChatbotUseCases {
+        return ChatbotUseCases(
+            sendMessageUseCase = SendMessageUseCase(repo),
+
+            getChatHistoryUseCase = GetChatHistoryUseCase(repo)
+
+        )
+    }
+
 }

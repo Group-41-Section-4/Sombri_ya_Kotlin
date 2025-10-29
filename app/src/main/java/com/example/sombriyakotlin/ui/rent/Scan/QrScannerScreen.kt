@@ -47,6 +47,7 @@ fun QrScannerScreen(
     LaunchedEffect(qrCode) {
         qrCode?.let { stationId ->
             Log.d("RENT", "Código QR detectado: $stationId")
+            rentViewModel.setQr()
             rentViewModel.handleScan(stationId)
         }
     }

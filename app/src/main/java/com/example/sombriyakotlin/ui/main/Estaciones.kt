@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.ui.layout.AppLayout
 
@@ -102,8 +103,8 @@ fun EstacionCard(estacion: Estacion) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainEstaciones(navController: NavController) {
-    AppLayout(navController = navController) {
+fun MainEstaciones(navController: NavController,navHostController: NavHostController) {
+    AppLayout(navController = navController, navHostController = navHostController) {
         CardEstaciones(navController)
     }
 }

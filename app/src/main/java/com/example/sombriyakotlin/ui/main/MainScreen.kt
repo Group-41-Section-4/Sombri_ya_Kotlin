@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.domain.model.Station
 import com.example.sombriyakotlin.ui.layout.AppLayout
@@ -169,8 +170,8 @@ fun MainContent(navController: NavController,
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainWithDrawer(navController: NavController) {
-    AppLayout(navController = navController) {
+fun MainWithDrawer(navController: NavController,navHostController: NavHostController) {
+    AppLayout(navController = navController,navHostController) {
         MainContent(navController)
     }
 }

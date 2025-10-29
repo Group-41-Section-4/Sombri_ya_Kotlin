@@ -1,12 +1,15 @@
 package com.example.sombriyakotlin.data.di
 
-import androidx.viewbinding.BuildConfig
+import com.example.sombriyakotlin.BuildConfig
 import com.example.sombriyakotlin.data.api.RentalApi
 import com.example.sombriyakotlin.data.api.UserApi
+import com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
+import com.example.sombriyakotlin.data.repository.ChatbotRepositoryImpl
 import com.example.sombriyakotlin.data.repository.RentalRepositoryImpl
 import com.example.sombriyakotlin.data.repository.StationRepositoryImpl
 import com.example.sombriyakotlin.data.repository.UserRepositoryImpl
+import com.example.sombriyakotlin.domain.repository.ChatbotRepository
 import com.example.sombriyakotlin.domain.repository.RentalRepository
 import com.example.sombriyakotlin.domain.repository.StationRepository
 import com.example.sombriyakotlin.domain.repository.UserRepository
@@ -17,6 +20,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -31,23 +35,23 @@ abstract class RepositoryModule {
             userLocalDataSource: UserLocalDataSource
         ): UserRepository = UserRepositoryImpl(userApi, userLocalDataSource)
 
+        @Provides @Singleton
+        fun provideRentalRepository(
+            rentalApi: RentalApi,
+            rentalLocalDataSource: RentalLocalDataSource
+        ): RentalRepository = RentalRepositoryImpl(rentalApi, rentalLocalDataSource)
+
         @Provides
         @Singleton
         fun provideWeatherRepository(): WeatherRepository {
-            return WeatherRepositoryImpl(apiKey = "64a018d01eba547f998be6d43c606c80")
-
+            return WeatherRepositoryImpl(apiKey = com.example.sombriyakotlin.BuildConfig.OWM_API_KEY)
         }
 
         @Provides
         @Singleton
-        fun provideRentalRepository(
-            rentalApi: com.example.sombriyakotlin.data.api.RentalApi,
-            rentalLocalDataSource: com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
-        ): com.example.sombriyakotlin.domain.repository.RentalRepository =
-            com.example.sombriyakotlin.data.repository.RentalRepositoryImpl(
-                rentalApi,
-                rentalLocalDataSource
-            )
+        fun provideChatRepository(): ChatbotRepository{
+            return ChatbotRepositoryImpl()
+        }
     }
 
     @Binds

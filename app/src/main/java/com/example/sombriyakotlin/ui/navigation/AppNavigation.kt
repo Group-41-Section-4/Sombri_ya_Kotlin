@@ -7,20 +7,21 @@ import androidx.navigation.compose.composable
 import com.example.sombriyakotlin.feature.history.HistoryScreen
 import com.example.sombriyakotlin.feature.notifications.NotificationsScreen
 import com.example.sombriyakotlin.ui.account.CardProfile
-import com.example.sombriyakotlin.ui.account.login.LoginScreen
-import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
-import com.example.sombriyakotlin.ui.home.CardHome
 import com.example.sombriyakotlin.ui.main.CardStations
 import com.example.sombriyakotlin.ui.main.MainWithDrawer
 import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
-import com.example.sombriyakotlin.ui.rent.CardRent
 import com.example.sombriyakotlin.ui.rent.MainRenta
+import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.navigation
+import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
+import com.example.sombriyakotlin.ui.account.navigation.authGraph
+import com.example.sombriyakotlin.ui.chatbot.ChatbotScreen
+import com.example.sombriyakotlin.ui.voice.VoiceScreen
 
 // Definimos las rutas de navegación
 object Routes {
-    const val LOGIN = "login"
-    const val SIGNUP = "signup"
-    const val HOME = "home"
+    const val AUTH_GRAPH = "auth_graph"
+    const val MAIN_GRAPH = "main_graph"
 
     const val MAIN = "main"
 
@@ -34,71 +35,74 @@ object Routes {
 
     const val NOTIFICATIONS = "notifications"
     const val HISTORY = "history"
+    const val VOICE = "voice"
+
+    const val CHATBOT = "chatbot"
+
+}
+
+
+fun NavHostController.safeNavigate(route: String, baseRoute: String) {
+    if (currentBackStackEntry?.destination?.route != route) {
+        navigate(route) {
+            popUpTo(baseRoute) { inclusive = false }
+            launchSingleTop = true
+        }
+    }
 }
 
 @Composable
-fun AppNavigation(navController: NavHostController) {
+fun AppNavigation(navController: NavHostController,
+    isLoggedIn: Boolean) {
     NavHost(
         navController = navController,
-        startDestination = Routes.HOME
+        startDestination = if (isLoggedIn) Routes.MAIN_GRAPH else Routes.AUTH_GRAPH
     ) {
-        composable(Routes.LOGIN) {
-            LoginScreen(
-                onNavigateToSignUp = {
-                    navController.navigate(Routes.SIGNUP)
-                },
-                onContinue = {
-                    // Comentado para futura implementación
-                    navController.navigate(Routes.MAIN)
-                }
-            )
+        navigation(
+            route = Routes.AUTH_GRAPH,
+            startDestination = AuthRoutes.SPLASH
+        ) {
+            authGraph(navController)
         }
-        
-        composable(Routes.SIGNUP) {
-            SignUpScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onContinue = {
-                    // Comentado para futura implementación
-                    navController.navigate(Routes.MAIN)
-                },
+        navigation(
+            route = Routes.MAIN_GRAPH,
+            startDestination = Routes.MAIN
+        ) {
 
-            )
-        }
-        
+            composable(Routes.MAIN) {
+                MainWithDrawer(navController, navController)
+            }
 
-        composable(Routes.HOME) {
-            CardHome(
-                navController
-            )
-        }
+            composable(Routes.RENT) {
+                MainRenta(navController , navController)
+            }
 
-        composable(Routes.MAIN) {
-            MainWithDrawer(navController)
-        }
+            composable(Routes.STATIONS) {
+                CardStations(navController)
+            }
 
-        composable(Routes.RENT) {
-            MainRenta(navController)
-        }
+            composable(Routes.PROFILE) {
+                CardProfile(navController)
+            }
 
-        composable(Routes.STATIONS) {
-            CardStations(navController)
-        }
+            composable(Routes.NOTIFICATIONS) {
+                NotificationsScreen(navController)
+            }
 
-        composable(Routes.PROFILE) {
-            CardProfile(navController)
-        }
+            composable(Routes.HISTORY) {
+                HistoryScreen(navController)
+            }
 
-        composable(Routes.NOTIFICATIONS) {
-            NotificationsScreen(navController)
-        }
-        composable(Routes.HISTORY) {
-            HistoryScreen(navController)
-        }
-        composable(Routes.PAYMENT_METHODS) {
-            paymentMethopdsCard(navController)
-        }
+            composable(Routes.PAYMENT_METHODS) {
+                paymentMethopdsCard(navController)
+            }
+            composable(Routes.VOICE){
+                VoiceScreen(navController,navController)
+            }
 
+            composable(Routes.CHATBOT){
+                ChatbotScreen(navController)
+            }
+        }
     }
 }

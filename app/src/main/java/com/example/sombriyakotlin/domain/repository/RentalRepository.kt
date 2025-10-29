@@ -9,9 +9,14 @@ interface RentalRepository {
     suspend fun endRental(rental: Rental): Rental
     suspend fun getRentalsUser(userId: String,state: String): List<Rental>
 
-    // NUEVO: “renta actual” guardada localmente (como el user)
+    // “renta actual” guardada localmente
     fun currentRental(): Flow<Rental?>
+
     suspend fun clearCurrentRental()
+
     suspend fun getRentalsHystoryByUserAndStatus(userId: String,state: String): List<History>
+    suspend fun setRentalCurrent(rental:Rental)
+
+
 }
 
