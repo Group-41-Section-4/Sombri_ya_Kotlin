@@ -85,7 +85,7 @@ class WeatherWorker(
             }
 
             //  Mostrar notificación personalizada
-            if (pop < 30) {
+            if (pop > 30) {
                 val message = if (nearest != null)
                     "Hay $pop% de probabilidad de lluvia. Alquila en ${nearest.name}."
                 else
@@ -96,15 +96,15 @@ class WeatherWorker(
                     title = "Alerta de lluvia ☔",
                     message = message
                 )
-                Log.d("WeatherWorker", "🔔 Notificación mostrada: $message")
+                Log.d("WeatherWorker", "Notificación mostrada: $message")
             } else {
-                Log.d("WeatherWorker", "🌤 POP bajo, no se notifica")
+                Log.d("WeatherWorker", "POP bajo, no se notifica")
             }
 
             Result.success()
 
         } catch (e: Exception) {
-            Log.e("WeatherWorker", "❌ Excepción en doWork", e)
+            Log.e("WeatherWorker", " Excepción en doWork", e)
             Result.retry()
         }
     }
