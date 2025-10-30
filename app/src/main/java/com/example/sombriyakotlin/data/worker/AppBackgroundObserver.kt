@@ -33,7 +33,7 @@ class AppBackgroundObserver(
             return
         }
 
-        // 2) Intentamos usar la última ubicación conocida (no bloquea UI)
+        // Intentamos usar la última ubicación conocida (no bloquea UI)
         val fused = LocationServices.getFusedLocationProviderClient(appContext)
         fused.lastLocation
             .addOnSuccessListener { loc ->

@@ -6,7 +6,7 @@ import com.example.sombriyakotlin.data.datasource.stations.StationsCacheLocalDat
 class StationsCacheRepository(
     private val local: StationsCacheLocalDataSource
 ) {
-    private val DEFAULT_TTL = 10 * 60 * 1000L
+    private val DEFAULT_TTL = Long.MAX_VALUE
 
     suspend fun getCachedStationsFreshOrEmpty(ttlMillis: Long = DEFAULT_TTL): List<SimpleStationCache> {
         val disk = local.getStationsOrEmpty()

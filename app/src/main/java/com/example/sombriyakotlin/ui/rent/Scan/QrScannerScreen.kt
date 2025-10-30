@@ -11,6 +11,8 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -42,6 +44,8 @@ fun QrScannerScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val qrCode by viewModel.qrCode.collectAsState()
+    val isDarkMode = isSystemInDarkTheme()
+
 
     // Cada vez que se detecta un código QR, procesamos la reserva
     LaunchedEffect(qrCode) {
@@ -174,14 +178,42 @@ fun QrScannerScreen(
                 )
             }
         } else {
-            Text(
-                text = "Se necesita permiso de cámara para escanear códigos QR.",
-                color = Color.White,
-                textAlign = TextAlign.Center,
+            Column(
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(16.dp)
-            )
+                    .fillMaxSize()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                var cColor = Color.Black
+                if (isDarkMode) {cColor =Color.White}
+                Text(
+                    text = "¡Upsss! \nParece que necesitas la cámara para esto.",
+                    color = cColor,
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Coso de la camara como instagram
+                androidx.compose.material3.Text(
+                    text = "Acepta los permisos de cámara en Configuración",
+                    color = Color(0xFF80CBC4), // tono turquesa claro
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .clickable {
+                            val intent = android.content.Intent(
+                                android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                android.net.Uri.fromParts("package", context.packageName, null)
+                            )
+                            context.startActivity(intent)
+                        }
+                        .padding(8.dp)
+                )
+            }
         }
+
     }
 }
