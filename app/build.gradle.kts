@@ -134,6 +134,11 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
 
+    //Podometro
+    implementation(platform("androidx.compose:compose-bom:2023.10.01"))
+    implementation("androidx.activity:activity-compose")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material:material")
 }
 
 secrets {
