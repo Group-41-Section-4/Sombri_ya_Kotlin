@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("QUEPASO","www")
+//        Log.d("QUEPASO","www")
         askNotificationPermission()
         askLocationPermission()
         super.onCreate(savedInstanceState)

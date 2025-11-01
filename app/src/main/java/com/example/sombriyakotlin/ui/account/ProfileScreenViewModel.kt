@@ -73,4 +73,14 @@ class ProfileScreenViewModel @Inject constructor(
             }
         }
     }
+
+    fun clearUser(){
+        viewModelScope.launch {
+            try {
+                userUseCases.clearUserUseCase()
+            } catch (e:Exception){
+                Log.e("ProfileViewModel", "Error limpiando usuario: ${e.message}", e)
+            }
+        }
+    }
 }

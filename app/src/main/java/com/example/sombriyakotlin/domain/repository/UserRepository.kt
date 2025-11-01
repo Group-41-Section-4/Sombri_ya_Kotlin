@@ -14,4 +14,6 @@ interface UserRepository {
     suspend fun logInUser(credentials: LogInUser): User
     suspend fun userTotalDistance(userId: String): UserHistory
 
+    suspend fun clearUser()
+
 }

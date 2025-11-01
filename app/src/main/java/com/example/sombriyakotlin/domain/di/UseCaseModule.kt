@@ -15,6 +15,7 @@ import com.example.sombriyakotlin.domain.usecase.rental.GetRentalUserUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.getRentalsHystoryUserUseCase
 import com.example.sombriyakotlin.domain.usecase.stations.GetStationByTagUseCase
+import com.example.sombriyakotlin.domain.usecase.user.ClearUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.CreateUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.GetUserDistance
 import com.example.sombriyakotlin.domain.usecase.user.GetUserUseCase
@@ -39,7 +40,8 @@ object UseCaseModule {
             getUserUseCase = GetUserUseCase(repo),
             refreshUserUseCase = RefreshUserUseCase(repo),
             logInUserUseCases = LogInUserUseCases(repo),
-            getUserDistance = GetUserDistance(repo)
+            getUserDistance = GetUserDistance(repo),
+            clearUserUseCase = ClearUserUseCase(repo)
         )
     }
 

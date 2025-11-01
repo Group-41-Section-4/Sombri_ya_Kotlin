@@ -216,6 +216,7 @@ fun ContentCard(
         Button(
             onClick = {
                 /* TODO Hace falta borrar el usuario del estado*/
+                viewModel.clearUser()
                 navController.navigate(Routes.AUTH_GRAPH) {
                     popUpTo(Routes.MAIN_GRAPH) { inclusive = true }
                     launchSingleTop = true
