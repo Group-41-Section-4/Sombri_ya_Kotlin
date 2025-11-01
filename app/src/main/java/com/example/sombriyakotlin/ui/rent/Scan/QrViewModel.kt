@@ -36,19 +36,31 @@ class QrViewModel @Inject constructor(
 
     private val _qrCode = MutableStateFlow<String?>(null)
     val qrCode: StateFlow<String?> = _qrCode
+    private val _isScanningEnabled = MutableStateFlow(true)
+    val isScanningEnabled: StateFlow<Boolean> = _isScanningEnabled
+
+    fun enableScanning(enabled: Boolean) {
+        _isScanningEnabled.value = enabled
+    }
 
 
     fun getAnalyzer(): ImageAnalysis.Analyzer {
         return ImageAnalysis.Analyzer { imageProxy ->
             viewModelScope.launch {
+                // Evitar procesar frames si el escaneo está deshabilitado
+                if (!_isScanningEnabled.value) {
+                    imageProxy.close()
+                    return@launch
+                }
+
                 scanQrCodeUseCase.execute(imageProxy).collectLatest { stationJson ->
                     val stationId = parseQrDataUseCase.execute(stationJson)?.station_id
                     if (_qrCode.value == null && stationId != null) {
                         _qrCode.value = stationId
                     }
-
                 }
             }
         }
     }
+
 }

@@ -2,7 +2,9 @@ package com.example.sombriyakotlin.ui.rent
 
 import android.app.Activity
 import android.nfc.NfcAdapter
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,6 +23,9 @@ import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.navigation.Routes
 import com.example.sombriyakotlin.feature.rent.Scan.NfcScanner // 🔹 Nuevo import (ver nota abajo)
 import com.example.sombriyakotlin.ui.rent.scan.QrScannerScreen
+import com.example.sombriyakotlin.ui.utils.isOnline
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardRent(navController: NavController) {
@@ -30,30 +35,62 @@ fun CardRent(navController: NavController) {
     val rentViewModel: RentViewModel = hiltViewModel()
     val rentState by rentViewModel.rentState.collectAsStateWithLifecycle()
     val hasActive by rentViewModel.hasActive.collectAsStateWithLifecycle()
+
+    // Estados de los pop-ups
     var showReservaPopup by remember { mutableStateOf(false) }
-    var navigateToMain by remember { mutableStateOf(false) }
+    var showDevolucionPopup by remember { mutableStateOf(false) }
     var showActivePopUp by remember { mutableStateOf(false) }
-    var showDevolucionPopup by remember { mutableStateOf(false) }   // 🆕
-    var suppressActivePopup by remember { mutableStateOf(false) }   // 🆕 evita el flash
+    var suppressActivePopup by remember { mutableStateOf(false) }
+    var showNoInternetPopup by remember { mutableStateOf(false) }
+    var navigateToMain by remember { mutableStateOf(false) }
+    val qrViewModel: QrViewModel = hiltViewModel()
+
+    var showErrorPopup by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
 
 
-
-    // 🔹 Estado NFC
+    // Estado NFC
     var nfcEnabled by remember { mutableStateOf(false) }
     val nfcScanner = remember {
         NfcScanner(
             onTagDetected = { tagId ->
                 Log.d("Rent", "Tag detectado: $tagId")
                 rentViewModel.handleScan(tagId)
-
             },
-            onError = { errorMsg ->
-                toast(activity, errorMsg)
-            }
+            onError = { errorMsg -> toast(activity, errorMsg) }
         )
     }
 
+    //   Verificar conexión al entrar
+    LaunchedEffect(Unit) {
+        if (!isOnline(activity)) {
+            showNoInternetPopup = true
+            Log.d("Rent", "Sin conexión: se muestra pop-up y se detiene flujo.")
+            return@LaunchedEffect // 👈 Detiene el resto del código inicial
+        }
+
+        //  Solo si hay conexión, activar NFC
+        if (isNfcSupported(activity)) {
+            if (isNfcEnabled(activity)) {
+                try {
+                    nfcScanner.start(activity)
+                    nfcEnabled = true
+                    toast(activity, "NFC activado automáticamente. Acerca la tarjeta…")
+                } catch (e: Exception) {
+                    Log.e("Rent", "Error activando NFC", e)
+                    toast(activity, "Error al activar NFC automáticamente")
+                }
+            } else {
+                toast(activity, "Activa NFC en los ajustes del sistema")
+                openNfcSettings(activity)
+            }
+        } else {
+            toast(activity, "Este dispositivo no soporta NFC")
+        }
+    }
+
+    // Detener NFC al salir
     DisposableEffect(Unit) {
         onDispose {
             Log.d("Rent", "Deteniendo NFC al salir de la pantalla…")
@@ -61,26 +98,38 @@ fun CardRent(navController: NavController) {
             suppressActivePopup = false
         }
     }
+
+    // Manejar cambios en el estado del alquiler
     LaunchedEffect(rentState) {
-        if (rentState is RentViewModel.RentState.Success) {
-            try { nfcScanner.stop(activity) } catch (_: Exception) {}
-            showActivePopUp = false
-            suppressActivePopup = true
-            val endedAt = ( rentState as RentViewModel.RentState.Success).rental.endedAt
-            Log.d("SE CERROOO","Cerrada ${rentState}")
-            Log.d("SE CERROOO","Cerrada ${endedAt} ")
-            if (!endedAt.isNullOrBlank()) {
-                // Devolución exitosa
-                Log.d("SE CERROOO","xd")
-                showDevolucionPopup = true
-            } else {
-                // Reserva exitosa
-                showReservaPopup = true
+        val currentState = rentState // 🔹 Creamos una variable local para permitir el smart cast
+
+        when (currentState) {
+            is RentViewModel.RentState.Success -> {
+                try { nfcScanner.stop(activity) } catch (_: Exception) {}
+                showActivePopUp = false
+                suppressActivePopup = true
+
+                val endedAt = currentState.rental.endedAt
+                if (!endedAt.isNullOrBlank()) {
+                    showDevolucionPopup = true
+                } else {
+                    showReservaPopup = true
+                }
             }
+
+            is RentViewModel.RentState.Error -> {
+                errorMessage = currentState.message
+                showErrorPopup = true
+            }
+
+            else -> Unit
         }
     }
+
+
+
+    //Navegación hacia la pantalla principal
     if (navigateToMain) {
-        // Esta navegación se hace fuera del árbol composable
         LaunchedEffect(Unit) {
             navController.navigate(Routes.MAIN) {
                 popUpTo(Routes.RENT) { inclusive = true }
@@ -89,61 +138,29 @@ fun CardRent(navController: NavController) {
         }
     }
 
+    //Hay renta solo si hay red
     LaunchedEffect(showReservaPopup, showDevolucionPopup, suppressActivePopup) {
-        // Consultar directamente si hay una renta activa
+        if (!isOnline(activity)) return@LaunchedEffect // evita errores sin conexión
+
         val active = rentViewModel.checkActiveRental()
-        Log.d("UI_POPUP", "¿Mostrar popup activo? ${active} (active=$active)")
-
         showActivePopUp = active && !showReservaPopup && !showDevolucionPopup && !suppressActivePopup
-        Log.d("UI_POPUP", "¿Mostrar popup activo? $showActivePopUp (active=$active)")
     }
+
+
+    // UI principal
     Column(modifier = Modifier.fillMaxSize()) {
-        Box(Modifier
-            .weight(1f)
-            .fillMaxSize()) {
-            // 🔹 QR Scanner embebido
+        Box(Modifier.weight(1f).fillMaxSize()) {
             QrScannerScreen(modifier = Modifier.matchParentSize())
-
-            // 🔹 Botón flotante NFC
-            BotonNFC(
-                onClick = {
-                    if (!isNfcSupported(activity)) {
-                        toast(activity, "Este dispositivo no soporta NFC")
-                        return@BotonNFC
-                    }
-
-                    if (!isNfcEnabled(activity)) {
-                        toast(activity, "Activa NFC en los ajustes del sistema")
-                        openNfcSettings(activity)
-                        return@BotonNFC
-                    }
-
-                    if (!nfcEnabled) {
-                        try {
-                            nfcScanner.start(activity)
-                            toast(activity, "NFC activado. Acerca la tarjeta…")
-                            nfcEnabled = true
-                        } catch (e: Exception) {
-                            Log.e("Rent", "Error activando NFC", e)
-                            toast(activity, "Error al activar NFC")
-                        }
-                    } else {
-                        try {
-                            nfcScanner.stop(activity)
-                            toast(activity, "NFC desactivado")
-                            nfcEnabled = false
-                        } catch (e: Exception) {
-                            Log.e("Rent", "Error desactivando NFC", e)
-                        }
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 80.dp)
-            )
         }
     }
 
+    // Pop-ups
+    if (showNoInternetPopup) {
+        PopUpNoInternet(
+            onDismiss = { showNoInternetPopup = false },
+            navController = navController
+        )
+    }
     if (showDevolucionPopup) {
         PopUpDevolucionExitosa(onDismiss = {
             showDevolucionPopup = false
@@ -152,8 +169,6 @@ fun CardRent(navController: NavController) {
             navigateToMain = true
         })
     }
-
-
     if (showReservaPopup) {
         PopUpReservaCreated(onDismiss = {
             showReservaPopup = false
@@ -162,8 +177,6 @@ fun CardRent(navController: NavController) {
             navigateToMain = true
         })
     }
-
-    // 🔹 Pop-up: alquiler activo
     if (showActivePopUp && !showReservaPopup && !showDevolucionPopup) {
         AlquilerActivoPopUp(
             onIngresar = {
@@ -178,7 +191,31 @@ fun CardRent(navController: NavController) {
             onDismiss = { showActivePopUp = false }
         )
     }
+    if (showErrorPopup) {
+        PopUpError(message = errorMessage) {
+            showErrorPopup = false
+            rentViewModel.reset()
+
+            // Reactiva NFC al cerrar el pop-up
+            try {
+                nfcScanner.start(activity)
+                nfcEnabled = true
+                toast(activity, "NFC reactivado. Acerca la tarjeta…")
+            } catch (e: Exception) {
+                Log.e("Rent", "Error reactivando NFC", e)
+                toast(activity, "No se pudo reactivar NFC automáticamente")
+            }
+        }
+    }
+
+    // bloquear el escaneo si hay pop-ups abiertos
+    LaunchedEffect(showReservaPopup, showDevolucionPopup, showActivePopUp, showNoInternetPopup) {
+        val anyPopupVisible = showReservaPopup || showDevolucionPopup || showActivePopUp || showNoInternetPopup
+        qrViewModel.enableScanning(!anyPopupVisible)
+        Log.d("QR_SCAN", "Escaneo habilitado: ${!anyPopupVisible}")
+    }
 }
+
 
 @Composable
 fun AlquilerActivoPopUp(
@@ -270,8 +307,58 @@ fun PopUpDevolucionExitosa(onDismiss: () -> Unit) {
         }
     )
 }
+@Composable
+fun PopUpNoInternet(
+    onDismiss: () -> Unit,
+    navController: NavController
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Sin conexión a Internet") },
+        text = { Text("Por favor verifica tu conexión antes de continuar.") },
+        confirmButton = {
+            TextButton(onClick = {
+                onDismiss()
+                // 👇 Al cerrar, navega al main
+                navController.navigate(Routes.MAIN) {
+                    popUpTo(Routes.RENT) { inclusive = true }
+                }
+            }) {
+                Text("OK")
+            }
+        }
+    )
+}
+
+@Composable
+fun PopUpError(message: String, onDismiss: () -> Unit) {
+    // 🔹 Función para limpiar mensajes técnicos
+    fun cleanMessage(raw: String): String {
+        return when {
+            raw.contains("timeout", true) -> "La conexión tardó demasiado. Revisa tu Internet e inténtalo otra vez."
+            else -> "Upsss No se pudo realizar la renta. Intenta nuevamente."
+        }
+    }
+
+    val prettyMessage = cleanMessage(message)
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Error en la renta") },
+        text = { Text(prettyMessage) },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Aceptar")
+            }
+        }
+    )
+}
 
 
+
+
+
+@RequiresApi(Build.VERSION_CODES.M)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainRenta(navController: NavController,navHostController: NavHostController) {
