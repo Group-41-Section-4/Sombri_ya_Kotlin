@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin
+package com.example.sombriyakotlin.ui.di
 
 import javax.inject.Qualifier
 
