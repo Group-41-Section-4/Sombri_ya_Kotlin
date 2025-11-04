@@ -1,6 +1,6 @@
 package com.example.sombriyakotlin.ui.di
 
-import com.example.sombriyakotlin.ApplicationScope
+import com.example.sombriyakotlin.ui.di.ApplicationScope
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
