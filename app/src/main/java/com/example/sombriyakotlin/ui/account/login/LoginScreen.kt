@@ -292,10 +292,12 @@ private fun GoogleButton(viewModel: LoginViewModel, isLoading: Boolean, ){
                 try {
                     val account = task.getResult(ApiException::class.java)
                     viewModel.googleLoginUser(account.idToken)
+                    googleAuth=false
 
                     Log.d("LoginScreen", "Google SignIn success: ${account.idToken}")
 
                 } catch (e: Exception) {
+                    googleAuth=false
                     Log.w("LoginScreen", "Google SignIn fallback failed: ${e.localizedMessage}")
                 }
             }
