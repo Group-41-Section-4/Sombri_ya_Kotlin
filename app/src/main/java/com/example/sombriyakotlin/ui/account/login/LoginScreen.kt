@@ -4,6 +4,8 @@ import android.app.Activity
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,25 +23,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sombriyakotlin.ui.account.login.LoginViewModel.LoginState
 import com.example.sombriyakotlin.ui.popup.SomenthingWentWrongPopUp
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.Firebase
-import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
-
-//import com.example.sombriyakotlin.ui.account.signInWithGoogleOption
+import com.example.sombriyakotlin.R
 
 @Composable
 fun LoginScreen(
@@ -58,7 +54,6 @@ fun LoginScreen(
     var showErrorDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
-    var googleAuth by remember { mutableStateOf(false) }
 
 
     LaunchedEffect(loginState) {
@@ -82,104 +77,6 @@ fun LoginScreen(
             else -> { /* No hacer nada en Idle o Loading */ }
         }
     }
-
-    // ---------- Auth
-//    Log.d("LoginScreen", "googleAuth: $googleAuth")
-    // Instantiate a Google sign-in request
-    val googleIdOption = GetGoogleIdOption.Builder()
-        // Your server's client ID, not your Android client ID.
-        .setServerClientId("751256331187-i160vbb6d96fo4bnnqhglrha2es9hla0.apps.googleusercontent.com")
-        // Only show accounts previously used to sign in.
-        .setFilterByAuthorizedAccounts(true)
-        .build()
-
-    Log.d("LoginScreen", "googleIdOption: $googleIdOption")
-    // [START create_credential_manager_request]
-
-    // Create the Credential Manager request
-    val request = GetCredentialRequest.Builder()
-        .addCredentialOption(googleIdOption)
-        .build()
-    Log.d("LoginScreen", "request: $request")
-    // [END create_credential_manager_request]
-    val baseContext = LocalContext.current
-    val activity = remember(baseContext) { baseContext as? Activity } // puede ser null en previews
-
-
-    val firebaseApp = remember {
-        // initializeApp devuelve FirebaseApp?; si ya estaba inicializado devuelve la instancia existente
-        FirebaseApp.initializeApp(baseContext)
-    }
-    // Ahora sí, obtener FirebaseAuth (ya inicializado)
-    val auth = Firebase.auth
-
-//    Log.d("LoginScreen", "firebaseApp=$firebaseApp auth=$auth")
-
-    // credential manager
-    val credentialManager = CredentialManager.create(baseContext)
-//    Log.d("LoginScreen", "credentialManager: $credentialManager")
-
-
-    val coroutineScope = rememberCoroutineScope()
-
-    // GoogleSignInClient para fallback
-    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken("751256331187-i160vbb6d96fo4bnnqhglrha2es9hla0.apps.googleusercontent.com")
-        .requestEmail()
-        .build()
-    val gsc = GoogleSignIn.getClient(activity ?: baseContext, gso)
-    val googleLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { res ->
-        if (res.resultCode == Activity.RESULT_OK) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(res.data)
-            // procesa task => intercambia token con Firebase o backend
-            coroutineScope.launch {
-                try {
-                    val account = task.getResult(ApiException::class.java)
-                    viewModel.googleLoginUser(account.idToken)
-
-                    // ejemplo: enviar account.idToken a Firebase
-                Log.d("LoginScreen", "Google SignIn success: ${account.idToken}")
-
-                //viewModel.handleGoogleSignInToken(account.idToken)
-                } catch (e: Exception) {
-                    Log.w("LoginScreen", "Google SignIn fallback failed: ${e.localizedMessage}")
-                }
-            }
-        } else {
-            Log.w("LoginScreen", "GoogleSignIn canceled or failed, code=${res.resultCode}")
-        }
-    }
-
-
-    LaunchedEffect(googleAuth) {
-        if (!googleAuth) return@LaunchedEffect
-
-        try {
-            googleLauncher.launch(gsc.signInIntent)
-
-            Log.d("LoginScreen", "googleAuth: $googleAuth")
-            // Launch Credential Manager UI
-//            val result = credentialManager.getCredential(
-//                context = activity ?: baseContext,
-//                request = request
-//            )
-//            // 1) Logs básicos
-//            Log.d("LoginScreen", "== getCredential result: ${result?.toString()}")
-//            Log.d("LoginScreen", "== result class: ${result?.let { it::class.java.name }}")
-//
-//            Log.d("LoginScreen", "result: $result")
-
-
-            // Extract credential from the result returned by Credential Manager
-//            viewModel.handleSignIn(id, auth)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("LoginScreen", "Couldn't retrieve user's credentials: ${e.localizedMessage}")
-        }
-    }
-    // ---------- End Auth
 
 
     Column(
@@ -327,19 +224,7 @@ fun LoginScreen(
                     }
 
 
-                    Button(modifier = Modifier.fillMaxWidth(),
-                        colors= ButtonColors(Color(0xFF001242),
-                            Color(0xFF001242),
-                            Color(0xFF001242),
-                            Color(0xFF001242)),
-                        onClick = { googleAuth=true })
-                    { //signInWithGoogleOption
-                        Text(
-                            text = "Iniciar Sesión con Google",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                        )
-                    }
+                    GoogleButton(viewModel,isLoading)
                 }
             }
         }
@@ -381,6 +266,92 @@ fun LoginScreen(
     }
 }
 
+
+
+@Composable
+private fun GoogleButton(viewModel: LoginViewModel, isLoading: Boolean, ){
+    var googleAuth by remember { mutableStateOf(false) }
+
+    val baseContext = LocalContext.current
+    val activity = remember(baseContext) { baseContext as? Activity } // puede ser null en previews
+
+    val coroutineScope = rememberCoroutineScope()
+
+    // GoogleSignInClient para fallback
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken("751256331187-i160vbb6d96fo4bnnqhglrha2es9hla0.apps.googleusercontent.com")
+        .requestEmail()
+        .build()
+    val gsc = GoogleSignIn.getClient(activity ?: baseContext, gso)
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { res ->
+        if (res.resultCode == Activity.RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(res.data)
+            coroutineScope.launch {
+                try {
+                    val account = task.getResult(ApiException::class.java)
+                    viewModel.googleLoginUser(account.idToken)
+
+                    Log.d("LoginScreen", "Google SignIn success: ${account.idToken}")
+
+                } catch (e: Exception) {
+                    Log.w("LoginScreen", "Google SignIn fallback failed: ${e.localizedMessage}")
+                }
+            }
+        } else {
+            Log.w("LoginScreen", "GoogleSignIn canceled or failed, code=${res.resultCode}")
+        }
+    }
+
+
+    LaunchedEffect(googleAuth) {
+        if (!googleAuth) return@LaunchedEffect
+
+        try {
+            googleLauncher.launch(gsc.signInIntent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("LoginScreen", "Couldn't retrieve user's credentials: ${e.localizedMessage}")
+        }
+    }
+
+    Button(modifier = Modifier.wrapContentWidth(),
+        colors= ButtonColors(
+            Color(131314),
+            Color(131314),
+            Color(131314),
+            Color(131314)),
+        onClick = { googleAuth=true },
+        enabled = !isLoading,
+        border = BorderStroke(1.dp, Color(0xFF747775))
+
+    )
+    { //signInWithGoogleOption
+        Row(
+            modifier = Modifier.padding(0.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Absolute.SpaceBetween
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.google_logo2),
+                contentDescription = "Google Logo",
+                modifier = Modifier
+                    .padding( 0.dp)
+                    .size(20.dp)
+
+            )
+            Text("Acceder con Google",
+                color = Color.Black,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(horizontal = 8.dp)
+
+            )
+
+        }
+    }
+
+}
 /**
  * Caja de input gris (E6E6E6) con borde D9D9D9 y radio 8dp,
  * tal como Figma. Es un TextField minimal con estilos custom.
