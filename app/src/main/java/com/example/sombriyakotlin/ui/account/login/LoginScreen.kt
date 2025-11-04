@@ -1,5 +1,11 @@
 package com.example.sombriyakotlin.ui.account.login
 
+import android.app.Activity
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,16 +22,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sombriyakotlin.ui.account.login.LoginViewModel.LoginState
 import com.example.sombriyakotlin.ui.popup.SomenthingWentWrongPopUp
-
-//import com.example.sombriyakotlin.ui.account.signInWithGoogleOption
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import kotlinx.coroutines.launch
+import com.example.sombriyakotlin.R
 
 @Composable
 fun LoginScreen(
@@ -42,10 +52,14 @@ fun LoginScreen(
 
     var errorMessage by remember { mutableStateOf("Algo salió mal :(") }
     var showErrorDialog by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
+
+
 
     LaunchedEffect(loginState) {
         when (loginState) {
             is LoginState.Success -> {
+                isLoading=false
                 // Navega solo cuando el registro es exitoso
                 onContinue()
             }
@@ -53,10 +67,17 @@ fun LoginScreen(
                 // Muestra un Snackbar, Toast o un diálogo con el error
                 val msg = (loginState as? LoginState.Error)?.message ?: "Algo salió mal :("
                 errorMessage = msg
-                showErrorDialog = true            }
+                showErrorDialog = true
+                isLoading=false
+            }
+            is LoginState.Loading -> {
+                isLoading=true
+
+            }
             else -> { /* No hacer nada en Idle o Loading */ }
         }
     }
+
 
     Column(
         modifier = Modifier
@@ -181,28 +202,29 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Button(modifier = Modifier.fillMaxWidth(),colors= ButtonColors(Color(0xFF001242),Color(0xFF001242),Color(0xFF001242),Color(0xFF001242)), onClick = {viewModel.loginUser(email,pass)})
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors= ButtonColors(Color(0xFF001242),Color(0xFF001242),Color(0xFF001242),Color(0xFF001242)),
+                        onClick = {viewModel.loginUser(email,pass)},
+                        enabled = !isLoading)
                     {
-                        Text(
-                            text = "Iniciar Sesión",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                        )
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Text(
+                                text = "Iniciar Sesión",
+                                color = Color.White,
+                                fontSize = 20.sp
+                            )
+                        }
                     }
 
 
-                    Button(modifier = Modifier.fillMaxWidth(),
-                        colors= ButtonColors(Color(0xFF001242),
-                            Color(0xFF001242),
-                            Color(0xFF001242),
-                            Color(0xFF001242)),
-                        onClick = { }) { //signInWithGoogleOption
-                        Text(
-                            text = "Iniciar Sesión con Google",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                        )
-                    }
+                    GoogleButton(viewModel,isLoading)
                 }
             }
         }
@@ -226,7 +248,6 @@ fun LoginScreen(
 //            modifier = Modifier.offset(x = 140.dp, y = 699.dp)
             )
 
-            // Slogan → (l:65, t:754) w:263
             Text(
                 text = "Ahorra tiempo y mantente seco en cualquier trayecto",
                 color = Color(0xFF001242),
@@ -245,6 +266,94 @@ fun LoginScreen(
     }
 }
 
+
+
+@Composable
+private fun GoogleButton(viewModel: LoginViewModel, isLoading: Boolean, ){
+    var googleAuth by remember { mutableStateOf(false) }
+
+    val baseContext = LocalContext.current
+    val activity = remember(baseContext) { baseContext as? Activity } // puede ser null en previews
+
+    val coroutineScope = rememberCoroutineScope()
+
+    // GoogleSignInClient para fallback
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken("751256331187-i160vbb6d96fo4bnnqhglrha2es9hla0.apps.googleusercontent.com")
+        .requestEmail()
+        .build()
+    val gsc = GoogleSignIn.getClient(activity ?: baseContext, gso)
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { res ->
+        if (res.resultCode == Activity.RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(res.data)
+            coroutineScope.launch {
+                try {
+                    val account = task.getResult(ApiException::class.java)
+                    viewModel.googleLoginUser(account.idToken)
+                    googleAuth=false
+
+                    Log.d("LoginScreen", "Google SignIn success: ${account.idToken}")
+
+                } catch (e: Exception) {
+                    googleAuth=false
+                    Log.w("LoginScreen", "Google SignIn fallback failed: ${e.localizedMessage}")
+                }
+            }
+        } else {
+            Log.w("LoginScreen", "GoogleSignIn canceled or failed, code=${res.resultCode}")
+        }
+    }
+
+
+    LaunchedEffect(googleAuth) {
+        if (!googleAuth) return@LaunchedEffect
+
+        try {
+            googleLauncher.launch(gsc.signInIntent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("LoginScreen", "Couldn't retrieve user's credentials: ${e.localizedMessage}")
+        }
+    }
+
+    Button(modifier = Modifier.wrapContentWidth(),
+        colors= ButtonColors(
+            Color(131314),
+            Color(131314),
+            Color(131314),
+            Color(131314)),
+        onClick = { googleAuth=true },
+        enabled = !isLoading,
+        border = BorderStroke(1.dp, Color(0xFF747775))
+
+    )
+    { //signInWithGoogleOption
+        Row(
+            modifier = Modifier.padding(0.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Absolute.SpaceBetween
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.google_logo2),
+                contentDescription = "Google Logo",
+                modifier = Modifier
+                    .padding( 0.dp)
+                    .size(20.dp)
+
+            )
+            Text("Acceder con Google",
+                color = Color.Black,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(horizontal = 8.dp)
+
+            )
+
+        }
+    }
+
+}
 /**
  * Caja de input gris (E6E6E6) con borde D9D9D9 y radio 8dp,
  * tal como Figma. Es un TextField minimal con estilos custom.
@@ -305,8 +414,4 @@ private fun LoginInput(
         }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF28BCEF)
-@Composable
-private fun PreviewLogin() {
-    LoginScreen()
-}
+

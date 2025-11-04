@@ -1,6 +1,7 @@
 package com.example.sombriyakotlin.data.dto
 
 import com.example.sombriyakotlin.domain.model.CreateUser
+import com.example.sombriyakotlin.domain.model.GoogleLogIn
 import com.example.sombriyakotlin.domain.model.LogInUser
 import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.model.UserHistory
@@ -39,10 +40,18 @@ data class UserDto(
     val created_at: String,
 )
 
-fun UserDto.toDomain(): User = User(id, name, email, password, biometric_enabled, created_at)
+data class GoogleLogInDto(
+    val idToken: String,
+)
+
+
+
+fun UserDto.toDomain(): User = User(id, name, email, (password as? String) ?: "", biometric_enabled, created_at)
 fun CreateUser.toDto(): CreateUserDto = CreateUserDto(name, email, password, biometricEnabled)
 fun RespuestaUserDto.toDomain(): User = user.toDomain()
 fun DistanceDto.toDomain(): UserHistory = UserHistory(totalDistanceKm)
 
 fun RespuestaLogInDto.toDomain(): User = user.toDomain()
 fun LogInUser.toDto() : LogInDto = LogInDto(email,password)
+
+fun GoogleLogIn.toDto(): GoogleLogInDto = GoogleLogInDto(idToken)

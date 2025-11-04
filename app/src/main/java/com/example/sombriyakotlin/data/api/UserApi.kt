@@ -2,6 +2,7 @@ package com.example.sombriyakotlin.data.api
 
 import com.example.sombriyakotlin.data.dto.CreateUserDto
 import com.example.sombriyakotlin.data.dto.DistanceDto
+import com.example.sombriyakotlin.data.dto.GoogleLogInDto
 import com.example.sombriyakotlin.data.dto.LogInDto
 import com.example.sombriyakotlin.data.dto.RespuestaLogInDto
 import com.example.sombriyakotlin.data.dto.RespuestaUserDto
@@ -25,4 +26,6 @@ interface UserApi {
     @GET("users/{id}/total-distance")
     suspend fun getTotalDistance(@Path("id") id: String): DistanceDto
 
+    @POST("auth/login/google")
+    suspend fun googleLogIn(@Body googleInDto: GoogleLogInDto): RespuestaLogInDto
 }

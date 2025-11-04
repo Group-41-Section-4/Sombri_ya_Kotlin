@@ -126,8 +126,11 @@ dependencies {
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
     // Google Auth / Credentials
+
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+// Use the latest stable version
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     // Permisos
@@ -149,6 +152,7 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.material:material")
 }
+apply(plugin = "com.google.gms.google-services")
 
 secrets {
     propertiesFileName = "secrets.properties"

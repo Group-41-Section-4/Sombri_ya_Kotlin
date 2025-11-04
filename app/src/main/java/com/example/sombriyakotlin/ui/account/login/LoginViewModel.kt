@@ -3,6 +3,7 @@ package com.example.sombriyakotlin.ui.account.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sombriyakotlin.domain.model.GoogleLogIn
 import com.example.sombriyakotlin.domain.model.LogInUser
 import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
@@ -47,6 +48,29 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    fun googleLoginUser(id: String?) {
+        viewModelScope.launch {
+            _loginState.value = LoginState.Loading
+            try {
+                if (id is String) {
+                    val credentials = GoogleLogIn(id)
+                    val loggedInUser = userUseCases.googleLogInUserUseCases(credentials)
+                    _loginState.value = LoginState.Success(loggedInUser)
+                    Log.e("LoginViewModel", "bien: ${loggedInUser.id}")
+                    upDateRentalLocal()
+                }else {
+                    Log.w("LoginViewModel", "Credential is not of type Google ID!")
+                    _loginState.value = LoginState.Error("Error inseperado en el login 2000")
+
+                }
+            } catch (e: Exception) {
+                Log.e("LoginViewModel", "Error en el login: ${e.message}", e)
+                _loginState.value = LoginState.Error("Error en el login: ${e.message}")
+            }
+        }
+    }
+
+
     private suspend fun upDateRentalLocal() {
         val user = userUseCases.getUserUseCase().first()
 
@@ -59,4 +83,5 @@ class LoginViewModel @Inject constructor(
             Log.d("RENTALSLOGIN", "Se ha actualizado la renta con exito")
         }
     }
+
 }

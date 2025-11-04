@@ -6,6 +6,7 @@ import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.dto.toDomain
 import com.example.sombriyakotlin.data.dto.toDto
 import com.example.sombriyakotlin.domain.model.CreateUser
+import com.example.sombriyakotlin.domain.model.GoogleLogIn
 import com.example.sombriyakotlin.domain.model.LogInUser
 import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.model.UserHistory
@@ -18,11 +19,11 @@ class UserRepositoryImpl @Inject constructor(
     private val userLocalDataSource: UserLocalDataSource
 ) : UserRepository {
     override suspend fun createUser(user: CreateUser): User {
-        Log.d("UserRepositoryImpl", "Creando usuario con datos: $user")
+//        Log.d("UserRepositoryImpl", "Creando usuario con datos: $user")
         val respuestaUserDto = userApi.createUser(user.toDto())
-        Log.d("UserRepositoryImpl", "Respuesta del servidor: $respuestaUserDto")
+//        Log.d("UserRepositoryImpl", "Respuesta del servidor: $respuestaUserDto")
         val domainUser = respuestaUserDto.toDomain()
-        Log.d("UserRepositoryImpl", "Usuario registrado: $domainUser")
+//        Log.d("UserRepositoryImpl", "Usuario registrado: $domainUser")
         userLocalDataSource.saveUser(domainUser)
         return domainUser
     }
@@ -47,6 +48,14 @@ class UserRepositoryImpl @Inject constructor(
         val distanceDto = userApi.getTotalDistance(userId)
         val domainDistance = distanceDto.toDomain()
         return domainDistance
+    }
+
+    override suspend fun googleLogIn(googleId: GoogleLogIn): User {
+        val respuestaUserDto = userApi.googleLogIn(googleId.toDto())
+        Log.d("UserRepositoryImpl", "Respuesta del servidor: $respuestaUserDto")
+        val domainUser = respuestaUserDto.toDomain()
+        Log.d("UserRepositoryImpl", "Usuario registrado (domain): $domainUser")
+        return domainUser
     }
 
 }
