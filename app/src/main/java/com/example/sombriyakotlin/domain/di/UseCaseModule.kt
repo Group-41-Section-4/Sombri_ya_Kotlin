@@ -18,6 +18,7 @@ import com.example.sombriyakotlin.domain.usecase.stations.GetStationByTagUseCase
 import com.example.sombriyakotlin.domain.usecase.user.CreateUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.GetUserDistance
 import com.example.sombriyakotlin.domain.usecase.user.GetUserUseCase
+import com.example.sombriyakotlin.domain.usecase.user.GoogleLogInUserCases
 import com.example.sombriyakotlin.domain.usecase.user.LogInUserUseCases
 import com.example.sombriyakotlin.domain.usecase.user.RefreshUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
@@ -39,7 +40,8 @@ object UseCaseModule {
             getUserUseCase = GetUserUseCase(repo),
             refreshUserUseCase = RefreshUserUseCase(repo),
             logInUserUseCases = LogInUserUseCases(repo),
-            getUserDistance = GetUserDistance(repo)
+            getUserDistance = GetUserDistance(repo),
+            googleLogInUserUseCases = GoogleLogInUserCases(repo)
         )
     }
 

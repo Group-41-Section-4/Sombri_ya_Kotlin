@@ -22,6 +22,10 @@ data class LogInUser (
     val password: String = "",
 )
 
+data class GoogleLogIn(
+    val idToken: String = "",
+)
+
 data class UserHistory (
     val totalDistance: Double = 0.0,
 

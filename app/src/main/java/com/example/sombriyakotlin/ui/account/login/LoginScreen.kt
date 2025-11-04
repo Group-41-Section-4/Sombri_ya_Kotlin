@@ -31,7 +31,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sombriyakotlin.ui.account.login.LoginViewModel.LoginState
 import com.example.sombriyakotlin.ui.popup.SomenthingWentWrongPopUp
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.example.sombriyakotlin.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -85,13 +84,13 @@ fun LoginScreen(
     }
 
     // ---------- Auth
-    Log.d("LoginScreen", "googleAuth: $googleAuth")
+//    Log.d("LoginScreen", "googleAuth: $googleAuth")
     // Instantiate a Google sign-in request
     val googleIdOption = GetGoogleIdOption.Builder()
         // Your server's client ID, not your Android client ID.
         .setServerClientId("751256331187-i160vbb6d96fo4bnnqhglrha2es9hla0.apps.googleusercontent.com")
         // Only show accounts previously used to sign in.
-        .setFilterByAuthorizedAccounts(false)
+        .setFilterByAuthorizedAccounts(true)
         .build()
 
     Log.d("LoginScreen", "googleIdOption: $googleIdOption")
@@ -114,11 +113,11 @@ fun LoginScreen(
     // Ahora sí, obtener FirebaseAuth (ya inicializado)
     val auth = Firebase.auth
 
-    Log.d("LoginScreen", "firebaseApp=$firebaseApp auth=$auth")
+//    Log.d("LoginScreen", "firebaseApp=$firebaseApp auth=$auth")
 
     // credential manager
     val credentialManager = CredentialManager.create(baseContext)
-    Log.d("LoginScreen", "credentialManager: $credentialManager")
+//    Log.d("LoginScreen", "credentialManager: $credentialManager")
 
 
     val coroutineScope = rememberCoroutineScope()
@@ -138,6 +137,8 @@ fun LoginScreen(
             coroutineScope.launch {
                 try {
                     val account = task.getResult(ApiException::class.java)
+                    viewModel.googleLoginUser(account.idToken)
+
                     // ejemplo: enviar account.idToken a Firebase
                 Log.d("LoginScreen", "Google SignIn success: ${account.idToken}")
 
@@ -156,7 +157,10 @@ fun LoginScreen(
         if (!googleAuth) return@LaunchedEffect
 
         try {
-//            // Launch Credential Manager UI
+            googleLauncher.launch(gsc.signInIntent)
+
+            Log.d("LoginScreen", "googleAuth: $googleAuth")
+            // Launch Credential Manager UI
 //            val result = credentialManager.getCredential(
 //                context = activity ?: baseContext,
 //                request = request
@@ -166,10 +170,10 @@ fun LoginScreen(
 //            Log.d("LoginScreen", "== result class: ${result?.let { it::class.java.name }}")
 //
 //            Log.d("LoginScreen", "result: $result")
-            googleLauncher.launch(gsc.signInIntent)
+
 
             // Extract credential from the result returned by Credential Manager
-//            viewModel.handleSignIn(result.credential, auth)
+//            viewModel.handleSignIn(id, auth)
         } catch (e: Exception) {
             e.printStackTrace()
             Log.e("LoginScreen", "Couldn't retrieve user's credentials: ${e.localizedMessage}")
@@ -301,7 +305,11 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Button(modifier = Modifier.fillMaxWidth(),colors= ButtonColors(Color(0xFF001242),Color(0xFF001242),Color(0xFF001242),Color(0xFF001242)), onClick = {viewModel.loginUser(email,pass)}, enabled = !isLoading)
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors= ButtonColors(Color(0xFF001242),Color(0xFF001242),Color(0xFF001242),Color(0xFF001242)),
+                        onClick = {viewModel.loginUser(email,pass)},
+                        enabled = !isLoading)
                     {
                         if (isLoading) {
                             CircularProgressIndicator(

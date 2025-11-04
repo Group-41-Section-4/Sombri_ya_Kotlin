@@ -5,5 +5,6 @@ data class UserUseCases(
     val getUserUseCase: GetUserUseCase,
     val refreshUserUseCase: RefreshUserUseCase,
     val logInUserUseCases: LogInUserUseCases,
-    val getUserDistance: GetUserDistance
+    val getUserDistance: GetUserDistance,
+    val googleLogInUserUseCases: GoogleLogInUserCases
 )
