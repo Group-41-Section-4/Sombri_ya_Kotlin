@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,7 +47,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.domain.model.Station
+import com.example.sombriyakotlin.domain.model.WeatherType
 import com.example.sombriyakotlin.ui.layout.AppLayout
+import com.example.sombriyakotlin.ui.main.animations.CloudEmojiAnimation
+import com.example.sombriyakotlin.ui.main.animations.RainAnimation
+import com.example.sombriyakotlin.ui.main.animations.SunRaysAnimation
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -60,7 +65,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainContent(navController: NavController,
-             viewModel: LocationViewModel = viewModel(),
+                homeViewModel: HomeViewModel = hiltViewModel(),
+                viewModel: LocationViewModel = viewModel(),
                 stationsViewModel: StationsViewModel = hiltViewModel()
 ){
 
@@ -88,32 +94,44 @@ fun MainContent(navController: NavController,
     // Para mover la cámara solo una vez al obtener la primera ubicación
     var isInitialLocationSet by remember { mutableStateOf(false) }
 
+    val weather by homeViewModel.weatherState.collectAsState()
+
+    val stationsUiState by stationsViewModel.stationsState.collectAsStateWithLifecycle()
+
     LaunchedEffect(location) {
         location?.let { loc ->
-            // Mover la cámara solo la primera vez que tengamos una ubicación
+            // Mueve la cámara solo la primera vez
             if (!isInitialLocationSet) {
-                val newPos = CameraPosition.fromLatLngZoom(LatLng(loc.latitude, loc.longitude), cameraPositionState.position.zoom)
-                // Intentamos animar/mover la cámara; setear la posición directamente
+                val newPos = CameraPosition.fromLatLngZoom(
+                    LatLng(loc.latitude, loc.longitude),
+                    cameraPositionState.position.zoom
+                )
                 cameraPositionState.position = newPos
-                isInitialLocationSet = true // Marcamos que ya se ha seteado la posición inicial
-
-                // Obtener estaciones solo la primera vez que se obtiene la ubicación.
+                isInitialLocationSet = true
                 stationsViewModel.getStations(loc.latitude, loc.longitude)
+            }
+
+            // update weather state
+            val now = System.currentTimeMillis()
+            val lastUpdate = homeViewModel.lastWeatherUpdateTime
+            if (now - lastUpdate > 60_000) { // 1 minute
+                Log.d("HomeViewModel", "Updating weather")
+                homeViewModel.checkWeatherAt(loc.latitude, loc.longitude)
             }
         }
     }
 
-    val stationsUiState by stationsViewModel.stationsState.collectAsStateWithLifecycle()
+
+
+
 
     Column (
-        modifier = Modifier.fillMaxHeight(1f),
+        modifier = Modifier.fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopCenter,
         ) {
 
@@ -157,6 +175,14 @@ fun MainContent(navController: NavController,
                     }
                 }
             }
+
+            when (weather){
+                WeatherType.SOLEADO -> SunRaysAnimation(modifier = Modifier.fillMaxSize())
+                WeatherType.NUBLADO -> CloudEmojiAnimation(modifier = Modifier.fillMaxSize())
+                WeatherType.LLUVIA -> RainAnimation(modifier = Modifier.fillMaxSize())
+                null -> {}
+            }
+
             Button(
                 onClick = { navController.navigate("stations") },
                 modifier = Modifier.padding(top = 5.dp),
