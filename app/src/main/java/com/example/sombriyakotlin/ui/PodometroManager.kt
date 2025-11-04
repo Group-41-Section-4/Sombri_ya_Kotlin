@@ -1,6 +1,6 @@
 package com.example.sombriyakotlin.ui
 
-import com.example.sombriyakotlin.ApplicationScope
+import com.example.sombriyakotlin.ui.di.ApplicationScope
 import com.example.sombriyakotlin.domain.model.PedometerRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
