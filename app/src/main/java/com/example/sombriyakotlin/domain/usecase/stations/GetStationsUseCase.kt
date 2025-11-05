@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetStationsUseCase @Inject constructor(
     private val stationRepository: StationRepository
 ) {
-    suspend fun invoke(localization: Localization): List<Station> {
+    suspend operator fun invoke(localization: Localization): List<Station> {
         return stationRepository.getStations(localization)
     }
 }

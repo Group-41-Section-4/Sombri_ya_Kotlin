@@ -1,6 +1,5 @@
 package com.example.sombriyakotlin.ui.main
 
-import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -8,10 +7,12 @@ import androidx.lifecycle.viewModelScope
 
 import com.example.sombriyakotlin.data.datasource.stations.SimpleStationCache
 import com.example.sombriyakotlin.data.datasource.stations.StationsCacheLocalDataSource
+import com.example.sombriyakotlin.data.dto.toDomain
 import com.example.sombriyakotlin.data.repository.StationsCacheRepository
 import com.example.sombriyakotlin.dataStore
 import com.example.sombriyakotlin.domain.model.Localization
 import com.example.sombriyakotlin.domain.model.Station
+import com.example.sombriyakotlin.domain.usecase.ObserveConnectivityUseCase
 import com.example.sombriyakotlin.domain.usecase.stations.StationsUseCases
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StationsViewModel @Inject constructor(
     private val stationsUseCase: StationsUseCases,
+    private val observeConnectivity: ObserveConnectivityUseCase,
     @ApplicationContext private val context: Context
 ) : ViewModel(){
     sealed class StationsState {
@@ -33,6 +35,8 @@ class StationsViewModel @Inject constructor(
         data class Success(val stations: List<Station>) : StationsState()
         data class Error(val message: String) : StationsState()
     }
+
+    val isConnected: StateFlow<Boolean> = observeConnectivity()
 
     private val _stationsState = MutableStateFlow<StationsState>(StationsState.Idle)
     val stationsState: StateFlow<StationsState> = _stationsState
@@ -45,8 +49,19 @@ class StationsViewModel @Inject constructor(
             try {
                 val localization = Localization(latitud, longitud)
 
-                val stations = stationsUseCase.getStationsUseCase.invoke(localization)
-                Log.d("HOLLY","FUNCIONAA")
+                val cacheRepo = StationsCacheRepository(
+                    StationsCacheLocalDataSource(context.dataStore)
+                )
+                Log.d("HOLLY","FUNCIONAA $(isConnected.value)")
+                var stations : List<Station>
+                if (isConnected.value) {
+                    stations = stationsUseCase.getStationsUseCase.invoke(localization)
+                } else {
+                    val cacheStations = cacheRepo.getCachedStationsFreshOrEmpty()
+                    Log.d("StationsViewModel","cacheStations: $cacheStations")
+                    stations = cacheStations.map{st -> st.toDomain()}
+                }
+
                 // Guardar estaciones
                 val simple = stations.map { st ->
                     SimpleStationCache(
@@ -57,9 +72,7 @@ class StationsViewModel @Inject constructor(
                     )
                 }
 
-                val cacheRepo = StationsCacheRepository(
-                    StationsCacheLocalDataSource(context.dataStore)
-                )
+
 
                 try {
                     cacheRepo.saveAll(simple)

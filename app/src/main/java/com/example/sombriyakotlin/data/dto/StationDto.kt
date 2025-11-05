@@ -1,9 +1,7 @@
 package com.example.sombriyakotlin.data.dto
 
-import androidx.compose.ui.geometry.CornerRadius
-import com.example.sombriyakotlin.domain.model.Localization
+import com.example.sombriyakotlin.data.datasource.stations.SimpleStationCache
 import com.example.sombriyakotlin.domain.model.Station
-import com.example.sombriyakotlin.domain.model.User
 
 data class StationDto(
     val id: String,
@@ -24,3 +22,6 @@ data class QrStationDto(
 
 
 fun StationDto.toDomain(): Station = Station(id, placeName, description, latitude, longitude, distanceMeters, availableUmbrellas, totalUmbrellas)
+
+
+fun SimpleStationCache.toDomain(): Station = Station(id, name, "Estacion en cache", latitude, longitude, -1, -1, -1)
