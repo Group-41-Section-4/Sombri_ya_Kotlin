@@ -1,43 +1,33 @@
 package com.example.sombriyakotlin.ui.main
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,7 +36,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
-import com.example.sombriyakotlin.domain.model.Station
 import com.example.sombriyakotlin.domain.model.WeatherType
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.main.animations.CloudEmojiAnimation
@@ -55,13 +44,11 @@ import com.example.sombriyakotlin.ui.main.animations.SunRaysAnimation
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.launch
 
 @Composable
 fun MainContent(navController: NavController,
@@ -71,8 +58,6 @@ fun MainContent(navController: NavController,
 ){
 
     val context = LocalContext.current
-
-
 
     // verificar permiso actual
     var hasLocationPermission by remember {
@@ -133,8 +118,8 @@ fun MainContent(navController: NavController,
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopCenter,
-        ) {
-
+        )
+        {
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
@@ -142,7 +127,9 @@ fun MainContent(navController: NavController,
                 properties = MapProperties(
                     isMyLocationEnabled = hasLocationPermission // Esto activa el "punto azul"
                 ),
-            ) {
+            )
+            {
+                Log.d("MainContent", "stationsUiState: $isMapLoaded")
                 when (val currentState = stationsUiState) {
                     is StationsViewModel.StationsState.Success -> {
                         Log.d("MainContent", "Stations: ${currentState.stations}")
@@ -190,7 +177,21 @@ fun MainContent(navController: NavController,
             ) {
                 Text(text = "ESTACIONES")
             }
+            if (!isMapLoaded) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.black_cat),
+                        "No connection"
+                    )
+                    Text("Sin conexión a internet")
+                }
+            }
         }
+
     }
 }
 
