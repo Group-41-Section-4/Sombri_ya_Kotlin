@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             SombriYaKotlinTheme {
-                AppNavigation(navController = navController, false)
+                AppNavigation(navController = navController, true)
             }
         }
     }
