@@ -200,7 +200,7 @@ class RentViewModel @Inject constructor(
                     return@launch
                 }
 
-                val current = rentalUseCases.getRentalsUserUseCase.invoke(user.id, "active" ).first()
+                val current = rentalUseCases.getRentalsUserUseCase.invoke(user.id, "ongoing" ).first()
                 if (current == null) {
                     _rentState.value = RentState.Error("No hay alquiler activo")
                     return@launch
@@ -213,7 +213,7 @@ class RentViewModel @Inject constructor(
                     userId = user.id,
                     stationStartId = stationId,
                     endedAt = endDate,
-                    status = "ongoing",
+                    status = "complete",
                     authType = current.authType ?: "nfc"
                 )
 
