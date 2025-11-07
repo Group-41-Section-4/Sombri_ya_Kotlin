@@ -63,16 +63,12 @@ class RentViewModel @Inject constructor(
 
     }
     // ---- Alquiler activo desde local (puede ser null) ----
-    val activeRental: StateFlow<Rental?> =
-        rentalUseCases.getCurrentRentalUseCase() // Flow<Rental?>
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+//    val activeRental: StateFlow<Rental?> =
+//        rentalUseCases.getRentalUserUseCase.invoke() // Flow<Rental?>
+//            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     // ---- Booleano derivado para la UI ----
-    val hasActive: StateFlow<Boolean> =
-        activeRental
-            .map { it?.let(::isRentalActive) == true }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-
+    val hasActive: StateFlow<Boolean> = MutableStateFlow(false)
     /**
      * Determina si una renta sigue activa
      */
@@ -179,6 +175,7 @@ class RentViewModel @Inject constructor(
 
                 val created = rentalUseCases.createRentalUseCase.invoke(rental)
                 success(created)
+                Log.d("RENT", "creada renta...${created.status}")
                 startPedometerFromOtherScreen()
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {
@@ -197,14 +194,15 @@ class RentViewModel @Inject constructor(
             Log.d("RENT", "Terminando renta...")
             _rentState.value = RentState.Loading
             try {
-                val current = rentalUseCases.getCurrentRentalUseCase().first()
-                if (current == null) {
-                    _rentState.value = RentState.Error("No hay alquiler activo")
-                    return@launch
-                }
 
                 val user = userUseCases.getUserUseCase().first() ?: run {
                     _rentState.value = RentState.Error("Usuario no autenticado")
+                    return@launch
+                }
+
+                val current = rentalUseCases.getRentalsUserUseCase.invoke(user.id, "active" ).first()
+                if (current == null) {
+                    _rentState.value = RentState.Error("No hay alquiler activo")
                     return@launch
                 }
 
@@ -215,7 +213,7 @@ class RentViewModel @Inject constructor(
                     userId = user.id,
                     stationStartId = stationId,
                     endedAt = endDate,
-                    status = "completed",
+                    status = "ongoing",
                     authType = current.authType ?: "nfc"
                 )
 

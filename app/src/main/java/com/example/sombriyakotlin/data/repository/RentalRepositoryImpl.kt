@@ -21,12 +21,8 @@ class RentalRepositoryImpl @Inject constructor(
     private val local: RentalLocalDataSource
 ): RentalRepository{
     override suspend fun createRental(rental: Rental): Rental {
-
         val response = rentalApi.createRental(rental.toRequestDto())
-
-
         val domain = response.toDomain()
-        local.saveCurrent(domain)
         return domain
         }
 
@@ -37,12 +33,11 @@ class RentalRepositoryImpl @Inject constructor(
         val response = rentalApi.endRental(rental.toEndDto())
         Log.d("RENT", "Despues Response: $response")
         val domain = response.toDomain()
-        local.clear()
         return domain
     }
 
-    override suspend fun getRentalsUser(userId: String,status: String): List<Rental> {
-        return rentalApi.getRentalsByUserAndStatus(userId, status).map { it.toDomain()}
+    override suspend fun getRentalsUser(userId: String,state: String): List<Rental> {
+        return rentalApi.getRentalsByUserAndStatus(userId, state).map { it.toDomain()}
 
     }
     override fun currentRental(): Flow<Rental?> = local.getCurrent()

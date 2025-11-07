@@ -79,7 +79,7 @@ class LoginViewModel @Inject constructor(
             val rentals = rentalUseCases.getRentalsUserUseCase.invoke(user.id, status = "ongoing")
             Log.d("RENTALSLOGIN", "Rentas obtenidas: ${rentals.size}")
             Log.d("RENTALSLOGIN","RETNAAAAAAAAA ${rentals[0]}")
-            rentalUseCases.setCurrentRentalUseCase.invoke(rentals[0])
+//            rentalUseCases.setCurrentRentalUseCase.invoke(rentals[0])
             Log.d("RENTALSLOGIN", "Se ha actualizado la renta con exito")
         }
     }

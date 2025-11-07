@@ -34,7 +34,7 @@ fun CardRent(navController: NavController) {
 
     val rentViewModel: RentViewModel = hiltViewModel()
     val rentState by rentViewModel.rentState.collectAsStateWithLifecycle()
-    val hasActive by rentViewModel.hasActive.collectAsStateWithLifecycle()
+    // val hasActive by rentViewModel.hasActive.collectAsStateWithLifecycle()
 
     // Estados de los pop-ups
     var showReservaPopup by remember { mutableStateOf(false) }
