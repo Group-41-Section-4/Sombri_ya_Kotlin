@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -85,6 +86,18 @@ fun ContentCard(
     val percentage = (userDistance / 5).toFloat().coerceIn(0f, 1f)
 
     val scrollState = rememberScrollState()
+
+    var loggingOut by remember { mutableStateOf(false) }
+
+    if (loggingOut) {
+        LaunchedEffect (Unit) {
+            viewModel.logout()
+            navController.navigate(Routes.AUTH_GRAPH) {
+                popUpTo(Routes.MAIN_GRAPH) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -214,13 +227,7 @@ fun ContentCard(
         )
         //
         Button(
-            onClick = {
-                /* TODO Hace falta borrar el usuario del estado*/
-                navController.navigate(Routes.AUTH_GRAPH) {
-                    popUpTo(Routes.MAIN_GRAPH) { inclusive = true }
-                    launchSingleTop = true
-                }
-            },
+            onClick = { loggingOut = true },
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.red),
                 contentColor = Color.White
