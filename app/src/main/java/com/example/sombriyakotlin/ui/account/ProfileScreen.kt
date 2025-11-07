@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ModalDrawer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -74,12 +75,15 @@ fun ContentCard(
     navController: NavHostController,
     viewModel: ProfileScreenViewModel
 ) {
+
+    val profileState by viewModel.profileState.collectAsState()
+
     var openDialogName by rememberSaveable { mutableStateOf(false) }
     var openDialogPassword by rememberSaveable { mutableStateOf(false) }
     var openDialogMail by rememberSaveable { mutableStateOf(false) }
 
     var currentName by rememberSaveable { mutableStateOf("Nombre") }
-    var currentPassword by rememberSaveable { mutableStateOf("Nombre") }
+    var currentPassword by rememberSaveable { mutableStateOf("...") }
     var currentMail by rememberSaveable { mutableStateOf("user@uniandes.edu.co") }
 
     val userDistance by viewModel.userDistance.collectAsState()
@@ -99,6 +103,16 @@ fun ContentCard(
         }
     }
 
+    LaunchedEffect(profileState) {
+        if (profileState is ProfileScreenViewModel.ProfileState.Success) {
+            val user = (profileState as ProfileScreenViewModel.ProfileState.Success).user
+            currentName = user.name
+            currentPassword = user.password
+            currentMail =  user.email
+        }
+
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -108,47 +122,11 @@ fun ContentCard(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // === NOMBRE ===
+        Text("¡Bienvenido ${currentName}!", fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 16.dp), fontSize = 24.sp)
 
         WaterLevelCircle(percentage = percentage, distance = userDistance)
 
-        // === NOMBRE ===
-        OutlinedTextField(
-            value = currentName,
-            onValueChange = {},
-            readOnly = true,
-            shape = RoundedCornerShape(24.dp),
-            prefix = {
-                Text(
-                    "Nombre",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(end = 160.dp)
-                )
-            },
-            trailingIcon = {
-                IconButton(onClick = { openDialogName = true }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow),
-                        contentDescription = "Modificar información",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            },
-            colors = TextFieldDefaults.colors(
-                disabledContainerColor  = colorResource(R.color.secondary),
-                focusedContainerColor   = colorResource(R.color.secondary),
-                unfocusedContainerColor = colorResource(R.color.secondary),
-                focusedTextColor        = colorResource(R.color.gray),
-                unfocusedTextColor      = colorResource(R.color.gray),
-                focusedIndicatorColor   = colorResource(R.color.primary),
-                unfocusedIndicatorColor = colorResource(R.color.primary)
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { openDialogName = true }
-        )
 
         // === CONTRASEÑA ===
         OutlinedTextField(
@@ -362,7 +340,7 @@ fun NameDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onSave(newName) }) {
+            Button(onClick = { onSave(newName) },enabled = false) {
                 Text("Guardar")
             }
         },
@@ -398,7 +376,7 @@ fun PasswordDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onSave(newPassword) }) {
+            Button(onClick = { onSave(newPassword) }, enabled = false) {
                 Text("Guardar")
             }
         },
@@ -434,7 +412,7 @@ fun MailDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onSave(newMail) }) {
+            Button(onClick = { onSave(newMail) }, enabled = false) {
                 Text("Guardar")
             }
         },
