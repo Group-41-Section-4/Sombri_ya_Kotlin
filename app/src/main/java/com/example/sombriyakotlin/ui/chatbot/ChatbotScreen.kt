@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -59,6 +60,10 @@ fun ChatbotScreen(
 
     var mensaje by remember { mutableStateOf("") }
 
+    val isConnected by viewModel.isConnected.collectAsState()
+
+
+
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
@@ -72,10 +77,21 @@ fun ChatbotScreen(
             .background(color = colorResource(id = R.color.EstacionCard))
             .navigationBarsPadding()
             .imePadding(),
-        verticalArrangement = Arrangement.Bottom
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        TopBarMini(navController, "Chatbot")
+        TopBarMini(navController, "Sombri-IA")
+        if (!isConnected){
+            Card(
+                Modifier.wrapContentSize().padding(top=10.dp),
+                shape = RoundedCornerShape(50.dp),
+                colors= CardColors(colorResource(R.color.light_gray),colorResource(R.color.black),colorResource(R.color.gray),colorResource(R.color.gray))
+
+            ) {
+                Text("No hay conexión", modifier = Modifier.padding(5.dp))
+            }
+        }
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -115,7 +131,7 @@ fun ChatbotScreen(
                     .weight(1f)                       // ocupa el espacio sobrante
                     .heightIn(min = 48.dp)            // altura mínima razonable
                     .background(colorResource(id = R.color.white_FFFDFD), shape = RoundedCornerShape(8.dp)),
-                placeholder = { Text("Escribe un mensaje...") },
+                placeholder = { Text(if (isConnected) "Escribe un mensaje..." else "Sin conexión") },
                 singleLine = false,
                 maxLines = 2,                         // límite de líneas para evitar crecer demasiado
                 textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
@@ -124,12 +140,12 @@ fun ChatbotScreen(
 
             val isLoading = uiState is ChatbotViewModel.ChatState.Loading
             Button({
-                if (mensaje.isNotBlank() && !isLoading) {
+                if (mensaje.isNotBlank() && !isLoading && isConnected) {
                     viewModel.sendMessage(mensaje)
                     mensaje = ""
                 }
             },
-                enabled = !isLoading,
+                enabled = !isLoading && isConnected,
                 modifier = Modifier.padding(start = 1.dp, end = 10.dp)
                 ,
                 colors = ButtonDefaults.buttonColors(
