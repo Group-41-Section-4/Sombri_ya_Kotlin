@@ -17,6 +17,9 @@ interface RentalRepository {
     suspend fun getRentalsHystoryByUserAndStatus(userId: String,state: String): List<History>
     suspend fun setRentalCurrent(rental:Rental)
 
+    suspend fun getActiveRentalRemote(userId: String): Rental?
+
+
 
 }
 

@@ -7,5 +7,7 @@ data class RentalUseCases(
     val getRentalsUserUseCase: GetRentalUserUseCase,
     val getRentalsHystoryUserUseCase: getRentalsHystoryUserUseCase,
     val getCurrentRentalUseCase: GetCurrentRentalUseCase,
-    val setCurrentRentalUseCase: SetCurrentRentalUseCase
-    )
+    val setCurrentRentalUseCase: SetCurrentRentalUseCase,
+    val getActiveRentalRemoteUseCase: GetActiveRentalRemoteUseCase
+
+)
