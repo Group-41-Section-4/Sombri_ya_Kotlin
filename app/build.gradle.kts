@@ -151,6 +151,13 @@ dependencies {
     implementation("androidx.activity:activity-compose")
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.material:material")
+
+    //ROOM
+    val room_version = "2.8.3"
+    implementation("androidx.room:room-runtime:${room_version}")
+
+    implementation("androidx.room:room-ktx:${room_version}")
+    implementation("androidx.room:room-guava:${room_version}")
 }
 apply(plugin = "com.google.gms.google-services")
 
