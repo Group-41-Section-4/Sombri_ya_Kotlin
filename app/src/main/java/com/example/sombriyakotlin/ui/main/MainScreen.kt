@@ -49,6 +49,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.delay
 
 @Composable
 fun MainContent(navController: NavController,
@@ -82,6 +83,23 @@ fun MainContent(navController: NavController,
     val weather by homeViewModel.weatherState.collectAsState()
 
     val stationsUiState by stationsViewModel.stationsState.collectAsStateWithLifecycle()
+
+    val connection by homeViewModel.isConnected.collectAsState(initial = true)
+
+    var showFallbackOverlay by remember { mutableStateOf(false) }
+
+    LaunchedEffect(connection, isMapLoaded) {
+        // si ambas condiciones se cumplen, esperamos un poco antes de mostrar
+        if (!connection && !isMapLoaded) {
+            delay(300) // ajusta el tiempo si quieres más/menos tolerancia
+            if (!connection && !isMapLoaded) {
+                showFallbackOverlay = true
+            }
+        } else {
+            showFallbackOverlay = false
+        }
+    }
+
 
     LaunchedEffect(location) {
         location?.let { loc ->
@@ -177,7 +195,7 @@ fun MainContent(navController: NavController,
             ) {
                 Text(text = "ESTACIONES")
             }
-            if (!isMapLoaded) {
+            if (showFallbackOverlay) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
