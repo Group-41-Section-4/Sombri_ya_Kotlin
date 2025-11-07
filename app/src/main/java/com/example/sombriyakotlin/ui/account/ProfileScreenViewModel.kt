@@ -73,4 +73,8 @@ class ProfileScreenViewModel @Inject constructor(
             }
         }
     }
+
+    suspend fun logout() {
+        userUseCases.closeSessionUseCase()
+    }
 }

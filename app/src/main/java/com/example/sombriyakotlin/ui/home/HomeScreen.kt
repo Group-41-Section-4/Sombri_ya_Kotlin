@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
+import com.example.sombriyakotlin.ui.navigation.Routes
 import com.example.sombriyakotlin.ui.navigation.safeNavigate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +49,21 @@ fun CardHome(
         showNoInternetDialog = !connected
     }
 
+    //run only ones
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(1500) // 1.5 segs
+
+        val hasUser = splashViewModel.hasUserStored()
+        if (hasUser) {
+            navController.navigate(Routes.MAIN_GRAPH) {
+                popUpTo(Routes.AUTH_GRAPH) { inclusive = true }
+                launchSingleTop = true
+            }
+        } else {
+            navController.safeNavigate("login", AuthRoutes.SPLASH)
+        }
+    }
+
 
     Surface(modifier = Modifier.fillMaxSize(),
         color= colorResource(id=R.color.BlueInterface),
@@ -64,18 +80,18 @@ fun CardHome(
                     .fillMaxWidth(0.75f)
                     .fillMaxHeight(0.75f)
             )
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .fillMaxHeight(0.3f)
-                ,
-                onClick = { navController.safeNavigate("login", AuthRoutes.SPLASH) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.HomeBlue),
-                    contentColor = Color.White,
-                    )
-            ) { Text("Iniciar Sesión",
-                fontSize = 20.sp)}
+//            Button(
+//                modifier = Modifier
+//                    .fillMaxWidth(0.8f)
+//                    .fillMaxHeight(0.3f)
+//                ,
+//                onClick = { navController.safeNavigate("login", AuthRoutes.SPLASH) },
+//                colors = ButtonDefaults.buttonColors(
+//                    containerColor = colorResource(R.color.HomeBlue),
+//                    contentColor = Color.White,
+//                    )
+//            ) { Text("Iniciar Sesión",
+//                fontSize = 20.sp)}
         }
     }
 
