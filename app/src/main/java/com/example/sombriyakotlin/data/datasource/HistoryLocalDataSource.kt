@@ -1,7 +1,5 @@
 package com.example.sombriyakotlin.data.datasource
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
@@ -28,11 +26,19 @@ interface HistoryDao {
     fun getAll(): List<History>
 
     @Insert
-    fun insertAll(vararg users: History)
+    fun insert(vararg history: History)
 }
 
 
 @Database(entities = [History::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): HistoryDao
+}
+
+
+class HistoryLocalDataSource @Inject constructor(
+    private val dao: HistoryDao
+) {
+    suspend fun insert(entity: History): Unit = dao.insert(entity)
+    suspend fun getAll(): List<History> = dao.getAll()
 }
