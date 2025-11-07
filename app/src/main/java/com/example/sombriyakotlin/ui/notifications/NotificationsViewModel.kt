@@ -149,7 +149,7 @@ class NotificationsViewModel @Inject constructor(
                         id = nextId("error"),
                         type = NotificationType.RENTAL,
                         title = "Error al cargar rentas",
-                        message = e.message ?: "Error desconocido.",
+                        message = if (!isConnected.value) "No hay conexión a internet" else e.message ?: "Error desconocido.",
                         time = nowLabel()
                     )
                 )
