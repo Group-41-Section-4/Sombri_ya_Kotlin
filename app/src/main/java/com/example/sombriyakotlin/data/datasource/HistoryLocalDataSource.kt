@@ -23,10 +23,10 @@ data class History(
 @Dao
 interface HistoryDao {
     @Query("SELECT * FROM history")
-    fun getAll(): List<History>
+    suspend fun getAll(): List<History>
 
     @Insert
-    fun insert(vararg history: History)
+    suspend fun insert(vararg history: History)
 }
 
 

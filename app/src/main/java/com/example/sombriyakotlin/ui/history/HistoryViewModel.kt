@@ -121,7 +121,7 @@ class HistoryViewModel @Inject constructor(
                             durationMinutes = durationMin,
                             time = formatTime(start)
                         )
-                    }.sortedBy { h ->
+                    }.sortedByDescending { h ->
                         parseIso("${h.date} ${h.time}")?.time ?: 0L
                     }
                     mapped.map{ it -> historyUseCases.saveHistory(HistoryItem(it.id,it.date,it.durationMinutes,it.time)) }

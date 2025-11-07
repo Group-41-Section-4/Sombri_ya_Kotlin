@@ -9,6 +9,8 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.kapt")
+
+    id("kotlin-kapt")
 }
 
 android {
@@ -158,6 +160,8 @@ dependencies {
 
     implementation("androidx.room:room-ktx:${room_version}")
     implementation("androidx.room:room-guava:${room_version}")
+
+    kapt("androidx.room:room-compiler:$room_version")
 }
 apply(plugin = "com.google.gms.google-services")
 
