@@ -8,6 +8,7 @@ import com.example.sombriyakotlin.domain.model.Chat
 import com.example.sombriyakotlin.domain.model.Message
 import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.repository.ChatbotRepository
+import com.example.sombriyakotlin.domain.usecase.ObserveConnectivityUseCase
 import com.example.sombriyakotlin.domain.usecase.chatbot.ChatbotUseCases
 import com.example.sombriyakotlin.ui.account.ProfileScreenViewModel.ProfileState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,8 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatbotViewModel @Inject constructor(
-    private val chatbotUseCases: ChatbotUseCases,
-    private val chatbotRepository: ChatbotRepository
+    private val chatbotRepository: ChatbotRepository,
+    observeConnectivity: ObserveConnectivityUseCase
 ): ViewModel()
 {
     sealed class ChatState {
@@ -28,6 +29,8 @@ class ChatbotViewModel @Inject constructor(
         data class Success(val chat: Chat) : ChatState()
         data class Error(val message: String) : ChatState()
     }
+
+    val isConnected: StateFlow<Boolean> = observeConnectivity()
 
     private val _chatbotState = MutableStateFlow<ChatState>(ChatState.Idle)
     val chatbotState: StateFlow<ChatState> = _chatbotState
