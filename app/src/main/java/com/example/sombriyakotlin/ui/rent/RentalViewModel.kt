@@ -63,10 +63,20 @@ class RentViewModel @Inject constructor(
 
     }
     // ---- Alquiler activo desde local (puede ser null) ----
-    val activeRental: StateFlow<Rental?> =
-        rentalUseCases.getCurrentRentalUseCase() // Flow<Rental?>
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    private val _activeRental = MutableStateFlow<Rental?>(null)
+    val activeRental: StateFlow<Rental?> = _activeRental
 
+    suspend fun fetchActiveRental() {
+        viewModelScope.launch {
+            try {
+                val user = userUseCases.getUserUseCase().first() ?: return@launch
+                val rental = rentalUseCases.getActiveRentalRemoteUseCase(user.id)
+                _activeRental.value = rental
+            } catch (e: Exception) {
+                Log.e("RENT_FETCH", "Error obteniendo renta remota", e)
+            }
+        }
+    }
     // ---- Booleano derivado para la UI ----
     val hasActive: StateFlow<Boolean> =
         activeRental
@@ -86,9 +96,10 @@ class RentViewModel @Inject constructor(
      * Permite consultar directamente si hay una renta activa.
      */
     suspend fun checkActiveRental(): Boolean {
-        val current = rentalUseCases.getCurrentRentalUseCase().first()
+        val user = userUseCases.getUserUseCase().first() ?: return false
+        val current = rentalUseCases.getActiveRentalRemoteUseCase(user.id)
         val active = current?.let(::isRentalActive) == true
-        Log.d("RENT_CHECK", "¿Hay renta activa?: $active (renta=$current)")
+        Log.d("RENT_CHECK", "¿Hay renta activa (remota)?: $active (renta=$current)")
         return active
     }
 

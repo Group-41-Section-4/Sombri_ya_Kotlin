@@ -45,7 +45,9 @@ class RentalRepositoryImpl @Inject constructor(
         return rentalApi.getRentalsByUserAndStatus(userId, status).map { it.toDomain()}
 
     }
-    override fun currentRental(): Flow<Rental?> = local.getCurrent()
+    override fun currentRental(): Flow<Rental?> {
+        return  local.getCurrent()
+    }
 
     override suspend fun getRentalsHystoryByUserAndStatus(userId: String, status: String): List<History>{
         return rentalApi.getRentalsHystoryByUserAndStatus(userId, status).map { it.toDomain() }
@@ -56,6 +58,13 @@ class RentalRepositoryImpl @Inject constructor(
     }
     override suspend fun setRentalCurrent(rental:Rental){
         local.saveCurrent(rental)
+    }
+
+    override suspend fun getActiveRentalRemote(userId: String): Rental? {
+        val response =  rentalApi.getRentalsByUserAndStatus(userId, "ongoing").firstOrNull()
+        return response?.toDomain()
+
+
     }
 
 

@@ -17,6 +17,7 @@ import com.example.sombriyakotlin.domain.usecase.stations.GetStationsUseCase
 import com.example.sombriyakotlin.domain.usecase.stations.StationsUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.EndRentalUseCase
+import com.example.sombriyakotlin.domain.usecase.rental.GetActiveRentalRemoteUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetRentalUserUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.getRentalsHystoryUserUseCase
@@ -62,7 +63,9 @@ object UseCaseModule {
             getRentalsUserUseCase = GetRentalUserUseCase(repo),
             getRentalsHystoryUserUseCase = getRentalsHystoryUserUseCase(repo),
             getCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.GetCurrentRentalUseCase(repo),
-            setCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.SetCurrentRentalUseCase(repo)
+            setCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.SetCurrentRentalUseCase(repo),
+            getActiveRentalRemoteUseCase = GetActiveRentalRemoteUseCase(repo) // 👈 nuevo
+
         )
     }
 

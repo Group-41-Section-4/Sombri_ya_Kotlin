@@ -62,6 +62,10 @@ fun CardRent(navController: NavController) {
         )
     }
 
+    LaunchedEffect(Unit) {
+        rentViewModel.fetchActiveRental()
+    }
+
     //   Verificar conexión al entrar
     LaunchedEffect(Unit) {
         if (!isOnline(activity)) {
