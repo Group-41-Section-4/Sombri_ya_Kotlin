@@ -1,6 +1,7 @@
 package com.example.sombriyakotlin.domain.di
 
 import com.example.sombriyakotlin.domain.repository.ChatbotRepository
+import com.example.sombriyakotlin.domain.repository.HistoryRepository
 import com.example.sombriyakotlin.domain.repository.NetworkRepository
 import com.example.sombriyakotlin.domain.repository.StationRepository
 import com.example.sombriyakotlin.domain.repository.RentalRepository
@@ -9,6 +10,9 @@ import com.example.sombriyakotlin.domain.usecase.ObserveConnectivityUseCase
 import com.example.sombriyakotlin.domain.usecase.chatbot.ChatbotUseCases
 import com.example.sombriyakotlin.domain.usecase.chatbot.GetChatHistoryUseCase
 import com.example.sombriyakotlin.domain.usecase.chatbot.SendMessageUseCase
+import com.example.sombriyakotlin.domain.usecase.history.GetHistory
+import com.example.sombriyakotlin.domain.usecase.history.HistoryUseCases
+import com.example.sombriyakotlin.domain.usecase.history.SaveHistory
 import com.example.sombriyakotlin.domain.usecase.stations.GetStationsUseCase
 import com.example.sombriyakotlin.domain.usecase.stations.StationsUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
@@ -86,6 +90,15 @@ object UseCaseModule {
     @Singleton
     fun provideConectivityUseCases(repo: NetworkRepository): ObserveConnectivityUseCase {
         return ObserveConnectivityUseCase(repo)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHistoryUseCases(repo: HistoryRepository): HistoryUseCases{
+        return HistoryUseCases(
+            getHistory = GetHistory(repo),
+            saveHistory = SaveHistory(repo)
+        )
     }
 
 }

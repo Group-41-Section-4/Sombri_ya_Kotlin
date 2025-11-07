@@ -1,9 +1,12 @@
 package com.example.sombriyakotlin.feature.history
 
 import History
+import HistoryItem
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sombriyakotlin.domain.usecase.ObserveConnectivityUseCase
+import com.example.sombriyakotlin.domain.usecase.history.HistoryUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,12 +33,19 @@ data class HistoryUiItem(
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val rentalUseCases: RentalUseCases,
-    private val userUseCases: UserUseCases
+    private val userUseCases: UserUseCases,
+    private val historyUseCases: HistoryUseCases,
+    observeConnectivity: ObserveConnectivityUseCase
 ) : ViewModel() {
+
+    val isConnected: StateFlow<Boolean> = observeConnectivity()
+
 
     // ** CAMBIO CLAVE: Usamos HistoryUiItem en el StateFlow **
     private val _history = MutableStateFlow<List<HistoryUiItem>>(emptyList())
     val history: StateFlow<List<HistoryUiItem>> = _history
+
+
 
     /* ------------------ utils de tiempo ------------------ */
     private fun parseIso(iso: String?): Date? {
@@ -84,34 +94,48 @@ class HistoryViewModel @Inject constructor(
                 }
 
                 Log.d("HistoryVM", "Usuario encontrado: ${user.id}")
-                Log.d("HistoryVM", "Consultando rentas del backend (status = 'completed')...")
+                var rentals = emptyList<History>()
+                var mapped = emptyList<HistoryUiItem>()
 
+                if (isConnected.value) {
+                    Log.d("HistoryVM", "Consultando rentas del backend (status = 'completed')...")
                 // 'rentals' es una lista de la clase History completa (el DTO)
-                val rentals = rentalUseCases.getRentalsHystoryUserUseCase.invoke(user.id, status = "completed")
+                    rentals = rentalUseCases.getRentalsHystoryUserUseCase.invoke(user.id, status = "completed")
+                    Log.d("HistoryVM", "Rentas obtenidas: ${rentals.size}")
 
-                Log.d("HistoryVM", "Rentas obtenidas: ${rentals.size}")
+                    mapped = rentals.mapNotNull { r ->
+                        val start = parseIso(r.startedAt)
+                        if (start == null) {
+                            Log.w("HistoryVM", "Renta ID ${r.id} omitida: startedAt es inválido.")
+                            return@mapNotNull null
+                        }
 
-                val mapped = rentals.mapNotNull { r ->
-                    val start = parseIso(r.startedAt)
-                    if (start == null) {
-                        Log.w("HistoryVM", "Renta ID ${r.id} omitida: startedAt es inválido.")
-                        return@mapNotNull null
+                        val durationMin = r.durationMinutes.takeIf { it >= 0 } ?: run {
+                            val end = parseIso(r.endedAt)
+                            if (end != null) max(0, ((end.time - start.time) / 60000L).toInt()) else 0
+                        }
+
+                        HistoryUiItem(
+                            id = r.id,
+                            date = formatDateEs(start),
+                            durationMinutes = durationMin,
+                            time = formatTime(start)
+                        )
+                    }.sortedByDescending { h ->
+                        parseIso("${h.date} ${h.time}")?.time ?: 0L
+                    }
+                    mapped.map{ it -> historyUseCases.saveHistory(HistoryItem(it.id,it.date,it.durationMinutes,it.time)) }
+
+                } else {
+                    val rentalsModel = historyUseCases.getHistory()
+                    Log.d("HistoryVM", "Rentas obtenidas en Local Storage: ${rentalsModel.size}")
+                    mapped = rentalsModel.mapNotNull { r ->
+                        HistoryUiItem(r.date, r.durationMinutes, r.time, r.id)
                     }
 
-                    val durationMin = r.durationMinutes.takeIf { it >= 0 } ?: run {
-                        val end = parseIso(r.endedAt)
-                        if (end != null) max(0, ((end.time - start.time) / 60000L).toInt()) else 0
-                    }
-
-                    HistoryUiItem(
-                        id = r.id,
-                        date = formatDateEs(start),
-                        durationMinutes = durationMin,
-                        time = formatTime(start)
-                    )
-                }.sortedByDescending { h ->
-                    parseIso("${h.date} ${h.time}")?.time ?: 0L
                 }
+
+
 
                 Log.d("HistoryVM", "Historial mapeado: ${mapped.size} elementos")
 

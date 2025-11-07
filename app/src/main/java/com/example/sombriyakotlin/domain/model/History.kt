@@ -1,3 +1,14 @@
+// domain/model/HistoryItem.kt
+
+data class HistoryItem(
+    val id: String,
+    val date: String,
+    val durationMinutes: Int,
+    val time: String
+)
+
+
+
 data class History(
     // Campos que corresponden a RentalHistoryDto
     val id: String, // Cambiado de Int a String
