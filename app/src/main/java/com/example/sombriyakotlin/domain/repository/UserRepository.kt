@@ -16,4 +16,6 @@ interface UserRepository {
     suspend fun userTotalDistance(userId: String): UserHistory
 
     suspend fun googleLogIn(googleLogIn: GoogleLogIn): User
+
+    suspend fun closeSession()
 }

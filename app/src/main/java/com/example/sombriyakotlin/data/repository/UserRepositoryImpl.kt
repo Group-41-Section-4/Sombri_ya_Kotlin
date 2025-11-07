@@ -55,7 +55,12 @@ class UserRepositoryImpl @Inject constructor(
         Log.d("UserRepositoryImpl", "Respuesta del servidor: $respuestaUserDto")
         val domainUser = respuestaUserDto.toDomain()
         Log.d("UserRepositoryImpl", "Usuario registrado (domain): $domainUser")
+        userLocalDataSource.saveUser(domainUser)
         return domainUser
+    }
+
+    override suspend fun closeSession() {
+        userLocalDataSource.clearUser()
     }
 
 }

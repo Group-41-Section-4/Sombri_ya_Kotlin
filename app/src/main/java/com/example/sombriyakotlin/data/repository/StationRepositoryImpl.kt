@@ -2,6 +2,7 @@ package com.example.sombriyakotlin.data.repository
 
 import android.util.Log
 import com.example.sombriyakotlin.data.api.StationApi
+import com.example.sombriyakotlin.data.cache.LruCache
 import com.example.sombriyakotlin.data.dto.toDomain
 import com.example.sombriyakotlin.data.dto.toDto
 import com.example.sombriyakotlin.domain.model.Localization
@@ -10,18 +11,31 @@ import com.example.sombriyakotlin.domain.repository.StationRepository
 import javax.inject.Inject
 
 class StationRepositoryImpl @Inject constructor(
-   private val stationApi: StationApi
+    private val cache: LruCache<String, List<Station>>,
+    private val stationApi: StationApi
 ) : StationRepository {
 
     override suspend fun getStations(location: Localization): List<Station> {
+
+        val formattedLatitude = String.format("%.3f", location.latitude)
+        val formattedLongitude = String.format("%.3f", location.longitude)
+        val key = "$formattedLatitude:$formattedLongitude"
+        cache.get(key)?.let {
+            Log.d("StationRepositoryImpl", "Cache hit para $key (${it.size} estaciones)")
+            return it
+        }
+
+        Log.d("StationRepositoryImpl", "Cache miss. Llamando a API...")
         val response = stationApi.getStations(location.toDto())
         Log.d("StationRepositoryImpl", "Response from API: ${response.body()}")
 
         if (response.isSuccessful) {
             val stationDtoList = response.body() ?: emptyList()
-            return stationDtoList.map { it.toDomain() }
+            val stations = stationDtoList.map { it.toDomain() }
+
+            cache.put(key, stations)
+            return stations
         } else {
-            // Here you can handle the error, for example by throwing an exception or returning an empty list
             Log.e("StationRepositoryImpl", "Error getting stations: ${response.code()}")
             return emptyList()
         }

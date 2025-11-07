@@ -2,7 +2,9 @@ package com.example.sombriyakotlin.data.di
 
 import com.example.sombriyakotlin.BuildConfig
 import com.example.sombriyakotlin.data.api.RentalApi
+import com.example.sombriyakotlin.data.api.StationApi
 import com.example.sombriyakotlin.data.api.UserApi
+import com.example.sombriyakotlin.data.cache.LruCache
 import com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.network.NetworkRepositoryImpl
@@ -11,6 +13,8 @@ import com.example.sombriyakotlin.data.repository.HistoryRepositoryImpl
 import com.example.sombriyakotlin.data.repository.RentalRepositoryImpl
 import com.example.sombriyakotlin.data.repository.StationRepositoryImpl
 import com.example.sombriyakotlin.data.repository.UserRepositoryImpl
+import com.example.sombriyakotlin.domain.model.Localization
+import com.example.sombriyakotlin.domain.model.Station
 import com.example.sombriyakotlin.domain.repository.ChatbotRepository
 import com.example.sombriyakotlin.domain.repository.HistoryRepository
 import com.example.sombriyakotlin.domain.repository.NetworkRepository
@@ -56,11 +60,21 @@ abstract class RepositoryModule {
         fun provideChatRepository(): ChatbotRepository{
             return ChatbotRepositoryImpl()
         }
-    }
 
-    @Binds
-    @Singleton
-    abstract fun bindStationRepository(stationRepositoryImpl: StationRepositoryImpl): StationRepository
+        @Provides
+        @Singleton
+        fun provideLruCache(): LruCache<String, List<Station>> {
+            // 100
+            return LruCache(maxSize = 4)
+        }
+
+        @Provides
+        @Singleton
+        fun provideStationRepositoryImpl(
+            cache: LruCache<String, List<Station>>,
+            stationApi: StationApi,
+        ): StationRepository = StationRepositoryImpl(cache, stationApi)
+    }
 
     @Binds
     @Singleton
