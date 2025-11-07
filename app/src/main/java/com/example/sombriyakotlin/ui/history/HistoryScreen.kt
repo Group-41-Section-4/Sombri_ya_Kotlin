@@ -2,6 +2,7 @@ package com.example.sombriyakotlin.feature.history
 
 // Asumo que la definición de HistoryUiItem se movió aquí para evitar redeclaración.
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,18 +21,20 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
+import com.example.sombriyakotlin.domain.usecase.history.GetHistory
+import com.example.sombriyakotlin.domain.usecase.history.SaveHistory
 import com.example.sombriyakotlin.ui.layout.TopBarMini
-
+import javax.inject.Inject
 
 
 @Composable
-fun HistoryScreen(
-    navController: NavHostController
+fun HistoryScreen (
+    navController: NavHostController,
+    historyVM: HistoryViewModel = hiltViewModel()
 ) {
-    val historyVM: HistoryViewModel = hiltViewModel()
-
     // Aseguramos que la data se cargue solo una vez
     LaunchedEffect(Unit) {
+        Log.d("HistoryScreen", "Cargando historial...")
         historyVM.onScreenOpened()
     }
 
@@ -39,6 +42,9 @@ fun HistoryScreen(
     val history by historyVM.history.collectAsState()
 
     val Bg = Color(0xFFFFFDFD)
+
+    val connected by historyVM.isConnected.collectAsState()
+
 
     Scaffold(
         containerColor = Bg,
@@ -53,7 +59,7 @@ fun HistoryScreen(
         ) {
             if (history.isEmpty()) {
                 Text(
-                    "Aún no tienes historial",
+                    if (connected) "Aún no tienes historial" else "Sin conexión a Internet",
                     modifier = Modifier.align(Alignment.Center),
                     style = MaterialTheme.typography.bodyMedium
                 )

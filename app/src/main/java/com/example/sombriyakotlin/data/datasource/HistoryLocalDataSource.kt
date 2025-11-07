@@ -32,7 +32,7 @@ interface HistoryDao {
 
 @Database(entities = [History::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun userDao(): HistoryDao
+    abstract fun historyDao(): HistoryDao
 }
 
 

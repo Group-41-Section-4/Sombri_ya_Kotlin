@@ -7,10 +7,12 @@ import com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.network.NetworkRepositoryImpl
 import com.example.sombriyakotlin.data.repository.ChatbotRepositoryImpl
+import com.example.sombriyakotlin.data.repository.HistoryRepositoryImpl
 import com.example.sombriyakotlin.data.repository.RentalRepositoryImpl
 import com.example.sombriyakotlin.data.repository.StationRepositoryImpl
 import com.example.sombriyakotlin.data.repository.UserRepositoryImpl
 import com.example.sombriyakotlin.domain.repository.ChatbotRepository
+import com.example.sombriyakotlin.domain.repository.HistoryRepository
 import com.example.sombriyakotlin.domain.repository.NetworkRepository
 import com.example.sombriyakotlin.domain.repository.RentalRepository
 import com.example.sombriyakotlin.domain.repository.StationRepository
@@ -65,4 +67,10 @@ abstract class RepositoryModule {
     abstract fun bindNetworkRepository(
         impl: NetworkRepositoryImpl
     ): NetworkRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindHistoryRepository(
+        historyRepositoryImpl: HistoryRepositoryImpl
+    ): HistoryRepository
 }
