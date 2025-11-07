@@ -1,7 +1,9 @@
+import java.util.UUID
+
 // domain/model/HistoryItem.kt
 
 data class HistoryItem(
-    val id: String,
+    val id: String = UUID.randomUUID().toString(),
     val date: String,
     val durationMinutes: Int,
     val time: String

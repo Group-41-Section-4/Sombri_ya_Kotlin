@@ -45,6 +45,7 @@ class HistoryViewModel @Inject constructor(
     private val _history = MutableStateFlow<List<HistoryUiItem>>(emptyList())
     val history: StateFlow<List<HistoryUiItem>> = _history
 
+    var MemoryHistory = 0
 
 
     /* ------------------ utils de tiempo ------------------ */
@@ -97,11 +98,21 @@ class HistoryViewModel @Inject constructor(
                 var rentals = emptyList<History>()
                 var mapped = emptyList<HistoryUiItem>()
 
-                if (isConnected.value) {
+                if (!isConnected.value || MemoryHistory==0) {
+                    val rentalsModel = historyUseCases.getHistory()
+                    Log.d("HistoryVM", "Rentas obtenidas en Local Storage: ${rentalsModel.size}")
+                    mapped = rentalsModel.mapNotNull { r ->
+                        HistoryUiItem(r.date, r.durationMinutes, r.time, r.id)
+                    }
+                    MemoryHistory = mapped.size
+
+                }
+
+                if(isConnected.value) {
                     Log.d("HistoryVM", "Consultando rentas del backend (status = 'completed')...")
                 // 'rentals' es una lista de la clase History completa (el DTO)
                     rentals = rentalUseCases.getRentalsHystoryUserUseCase.invoke(user.id, status = "completed")
-                    Log.d("HistoryVM", "Rentas obtenidas: ${rentals.size}")
+                    Log.d("HistoryVM", "Rentas obtenidas: ${rentals}")
 
                     mapped = rentals.mapNotNull { r ->
                         val start = parseIso(r.startedAt)
@@ -121,16 +132,15 @@ class HistoryViewModel @Inject constructor(
                             durationMinutes = durationMin,
                             time = formatTime(start)
                         )
-                    }.sortedByDescending { h ->
-                        parseIso("${h.date} ${h.time}")?.time ?: 0L
-                    }
-                    mapped.map{ it -> historyUseCases.saveHistory(HistoryItem(it.id,it.date,it.durationMinutes,it.time)) }
+                    }.reversed()
+                    Log.d("HistoryVM", "Historial mapeado: ${mapped.size} elementos y guardado en Local Storage ${MemoryHistory}")
 
-                } else {
-                    val rentalsModel = historyUseCases.getHistory()
-                    Log.d("HistoryVM", "Rentas obtenidas en Local Storage: ${rentalsModel.size}")
-                    mapped = rentalsModel.mapNotNull { r ->
-                        HistoryUiItem(r.date, r.durationMinutes, r.time, r.id)
+                    if (mapped.size > MemoryHistory){
+                        Log.d("HistoryVM", "Guardando historial en Local Storage ${MemoryHistory}...")
+                        val m= mapped.drop(MemoryHistory)
+                        Log.d("HistoryVM", "Rentas a guardar en Local Storage: ${m.size}")
+                        m.forEach{ it -> historyUseCases.saveHistory(HistoryItem(date=it.date, durationMinutes = it.durationMinutes,time=it.time)) }
+                        MemoryHistory = mapped.size
                     }
 
                 }
