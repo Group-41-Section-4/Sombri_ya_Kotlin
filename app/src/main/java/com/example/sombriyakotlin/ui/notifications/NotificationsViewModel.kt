@@ -9,6 +9,7 @@ import com.example.sombriyakotlin.NotificationHelper
 import com.example.sombriyakotlin.domain.model.Notification
 import com.example.sombriyakotlin.domain.model.NotificationType
 import com.example.sombriyakotlin.domain.repository.WeatherRepository
+import com.example.sombriyakotlin.domain.usecase.ObserveConnectivityUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,9 +28,13 @@ class NotificationsViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val rentalUseCases: RentalUseCases,
     private val userUseCases: UserUseCases,
+    observeConnectivity: ObserveConnectivityUseCase,
     @ApplicationContext private val context: Context   // 👈 agregado
 
 ) : ViewModel() {
+
+    val isConnected: StateFlow<Boolean> = observeConnectivity()
+
 
     private val _notifications = MutableStateFlow<List<Notification>>(emptyList())
     val notifications: StateFlow<List<Notification>> = _notifications
@@ -157,47 +162,58 @@ class NotificationsViewModel @Inject constructor(
     fun checkWeatherAt(context: Context, location: Location) {
         viewModelScope.launch {
             Log.d("JULIANICEN","xd")
-            val pop = weatherRepository
-                .getFirstPopPercent(location.latitude, location.longitude)
-                ?: return@launch
-            Log.d("JULIANICEN","MUERE")
-            if (pop > 30) {
-                Log.d("JULIANICEN","QUE PASO")
-
+            if (!isConnected.value) {
                 val newNotif = Notification(
                     id = nextId("w"),
                     type = NotificationType.WEATHER,
-                    title = "Alerta de Lluvia",
-                    message = "Hay $pop% de probabilidad de lluvia en las próximas horas.",
+                    title = "No hay internet para el clima",
+                    message = "Revise la conexión a internet",
                     time = nowLabel()
                 )
                 _notifications.value = _notifications.value + newNotif
 
-                //  Notificación del sistema
-                NotificationHelper.showNotification(
-                    context,
-                    title = newNotif.title,
-                    message = newNotif.message
-                )
-            }
-            else{
-                Log.d("JULIANICEN","QUE PASO")
-                val newNotif = Notification(
-                    id = nextId("w"),
-                    type = NotificationType.WEATHER,
-                    title = "Alerta de Lluvia",
-                    message = "Hay $pop% de probabilidad de lluvia en las próximas horas.",
-                    time = nowLabel()
-                )
-                _notifications.value = _notifications.value + newNotif
+            }else {
+                val pop = weatherRepository
+                    .getFirstPopPercent(location.latitude, location.longitude)
+                    ?: return@launch
+                Log.d("JULIANICEN", "MUERE")
+                if (pop > 30) {
+                    Log.d("JULIANICEN", "QUE PASO")
 
-                // 🔔 Notificación del sistema
-                NotificationHelper.showNotification(
-                    context,
-                    title = newNotif.title,
-                    message = newNotif.message
-                )
+                    val newNotif = Notification(
+                        id = nextId("w"),
+                        type = NotificationType.WEATHER,
+                        title = "Alerta de Lluvia",
+                        message = "Hay $pop% de probabilidad de lluvia en las próximas horas.",
+                        time = nowLabel()
+                    )
+                    _notifications.value = _notifications.value + newNotif
 
+                    //  Notificación del sistema
+                    NotificationHelper.showNotification(
+                        context,
+                        title = newNotif.title,
+                        message = newNotif.message
+                    )
+                } else {
+                    Log.d("JULIANICEN", "QUE PASO")
+                    val newNotif = Notification(
+                        id = nextId("w"),
+                        type = NotificationType.WEATHER,
+                        title = "Riesgo bajo de Lluvia",
+                        message = "Hay $pop% de probabilidad de lluvia en las próximas horas.",
+                        time = nowLabel()
+                    )
+                    _notifications.value = _notifications.value + newNotif
+
+                    // 🔔 Notificación del sistema
+                    NotificationHelper.showNotification(
+                        context,
+                        title = newNotif.title,
+                        message = newNotif.message
+                    )
+
+                }
             }
         }
     }
