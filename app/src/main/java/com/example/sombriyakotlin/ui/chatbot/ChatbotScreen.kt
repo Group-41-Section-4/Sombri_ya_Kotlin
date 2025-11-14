@@ -101,7 +101,7 @@ fun ChatbotScreen(
             state = listState,
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            reverseLayout = true
+            reverseLayout = false
         ) {
             itemsIndexed(messages, key = { index, item ->
                 // si Message tiene id, úsalo aquí en lugar de index
