@@ -56,7 +56,7 @@ class LoginViewModel @Inject constructor(
                     val credentials = GoogleLogIn(id)
                     val loggedInUser = userUseCases.googleLogInUserUseCases(credentials)
                     _loginState.value = LoginState.Success(loggedInUser)
-                    Log.e("LoginViewModel", "bien: ${loggedInUser.id}")
+                    Log.d("LoginViewModel", "bien: ${loggedInUser.id}")
                     upDateRentalLocal()
                 }else {
                     Log.w("LoginViewModel", "Credential is not of type Google ID!")
@@ -78,8 +78,12 @@ class LoginViewModel @Inject constructor(
             Log.d("RENTALSLOGIN", "Cargando rentas del usuario...")
             val rentals = rentalUseCases.getRentalsUserUseCase.invoke(user.id, status = "ongoing")
             Log.d("RENTALSLOGIN", "Rentas obtenidas: ${rentals.size}")
-            Log.d("RENTALSLOGIN","RETNAAAAAAAAA ${rentals[0]}")
-            rentalUseCases.setCurrentRentalUseCase.invoke(rentals[0])
+
+            if (rentals.isNotEmpty()) {
+                Log.d("RENTALSLOGIN", "Renta encontrada: ${rentals[0]}")
+                rentalUseCases.setCurrentRentalUseCase.invoke(rentals[0])
+            }
+
             Log.d("RENTALSLOGIN", "Se ha actualizado la renta con exito")
         }
     }

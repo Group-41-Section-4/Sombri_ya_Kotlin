@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.ui.home
+package com.example.sombriyakotlin.ui.splash
 
 import androidx.lifecycle.ViewModel
 import com.example.sombriyakotlin.domain.usecase.ObserveConnectivityUseCase

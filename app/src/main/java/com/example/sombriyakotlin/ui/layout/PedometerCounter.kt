@@ -39,7 +39,7 @@ fun PedometerCounter(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            viewModel.startPedometer()
+            //viewModel.startPedometer()
         } else {
             Toast.makeText(context, "Permiso denegado para el podómetro", Toast.LENGTH_SHORT).show()
         }
