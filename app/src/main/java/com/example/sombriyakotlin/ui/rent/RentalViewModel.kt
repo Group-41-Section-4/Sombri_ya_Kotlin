@@ -119,11 +119,9 @@ class RentViewModel @Inject constructor(
                     return@launch
                 }
 
-                val stationId = "16fdfe43-72a3-496e-8d80-7cb5071cff8e"
-
                 val rental = Rental(
                     userId = user.id,
-                    stationStartId = stationId,
+                    stationStartId = tagUid,
                     authType = "nfc",
                 )
 

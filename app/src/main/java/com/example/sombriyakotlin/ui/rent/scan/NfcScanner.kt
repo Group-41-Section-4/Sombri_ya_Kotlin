@@ -60,11 +60,18 @@ class NfcScanner(
     }
 
     // 🏷Callback principal cuando se detecta un tag NFC
-    private val readerCallback = NfcAdapter.ReaderCallback @androidx.annotation.RequiresPermission(
-        android.Manifest.permission.VIBRATE
-    ) { tag: Tag? ->
+    private val readerCallback = NfcAdapter.ReaderCallback { tag: Tag? ->
+        Log.d(
+            "NFC",
+            """
+            === TAG DETECTADO ===
+            id = ${tag?.id?.joinToString("") { "%02X".format(it) }}
+            techs = ${tag?.techList?.joinToString()}
+            hilo = ${Thread.currentThread().name}
+        """.trimIndent()
+        )
         Log.d("NFC", "LEYENDO TAG = $tag")
-        val act = activityRef?.get()
+//        val act = activityRef?.get()
 
         if (tag == null) {
             Log.d("NFC", "Tag es null")
@@ -78,7 +85,7 @@ class NfcScanner(
         firing = true
 
         val uid = uidOf(tag)
-        val techs = tag.techList.joinToString()
+//        val techs = tag.techList.joinToString()
         Log.d("NFC", "Tag detectado - UID=$uid")
 
         // Feedback inmediato
@@ -101,6 +108,10 @@ class NfcScanner(
     @RequiresPermission(Manifest.permission.VIBRATE)
     fun start(activity: Activity) {
         Log.d("NFC", "start() llamado")
+        if (!activity.hasWindowFocus()) {
+            Log.w("NFC", "No arrancando NFC: activity no tiene window focus")
+            return
+        }
         if (enabled) {
             Log.d("NFC", "ReaderMode ya estaba habilitado")
             beep(100)
@@ -125,12 +136,24 @@ class NfcScanner(
                     NfcAdapter.FLAG_READER_NFC_BARCODE or
                     NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
 
+        Log.d("NFC", "ReaderMode flags: $flags")
+
         val extras = Bundle().apply {
             putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 250)
         }
 
-        adapter.enableReaderMode(activity, readerCallback, flags, extras)
-
+        // asegurarnos UI thread
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            activity.runOnUiThread {
+                Log.d("NFC", "enableReaderMode() llamado (UI thread)")
+                adapter.enableReaderMode(activity, readerCallback, flags, extras)
+                Log.d("NFC", "enableReaderMode() llamado (post)")
+            }
+        } else {
+            Log.d("NFC", "enableReaderMode() llamado (main)")
+            adapter.enableReaderMode(activity, readerCallback, flags, extras)
+            Log.d("NFC", "enableReaderMode() llamado (post)")
+        }
         this.adapter = adapter
         enabled = true
         firing = false

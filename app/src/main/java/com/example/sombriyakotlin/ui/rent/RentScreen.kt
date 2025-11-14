@@ -53,6 +53,7 @@ fun CardRent(navController: NavController) {
     // Estado NFC
     var nfcEnabled by remember { mutableStateOf(false) }
     val nfcScanner = remember {
+        Log.d("Rent", "Buscando con NFC…")
         NfcScanner(
             onTagDetected = { tagId ->
                 Log.d("Rent", "Tag detectado: $tagId")
@@ -73,9 +74,12 @@ fun CardRent(navController: NavController) {
             Log.d("Rent", "Sin conexión: se muestra pop-up y se detiene flujo.")
             return@LaunchedEffect // 👈 Detiene el resto del código inicial
         }
+    }
 
+
+    LaunchedEffect(nfcEnabled) {
         //  Solo si hay conexión, activar NFC
-        if (isNfcSupported(activity)) {
+        if (isNfcSupported(activity) ) {
             if (isNfcEnabled(activity)) {
                 try {
                     nfcScanner.start(activity)
@@ -140,6 +144,7 @@ fun CardRent(navController: NavController) {
             }
             navigateToMain = false
         }
+        nfcScanner.stop(activity)
     }
 
     //Hay renta solo si hay red
@@ -154,7 +159,11 @@ fun CardRent(navController: NavController) {
     // UI principal
     Column(modifier = Modifier.fillMaxSize()) {
         Box(Modifier.weight(1f).fillMaxSize()) {
+            BotonNFC({
+                nfcScanner.start(activity)
+            })
             QrScannerScreen(modifier = Modifier.matchParentSize())
+
         }
     }
 
