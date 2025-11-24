@@ -5,6 +5,7 @@ import com.example.sombriyakotlin.data.serviceAdapter.StationApi
 import com.example.sombriyakotlin.data.serviceAdapter.UserApi
 import com.example.sombriyakotlin.data.cache.LruCache
 import com.example.sombriyakotlin.data.datasource.DataStoreSettingsStorage
+import com.example.sombriyakotlin.data.datasource.ROM.ChatDatabase
 import com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.network.NetworkRepositoryImpl
@@ -58,12 +59,6 @@ abstract class RepositoryModule {
 
         @Provides
         @Singleton
-        fun provideChatRepository(): ChatbotRepository{
-            return ChatbotRepositoryImpl()
-        }
-
-        @Provides
-        @Singleton
         fun provideLruCache(): LruCache<String, List<Station>> {
             // 100
             return LruCache(maxSize = 4)
@@ -95,4 +90,12 @@ abstract class RepositoryModule {
     abstract fun bindHistoryRepository(
         historyRepositoryImpl: HistoryRepositoryImpl
     ): HistoryRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindChatRepository(
+        chatbotRepositoryImpl: ChatbotRepositoryImpl
+    ): ChatbotRepository
+
+
 }

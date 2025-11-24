@@ -42,5 +42,6 @@ fun Message.toDto(): MessageDto = MessageDto (
 
 fun MessageDto.toDomain(): Message = Message (
     content = content,
-    isUser = false
+    isUser = false,
+    timestamp = System.currentTimeMillis()
 )

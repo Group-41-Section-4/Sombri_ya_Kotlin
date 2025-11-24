@@ -1,7 +1,7 @@
 package com.example.sombriyakotlin.data.repository
 
-import com.example.sombriyakotlin.data.datasource.History
-import com.example.sombriyakotlin.data.datasource.HistoryLocalDataSource
+import com.example.sombriyakotlin.data.datasource.ROM.History
+import com.example.sombriyakotlin.data.datasource.ROM.HistoryLocalDataSource
 import HistoryItem
 import com.example.sombriyakotlin.domain.repository.HistoryRepository
 import javax.inject.Inject
