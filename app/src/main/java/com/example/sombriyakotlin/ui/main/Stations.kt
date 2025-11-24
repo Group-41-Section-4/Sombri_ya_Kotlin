@@ -249,3 +249,50 @@ fun EstacionCard(estacion: Station,
     }
 }
 
+
+@Composable
+fun StationsSheet(
+    stationsUiState: StationsViewModel.StationsState,
+    onStationClick: (Station) -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
+    ) {
+        Text("Estaciones cercanas", fontWeight = FontWeight.Bold)
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            when (stationsUiState) {
+                is StationsViewModel.StationsState.Success -> {
+                    items(stationsUiState.stations) { station ->
+                        EstacionCard(
+                            estacion = station,
+                            onCardClick = { onStationClick(station) }
+                        )
+                    }
+                }
+                is StationsViewModel.StationsState.Loading -> {
+                    item {
+                        Text("Cargando estaciones...")
+                    }
+                }
+                is StationsViewModel.StationsState.Error -> {
+                    item {
+                        Text("Error al cargar: ${stationsUiState.message}")
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
+}
+
+

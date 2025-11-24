@@ -9,19 +9,28 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.SignalWifiOff
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +59,9 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent(navController: NavController,
                 homeViewModel: HomeViewModel = hiltViewModel(),
@@ -87,6 +98,14 @@ fun MainContent(navController: NavController,
     val connection by homeViewModel.isConnected.collectAsState(initial = true)
 
     var showFallbackOverlay by remember { mutableStateOf(false) }
+
+    val scope = rememberCoroutineScope ()
+    val scaffoldState = rememberBottomSheetScaffoldState(
+         bottomSheetState = rememberStandardBottomSheetState(
+             initialValue = SheetValue.Hidden,
+             skipHiddenState = false
+         )
+    )
 
     LaunchedEffect(connection, isMapLoaded) {
         // si ambas condiciones se cumplen, esperamos un poco antes de mostrar
@@ -128,14 +147,28 @@ fun MainContent(navController: NavController,
 
 
 
-    Column (
-        modifier = Modifier.fillMaxHeight(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
+    BottomSheetScaffold (
+        scaffoldState = scaffoldState,
+        sheetPeekHeight = 0.dp,
+        sheetContent = {
+            StationsSheet(
+                stationsUiState = stationsUiState,
+                onStationClick = { station ->
+                    val newPosition = LatLng(station.latitude, station.longitude)
+                    scope.launch {
+                        cameraPositionState.animate(
+                            com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(newPosition, 17f)
+                        )
+                    }
+                }
+            )
+        },
+        modifier = Modifier.fillMaxSize()
+    ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         )
         {
             GoogleMap(
@@ -189,11 +222,29 @@ fun MainContent(navController: NavController,
             }
 
             Button(
-                onClick = { navController.navigate("stations") },
-                modifier = Modifier.padding(top = 5.dp),
+                onClick = {
+                    scope.launch {
+                        val bottomState = scaffoldState.bottomSheetState
+                        if (bottomState.isVisible) {
+                            bottomState.hide()      // ahora sí OK
+                        } else {
+                            bottomState.expand()    // ahora sí OK
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 5.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.estaciones_button)), // Color del botón
             ) {
                 Text(text = "ESTACIONES")
+                if (!connection) {
+                    Icon(
+                        Icons.Rounded.SignalWifiOff,
+                        contentDescription = "Sin conexión",
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
             }
             if (showFallbackOverlay) {
                 Column(
@@ -215,8 +266,8 @@ fun MainContent(navController: NavController,
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainWithDrawer(navController: NavController,navHostController: NavHostController) {
-    AppLayout(navController = navController,navHostController) {
-        MainContent(navController)
+fun MainWithDrawer(navController: NavController, navHostController: NavHostController) {
+    AppLayout(navController = navController, navHostController = navHostController) {
+        MainContent(navController = navController)
     }
 }

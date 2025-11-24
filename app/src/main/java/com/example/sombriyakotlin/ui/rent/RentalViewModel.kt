@@ -228,6 +228,7 @@ class RentViewModel @Inject constructor(
                     endedAt = endDate,
                     status = "completed",
                     authType = current.authType ?: "nfc"
+                    // pasos
                 )
 
                 val ended = rentalUseCases.endRentalUseCase.invoke(rentalToEnd)
