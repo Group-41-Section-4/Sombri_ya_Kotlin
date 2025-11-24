@@ -16,10 +16,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.SignalWifiOff
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -203,6 +206,7 @@ fun CardStations(navController: NavHostController,
 
 @Composable
 fun EstacionCard(estacion: Station,
+                 isconected: Boolean = true,
                  onCardClick: (Station) -> Unit = {}) {
     Card(modifier = Modifier
         .padding(0.dp)
@@ -222,24 +226,26 @@ fun EstacionCard(estacion: Station,
 
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(text = "${estacion.placeName}", fontWeight = FontWeight.Bold)
+                if (!isconected) {
+                    Row(modifier = Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter=painterResource(R.drawable.umbrella_available),
+                            contentDescription = "Sombrilla disponible",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        Text(text = " ${estacion.availableUmbrellas} ", color= colorResource(R.color.green), fontWeight = FontWeight.Bold)
+                        Image(
+                            painter=painterResource(R.drawable.no_umbrella),
+                            contentDescription = "Sombrilla no disponible",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        Text("${estacion.totalUmbrellas - estacion.availableUmbrellas}",color=colorResource(R.color.red), fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(text = "${estacion.distanceMeters} m")
 
-                Row(modifier = Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter=painterResource(R.drawable.umbrella_available),
-                        contentDescription = "Sombrilla disponible",
-                        modifier = Modifier.padding(8.dp)
-                    )
-                    Text(text = " ${estacion.availableUmbrellas} ", color= colorResource(R.color.green), fontWeight = FontWeight.Bold)
-                    Image(
-                        painter=painterResource(R.drawable.no_umbrella),
-                        contentDescription = "Sombrilla no disponible",
-                        modifier = Modifier.padding(8.dp)
-                    )
-                    Text("${estacion.totalUmbrellas - estacion.availableUmbrellas}",color=colorResource(R.color.red), fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "${estacion.distanceMeters} m")
-
+                    }
                 }
+
                 Text(text = "${estacion.description}")
             }
 
@@ -253,6 +259,7 @@ fun EstacionCard(estacion: Station,
 @Composable
 fun StationsSheet(
     stationsUiState: StationsViewModel.StationsState,
+    isConnected: Boolean,
     onStationClick: (Station) -> Unit
 ) {
     Column(
@@ -275,6 +282,7 @@ fun StationsSheet(
                     items(stationsUiState.stations) { station ->
                         EstacionCard(
                             estacion = station,
+                            isconected = isConnected,
                             onCardClick = { onStationClick(station) }
                         )
                     }

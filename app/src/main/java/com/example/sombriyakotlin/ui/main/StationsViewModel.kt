@@ -38,6 +38,7 @@ class StationsViewModel @Inject constructor(
 
     val isConnected: StateFlow<Boolean> = observeConnectivity()
 
+
     private val _stationsState = MutableStateFlow<StationsState>(StationsState.Idle)
     val stationsState: StateFlow<StationsState> = _stationsState
 

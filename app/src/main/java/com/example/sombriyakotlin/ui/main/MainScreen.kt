@@ -102,8 +102,8 @@ fun MainContent(navController: NavController,
     val scope = rememberCoroutineScope ()
     val scaffoldState = rememberBottomSheetScaffoldState(
          bottomSheetState = rememberStandardBottomSheetState(
-             initialValue = SheetValue.Hidden,
-             skipHiddenState = false
+             initialValue = SheetValue.PartiallyExpanded, // 👈 arranca colapsado
+             skipHiddenState = true
          )
     )
 
@@ -153,12 +153,26 @@ fun MainContent(navController: NavController,
         sheetContent = {
             StationsSheet(
                 stationsUiState = stationsUiState,
+                isConnected = connection,
                 onStationClick = { station ->
-                    val newPosition = LatLng(station.latitude, station.longitude)
                     scope.launch {
+                        // 1. Move camara
+                        val newPosition = LatLng(station.latitude, station.longitude)
                         cameraPositionState.animate(
-                            com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(newPosition, 17f)
+                            com.google.android.gms.maps.CameraUpdateFactory
+                                .newLatLngZoom(newPosition, 17f)
                         )
+
+                        // 2. close sheet
+                        val bottomState = scaffoldState.bottomSheetState
+
+                        // avoid animarion
+                        if (bottomState.currentValue != bottomState.targetValue) return@launch
+
+                        // PartiallyExpanded
+                        if (bottomState.currentValue == SheetValue.Expanded) {
+                            bottomState.partialExpand()
+                        }
                     }
                 }
             )
@@ -225,10 +239,15 @@ fun MainContent(navController: NavController,
                 onClick = {
                     scope.launch {
                         val bottomState = scaffoldState.bottomSheetState
-                        if (bottomState.isVisible) {
-                            bottomState.hide()      // ahora sí OK
-                        } else {
-                            bottomState.expand()    // ahora sí OK
+
+                        // Evita pelear con una animación en curso
+                        if (bottomState.currentValue != bottomState.targetValue) return@launch
+
+                        when (bottomState.currentValue) {
+                            SheetValue.PartiallyExpanded -> bottomState.expand()
+                            SheetValue.Expanded -> bottomState.partialExpand()
+                            // Hidden ya no existe con skipHiddenState = true
+                            else -> {}
                         }
                     }
                 },
