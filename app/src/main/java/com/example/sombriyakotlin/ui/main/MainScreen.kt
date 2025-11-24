@@ -11,21 +11,31 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.SignalWifiOff
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -52,14 +62,17 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainContent(navController: NavController,
-                homeViewModel: HomeViewModel = hiltViewModel(),
-                viewModel: LocationViewModel = viewModel(),
-                stationsViewModel: StationsViewModel = hiltViewModel()
-){
-
+fun MainContent(
+    navController: NavController,
+    onBottomBarVisibilityChange: ((Boolean) -> Unit)? = null,
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    viewModel: LocationViewModel = viewModel(),
+    stationsViewModel: StationsViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
 
     // verificar permiso actual
@@ -90,12 +103,49 @@ fun MainContent(navController: NavController,
 
     var showFallbackOverlay by remember { mutableStateOf(false) }
 
+    val scope = rememberCoroutineScope ()
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.Hidden, // 👈 arranca colapsado
+            skipHiddenState = false
+        )
+    )
+
     var showConsentPopUp by remember { mutableStateOf(false) }
 
     val alreadySent = rememberSaveable { mutableStateOf(false) }
 
     val consent by homeViewModel.consentState.collectAsState() // Boolean? (null = no preguntado)
 
+    var bottomPadding by remember { mutableStateOf(72.dp) }
+
+    // Detectar automáticamente los gestos del usuario
+    LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
+        val state = scaffoldState.bottomSheetState.currentValue
+
+        when (state) {
+            SheetValue.PartiallyExpanded -> {
+                onBottomBarVisibilityChange?.invoke(false)
+                bottomPadding = 72.dp
+            }
+            SheetValue.Expanded -> {
+                onBottomBarVisibilityChange?.invoke(false)
+                bottomPadding = 72.dp
+            }
+            SheetValue.Hidden -> {
+                onBottomBarVisibilityChange?.invoke(true)
+                bottomPadding = 0.dp
+            }
+            else -> { /* nada */ }
+        }
+    }
+
+
+    // Ejemplo: mostrar el bottom bar normalmente
+    LaunchedEffect(Unit) {
+        onBottomBarVisibilityChange?.invoke(true)
+        bottomPadding = 0.dp
+    }
 
     LaunchedEffect(connection, isMapLoaded) {
         // si ambas condiciones se cumplen, esperamos un poco antes de mostrar
@@ -146,18 +196,55 @@ fun MainContent(navController: NavController,
                 location?.longitude ?: 0.0,
             )
         }
+
+
     }
 
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetPeekHeight = 400.dp,
+        sheetContent = {
+            Box(
+                Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                StationsSheet(
+                    stationsUiState = stationsUiState,
+                    isConnected = connection,
+                    onStationClick = { station ->
+                        scope.launch {
+                            // 1. Move camara
+                            val newPosition = LatLng(station.latitude, station.longitude)
+                            cameraPositionState.animate(
+                                com.google.android.gms.maps.CameraUpdateFactory
+                                    .newLatLngZoom(newPosition, 17f)
+                            )
 
+                            // 2. close sheet
+                            val bottomState = scaffoldState.bottomSheetState
 
-    Column (
-        modifier = Modifier.fillMaxHeight(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
+                            // avoid animarion
+                            if (bottomState.currentValue != bottomState.targetValue) return@launch
+
+                            // PartiallyExpanded
+                            if (bottomState.currentValue == SheetValue.Expanded) {
+                                bottomState.partialExpand()
+                            }
+                        }
+                    }
+                )
+            }
+        },
+        //modifier = Modifier.fillMaxSize(),
+        //sheetShadowElevation = 4.dp,
+        sheetContainerColor = Color.White,
+        sheetSwipeEnabled = true
+    ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding( bottom = bottomPadding)
         )
         {
             GoogleMap(
@@ -204,18 +291,50 @@ fun MainContent(navController: NavController,
             }
 
             when (weather){
-                WeatherType.SOLEADO -> SunRaysAnimation(modifier = Modifier.fillMaxSize())
+                WeatherType.SOLEADO -> {}
                 WeatherType.NUBLADO -> CloudEmojiAnimation(modifier = Modifier.fillMaxSize())
                 WeatherType.LLUVIA -> RainAnimation(modifier = Modifier.fillMaxSize())
                 null -> {}
             }
 
             Button(
-                onClick = { navController.navigate("stations") },
-                modifier = Modifier.padding(top = 5.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.estaciones_button)), // Color del botón
+                onClick = {
+                    scope.launch {
+                        onBottomBarVisibilityChange?.invoke(false)
+                        bottomPadding = 72.dp
+                        val bottomState = scaffoldState.bottomSheetState
+
+                        if (bottomState.currentValue != bottomState.targetValue) return@launch
+
+                        when (bottomState.currentValue) {
+                            SheetValue.PartiallyExpanded -> {
+                                bottomState.hide()
+                            }
+                            SheetValue.Expanded -> {
+                                bottomState.partialExpand()
+                            }
+                            SheetValue.Hidden -> {
+                                bottomState.partialExpand()
+                            }
+                            else -> {}
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 5.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.estaciones_button)
+                )
             ) {
-                Text(text = "ESTACIONES")
+                Text("ESTACIONES")
+                if (!connection) {
+                    Icon(
+                        Icons.Rounded.SignalWifiOff,
+                        contentDescription = "Sin conexión",
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
             }
             if (showFallbackOverlay) {
                 Column(
@@ -249,13 +368,19 @@ fun MainContent(navController: NavController,
                 )
             }
         }
+
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainWithDrawer(navController: NavController,navHostController: NavHostController) {
-    AppLayout(navController = navController,navHostController) {
-        MainContent(navController)
+fun MainWithDrawer(
+    navController: NavController,
+    navHostController: NavHostController
+) {
+    AppLayout(navController, navHostController) { setBottomBarVisible ->
+        MainContent(
+            navController = navController,
+            onBottomBarVisibilityChange = setBottomBarVisible
+        )
     }
 }
