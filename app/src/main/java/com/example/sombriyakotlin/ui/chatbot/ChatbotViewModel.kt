@@ -38,6 +38,8 @@ class ChatbotViewModel @Inject constructor(
     private val _chat = MutableStateFlow(Chat( mutableListOf()))
     val chat: StateFlow<Chat> = _chat
 
+    val MAX_CHAT_MESSAGES = 200
+
 
     fun sendMessage(text: String){
         viewModelScope.launch {
