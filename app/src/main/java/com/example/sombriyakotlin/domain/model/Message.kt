@@ -8,5 +8,5 @@ data class Message(
     val id: String? = null,
     val status: MessageStatus = MessageStatus.PENDING,
     val position:Int = 0,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long
 )

@@ -88,7 +88,7 @@ class ChatbotViewModel @Inject constructor(
             _chatbotState.value = ChatState.Loading
 
             val currentList = _chat.value.messages.toMutableList()
-            val newMessage = Message(content = text, isUser = true)
+            val newMessage = Message(content = text, isUser = true, timestamp = System.currentTimeMillis())
             currentList.add(newMessage)
             _chat.value = Chat(currentList)
 
@@ -119,17 +119,16 @@ class ChatbotViewModel @Inject constructor(
         // Actualiza lista UI
         val currentList = _chat.value.messages.toMutableList()
         val pos = indexToPosition.get(key, -1)
-        currentList.add(newMessage)
-
-//        if (pos >= 0) {
-//            currentList[pos] = newMessage
-//        } else {
-//            indexToPosition.put(key, currentList.lastIndex)
-//        }
+        if (pos >= 0) {
+            currentList[pos] = newMessage
+        } else {
+            currentList.add(newMessage)
+            indexToPosition.put(key, currentList.lastIndex)
+        }
         _chat.value = Chat(currentList)
 
         // Evict si hace falta
-//        evictIfNeeded()
+        evictIfNeeded()
     }
 
     fun getMessageByLocalId(localId: Int): Message? {
@@ -140,10 +139,11 @@ class ChatbotViewModel @Inject constructor(
         // Trae PAGE_SIZE mensajes anteriores a oldestLoadedTimestamp
         val before = oldestLoadedTimestamp.takeIf { it != Long.MAX_VALUE } ?: System.currentTimeMillis()
         val more = chatbotRepository.getMessagesBefore(before, MAX_CACHE) // implementa en repo
+        Log.d("ChatbotViewModel", "More messages: $oldestLoadedTimestamp $more")
         if (more.isNotEmpty()) {
             // asumiendo que 'more' viene ordenado de más antiguo a más reciente
             val loadedMessages = (more + _chat.value.messages).toMutableList()
-            oldestLoadedTimestamp = more.first().timestamp
+            oldestLoadedTimestamp = more.last().timestamp
             more.forEach { msg ->
                 val key = msg.position ?: return@forEach
                 messageCache.put(key, msg)

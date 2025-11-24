@@ -74,13 +74,12 @@ fun ChatbotScreen(
             listState.animateScrollToItem(messages.size - 1)
         }
     }
-//
-//
-//    LaunchedEffect(listState.firstVisibleItemIndex) {
-//        if (listState.firstVisibleItemIndex == 0 && messages.isNotEmpty()) { // llegó al top
-//            viewModel.loadMoreMessages()
-//        }
-//    }
+
+    LaunchedEffect(listState.firstVisibleItemIndex) {
+        if (listState.firstVisibleItemIndex == 0 && messages.isNotEmpty()) { // llegó al top
+            viewModel.loadMoreMessages()
+        }
+    }
 
 
     Column(

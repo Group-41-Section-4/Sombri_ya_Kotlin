@@ -17,7 +17,7 @@ data class MessageEntity(
 )
 
 
-fun MessageEntity.toDomain() = Message(id=remoteId, content=content, isUser=isUser, status=status, position = localId)
+fun MessageEntity.toDomain() = Message(id=remoteId, content=content, isUser=isUser, status=status, position = localId, timestamp=timestamp)
 fun Message.toEntity() = MessageEntity( content=content, isUser=isUser, remoteId=id, status=status)
 
 fun MessageEntity.toDto() = MessageDto(role=if (isUser) "user" else "assistant", content=content)
