@@ -22,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +42,7 @@ import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.main.animations.CloudEmojiAnimation
 import com.example.sombriyakotlin.ui.main.animations.RainAnimation
 import com.example.sombriyakotlin.ui.main.animations.SunRaysAnimation
+import com.example.sombriyakotlin.ui.popup.ConsentDialog
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -88,6 +90,13 @@ fun MainContent(navController: NavController,
 
     var showFallbackOverlay by remember { mutableStateOf(false) }
 
+    var showConsentPopUp by remember { mutableStateOf(false) }
+
+    val alreadySent = rememberSaveable { mutableStateOf(false) }
+
+    val consent by homeViewModel.consentState.collectAsState() // Boolean? (null = no preguntado)
+
+
     LaunchedEffect(connection, isMapLoaded) {
         // si ambas condiciones se cumplen, esperamos un poco antes de mostrar
         if (!connection && !isMapLoaded) {
@@ -97,6 +106,13 @@ fun MainContent(navController: NavController,
             }
         } else {
             showFallbackOverlay = false
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        delay(300)
+        if (consent == null) {
+            showConsentPopUp = true
         }
     }
 
@@ -122,9 +138,15 @@ fun MainContent(navController: NavController,
                 homeViewModel.checkWeatherAt(loc.latitude, loc.longitude)
             }
         }
+        if (location != null && !alreadySent.value) {
+            alreadySent.value = true
+
+            homeViewModel.sendCurrentLocation(
+                location?.latitude ?: 0.0,
+                location?.longitude ?: 0.0,
+            )
+        }
     }
-
-
 
 
 
@@ -208,8 +230,25 @@ fun MainContent(navController: NavController,
                     Text("Sin conexión a internet")
                 }
             }
-        }
 
+            if (showConsentPopUp) {
+                ConsentDialog(
+                    onAllow = {
+                        // antes de pedir permiso de runtime, podemos chequear si ya se concedió
+                        homeViewModel.onConsentAnswered(true)
+                        if (location != null)
+                        {
+                            homeViewModel.sendCurrentLocation(
+                                location?.latitude ?: 0.0,
+                                location?.longitude ?: 0.0)
+                        }
+                    },
+                    onDeny = {
+                        homeViewModel.onConsentAnswered(false)
+                    }
+                )
+            }
+        }
     }
 }
 

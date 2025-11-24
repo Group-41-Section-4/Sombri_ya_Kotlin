@@ -3,20 +3,29 @@ package com.example.sombriyakotlin.ui.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sombriyakotlin.domain.model.CreateLocation
 import com.example.sombriyakotlin.domain.model.Notification
 import com.example.sombriyakotlin.domain.model.WeatherType
 import com.example.sombriyakotlin.domain.repository.WeatherRepository
 import com.example.sombriyakotlin.domain.usecase.ObserveConnectivityUseCase
+import com.example.sombriyakotlin.domain.usecase.location.LocationUseCases
+import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
+    private val locationUseCases: LocationUseCases,
+    private val userUseCases: UserUseCases,
     private val observeConnectivity: ObserveConnectivityUseCase,
 ): ViewModel(){
 
@@ -25,8 +34,15 @@ class HomeViewModel @Inject constructor(
     private val _weatherState = MutableStateFlow<WeatherType?>(null)
     val weatherState: StateFlow<WeatherType?> = _weatherState
 
+    private val sentInThisProcess = AtomicBoolean(false)
+
+
     var lastWeatherUpdateTime: Long = 0L
         private set
+
+    val consentState = locationUseCases.isLocationConsentGiven()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null) // null = not asked
+
 
     fun checkWeatherAt(lat: Double, lon: Double) {
         viewModelScope.launch {
@@ -40,6 +56,29 @@ class HomeViewModel @Inject constructor(
             _weatherState.value = weather
             lastWeatherUpdateTime = System.currentTimeMillis()
             Log.d("HomeViewModel", "checkWeatherAt: $weather")
+        }
+    }
+
+    fun sendCurrentLocation(lat: Double, lon: Double) {
+
+        viewModelScope.launch {
+            try {
+                if (!isConnected.value || sentInThisProcess.get() || consentState.value != true) return@launch
+
+                val user = userUseCases.getUserUseCase().first() ?: return@launch
+                locationUseCases.sendCurrentLocation(CreateLocation(lat, lon, user.id))
+                sentInThisProcess.set(true)
+            }
+            catch (e: Exception) {
+                Log.e("HomeViewModel", "error en sendCurrentLocation: ${e.message}", e)
+            }
+        }
+        Log.d("HomeViewModel", "Location Send it: $lat, $lon")
+    }
+
+    fun onConsentAnswered(given: Boolean) {
+        viewModelScope.launch {
+            locationUseCases.setLocationConsent(given)
         }
     }
 

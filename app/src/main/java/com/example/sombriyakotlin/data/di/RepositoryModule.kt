@@ -1,22 +1,24 @@
 package com.example.sombriyakotlin.data.di
 
-import com.example.sombriyakotlin.BuildConfig
-import com.example.sombriyakotlin.data.api.RentalApi
-import com.example.sombriyakotlin.data.api.StationApi
-import com.example.sombriyakotlin.data.api.UserApi
+import com.example.sombriyakotlin.data.serviceAdapter.RentalApi
+import com.example.sombriyakotlin.data.serviceAdapter.StationApi
+import com.example.sombriyakotlin.data.serviceAdapter.UserApi
 import com.example.sombriyakotlin.data.cache.LruCache
+import com.example.sombriyakotlin.data.datasource.DataStoreSettingsStorage
 import com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.network.NetworkRepositoryImpl
 import com.example.sombriyakotlin.data.repository.ChatbotRepositoryImpl
 import com.example.sombriyakotlin.data.repository.HistoryRepositoryImpl
+import com.example.sombriyakotlin.data.repository.LocationRepositoryImpl
 import com.example.sombriyakotlin.data.repository.RentalRepositoryImpl
 import com.example.sombriyakotlin.data.repository.StationRepositoryImpl
 import com.example.sombriyakotlin.data.repository.UserRepositoryImpl
-import com.example.sombriyakotlin.domain.model.Localization
+import com.example.sombriyakotlin.data.serviceAdapter.LocationApi
 import com.example.sombriyakotlin.domain.model.Station
 import com.example.sombriyakotlin.domain.repository.ChatbotRepository
 import com.example.sombriyakotlin.domain.repository.HistoryRepository
+import com.example.sombriyakotlin.domain.repository.LocationRepository
 import com.example.sombriyakotlin.domain.repository.NetworkRepository
 import com.example.sombriyakotlin.domain.repository.RentalRepository
 import com.example.sombriyakotlin.domain.repository.StationRepository
@@ -28,7 +30,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -67,6 +68,13 @@ abstract class RepositoryModule {
             // 100
             return LruCache(maxSize = 4)
         }
+
+        @Provides
+        @Singleton
+        fun provideLocationRepository(
+            locationApi : LocationApi,
+            local: DataStoreSettingsStorage
+        ): LocationRepository = LocationRepositoryImpl(locationApi = locationApi, local = local)
 
         @Provides
         @Singleton

@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ModalDrawer
+import androidx.compose.material.Switch
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -93,6 +99,9 @@ fun ContentCard(
 
     var loggingOut by remember { mutableStateOf(false) }
 
+    val consent by viewModel.consentState.collectAsState() // Boolean? (null = no preguntado)
+
+
     if (loggingOut) {
         LaunchedEffect (Unit) {
             viewModel.logout()
@@ -123,14 +132,47 @@ fun ContentCard(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // === NOMBRE ===
-        Text("¡Bienvenido ${currentName}!", fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 16.dp), fontSize = 24.sp)
+        Text("¡Hola ${currentName}!", fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 16.dp), fontSize = 24.sp)
 
         WaterLevelCircle(percentage = percentage, distance = userDistance)
 
-
+        // === EMAIL ===
+        OutlinedTextField(
+            value = currentMail,
+            onValueChange = {},
+            readOnly = true,
+            shape = RoundedCornerShape(24.dp),
+            prefix = {
+                Text(
+                    "Email",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(end = 130.dp)
+                )
+            },
+            trailingIcon = {
+                IconButton(onClick = { openDialogMail = true }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrow),
+                        contentDescription = "Modificar información",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            },
+            colors = TextFieldDefaults.colors(
+                disabledContainerColor  = colorResource(R.color.secondary),
+                focusedContainerColor   = colorResource(R.color.secondary),
+                unfocusedContainerColor = colorResource(R.color.secondary),
+                focusedTextColor        = colorResource(R.color.gray),
+                unfocusedTextColor      = colorResource(R.color.gray),
+                focusedIndicatorColor   = colorResource(R.color.primary),
+                unfocusedIndicatorColor = colorResource(R.color.primary)
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = false
+        )
         // === CONTRASEÑA ===
         OutlinedTextField(
-            value = currentPassword,
+            value = "........",
             onValueChange = {},
             readOnly = true,
             shape = RoundedCornerShape(24.dp),
@@ -167,42 +209,34 @@ fun ContentCard(
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
-                ) { openDialogPassword = true }
+                ) { openDialogPassword = true },
+            enabled = false
         )
 
-        // === EMAIL ===
-        OutlinedTextField(
-            value = currentMail,
-            onValueChange = {},
-            readOnly = true,
-            shape = RoundedCornerShape(24.dp),
-            prefix = {
-                Text(
-                    "Email",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(end = 130.dp)
-                )
-            },
-            trailingIcon = {
-                IconButton(onClick = { openDialogMail = true }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow),
-                        contentDescription = "Modificar información",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            },
-            colors = TextFieldDefaults.colors(
-                disabledContainerColor  = colorResource(R.color.secondary),
-                focusedContainerColor   = colorResource(R.color.secondary),
-                unfocusedContainerColor = colorResource(R.color.secondary),
-                focusedTextColor        = colorResource(R.color.gray),
-                unfocusedTextColor      = colorResource(R.color.gray),
-                focusedIndicatorColor   = colorResource(R.color.primary),
-                unfocusedIndicatorColor = colorResource(R.color.primary)
-            ),
-            modifier = Modifier.fillMaxWidth()
+        Row (
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         )
+        {
+            Text("¿Enviar ubicación al abrir la app?")
+            Switch(
+            checked = consent == true,
+            onCheckedChange = { viewModel.setLocationConsent(it) },
+                thumbContent = if (consent == true) {
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    }
+                } else {
+                    null
+                }
+            )
+        }
+
         //
         Button(
             onClick = { loggingOut = true },
