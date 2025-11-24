@@ -38,33 +38,49 @@ class ChatbotViewModel @Inject constructor(
     private val _chat = MutableStateFlow(Chat( mutableListOf()))
     val chat: StateFlow<Chat> = _chat
 
-    val MAX_CHAT_MESSAGES = 200
+    val MAX_CHAT_MESSAGES = 20
 
 
-    fun sendMessage(text: String){
+    fun sendMessage(text: String) {
         viewModelScope.launch {
             _chatbotState.value = ChatState.Loading
 
             try {
-                val out = Message(text,true)
+                // Crear mensaje del usuario
+                val out = Message(text, true)
+
+                // Copiar la lista actual y agregar el nuevo mensaje
                 val currentMessages = _chat.value.messages.toMutableList()
                 currentMessages.add(out)
+
+                // Limitar la lista a MAX_CHAT_MESSAGES
+                if (currentMessages.size > MAX_CHAT_MESSAGES) {
+                    currentMessages.subList(0, currentMessages.size - MAX_CHAT_MESSAGES).clear()
+                }
+
+                // Actualizar el StateFlow
                 _chat.value = Chat(currentMessages)
 
-                val chatv = _chat.value
-                val reply: Message = chatbotRepository.sendMessage(chatv)
+                // Enviar al repositorio/LLM
+                val reply: Message = chatbotRepository.sendMessage(_chat.value)
 
+                // Agregar respuesta del LLM a la lista actual
                 val updated = _chat.value.messages.toMutableList()
                 updated.add(reply)
-                _chat.value = Chat(updated)
 
+                // Limitar nuevamente la lista
+                if (updated.size > MAX_CHAT_MESSAGES) {
+                    updated.subList(0, updated.size - MAX_CHAT_MESSAGES).clear()
+                }
+
+                _chat.value = Chat(updated)
                 _chatbotState.value = ChatState.Success(_chat.value)
+
                 Log.d("ChatbotViewModel", "Mensaje recibido: $reply")
 
             } catch (e: Exception) {
                 Log.e("ChatbotViewModel", "Error enviando mensaje ${e.message}", e)
                 _chatbotState.value = ChatState.Error(e.message ?: "Error enviando mensaje")
-
             }
         }
     }
