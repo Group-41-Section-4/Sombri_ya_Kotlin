@@ -1,7 +1,7 @@
 package com.example.sombriyakotlin.data.repository
 
 import android.util.Log
-import com.example.sombriyakotlin.data.api.UserApi
+import com.example.sombriyakotlin.data.serviceAdapter.UserApi
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.dto.toDomain
 import com.example.sombriyakotlin.data.dto.toDto

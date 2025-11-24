@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
-    private val rentalUseCases: RentalUseCases
+    private val rentalUseCases: RentalUseCases,
 ) : ViewModel() {
 
     // Clase sellada para manejar los estados de la UI
@@ -43,7 +43,7 @@ class LoginViewModel @Inject constructor(
                 upDateRentalLocal()
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Error en el login: ${e.message}", e)
-                _loginState.value = LoginState.Error("Error en el login: ${e.message}")
+                _loginState.value = LoginState.Error("Error en el login: Compruebe sus credenciales")
             }
         }
     }
@@ -56,11 +56,11 @@ class LoginViewModel @Inject constructor(
                     val credentials = GoogleLogIn(id)
                     val loggedInUser = userUseCases.googleLogInUserUseCases(credentials)
                     _loginState.value = LoginState.Success(loggedInUser)
-                    Log.e("LoginViewModel", "bien: ${loggedInUser.id}")
+                    Log.d("LoginViewModel", "bien: ${loggedInUser.id}")
                     upDateRentalLocal()
                 }else {
                     Log.w("LoginViewModel", "Credential is not of type Google ID!")
-                    _loginState.value = LoginState.Error("Error inseperado en el login 2000")
+                    _loginState.value = LoginState.Error("Error inseperado en el login")
 
                 }
             } catch (e: Exception) {
@@ -78,8 +78,12 @@ class LoginViewModel @Inject constructor(
             Log.d("RENTALSLOGIN", "Cargando rentas del usuario...")
             val rentals = rentalUseCases.getRentalsUserUseCase.invoke(user.id, status = "ongoing")
             Log.d("RENTALSLOGIN", "Rentas obtenidas: ${rentals.size}")
-            Log.d("RENTALSLOGIN","RETNAAAAAAAAA ${rentals[0]}")
-            rentalUseCases.setCurrentRentalUseCase.invoke(rentals[0])
+
+            if (rentals.isNotEmpty()) {
+                Log.d("RENTALSLOGIN", "Renta encontrada: ${rentals[0]}")
+                rentalUseCases.setCurrentRentalUseCase.invoke(rentals[0])
+            }
+
             Log.d("RENTALSLOGIN", "Se ha actualizado la renta con exito")
         }
     }

@@ -7,7 +7,9 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 
@@ -39,7 +43,7 @@ fun PedometerCounter(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            viewModel.startPedometer()
+            //viewModel.startPedometer()
         } else {
             Toast.makeText(context, "Permiso denegado para el podómetro", Toast.LENGTH_SHORT).show()
         }
@@ -58,7 +62,19 @@ fun PedometerCounter(
     }
 
     if (running){
-        Text(text = "Pasos: $count", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.fillMaxWidth())
+        AnimatedContent(
+            targetState = count,
+            label = ""
+        ) { value ->
+            Text(
+                text = "Pasos: $value",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                textAlign = TextAlign.Center
+            )
+        }
     }
     else {
         //Button({ running = true; viewModel.startPedometer() }) { }

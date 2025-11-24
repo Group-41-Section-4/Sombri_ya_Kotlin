@@ -26,3 +26,20 @@ fun SomenthingWentWrongPopUp(
     )
 }
 
+@Composable
+fun ConsentDialog(onAllow: () -> Unit, onDeny: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = { /* evitar dismiss si quieres forzar respuesta; o llamar onDeny */ },
+        title = { Text("Enviar ubicación") },
+        text = {
+            Text("¿Deseas enviar tu ubicación al abrir la app? Se usará para mejorar la aplicación y se mantendrá privada.")
+        },
+        confirmButton = {
+            TextButton(onClick = onAllow) { Text("Permitir") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDeny) { Text("No permitir") }
+        }
+    )
+}
+

@@ -4,18 +4,22 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sombriyakotlin.domain.model.User
+import com.example.sombriyakotlin.domain.usecase.location.LocationUseCases
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileScreenViewModel @Inject constructor(
-    private val userUseCases: UserUseCases
+    private val userUseCases: UserUseCases,
+    private val locationUseCases: LocationUseCases
 ) : ViewModel() {
 
     sealed class ProfileState {
@@ -33,6 +37,10 @@ class ProfileScreenViewModel @Inject constructor(
     init {
         loadInitialData()
     }
+
+    val consentState = locationUseCases.isLocationConsentGiven()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null) // null = not asked
+
 
     private fun loadInitialData() {
         viewModelScope.launch {
@@ -76,5 +84,11 @@ class ProfileScreenViewModel @Inject constructor(
 
     suspend fun logout() {
         userUseCases.closeSessionUseCase()
+    }
+
+    fun setLocationConsent(given: Boolean) {
+        viewModelScope.launch {
+            locationUseCases.setLocationConsent(given)
+        }
     }
 }

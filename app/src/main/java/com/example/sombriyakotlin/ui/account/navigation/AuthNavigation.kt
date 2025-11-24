@@ -1,18 +1,17 @@
 package com.example.sombriyakotlin.ui.account.navigation
 
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.sombriyakotlin.ui.account.login.LoginScreen
 import com.example.sombriyakotlin.ui.account.signup.SignUpScreen
-import com.example.sombriyakotlin.ui.home.CardHome
+import com.example.sombriyakotlin.ui.splash.CardHome
 import com.example.sombriyakotlin.ui.navigation.Routes
 
 object AuthRoutes {
     const val LOGIN = "login"
     const val SIGNUP = "signup"
-    const val SPLASH = "home"
+    const val SPLASH = "splash"
 
 }
 
