@@ -4,7 +4,11 @@ import com.example.sombriyakotlin.domain.model.Chat
 import com.example.sombriyakotlin.domain.model.Message
 
 interface ChatbotRepository {
-    suspend fun getChatHistory(chat: Chat): Chat
+    suspend fun getChatHistory(): Chat
     suspend fun sendMessage(chat: Chat): Message
+
+    suspend fun getMessagesBefore(timestamp: Long, limit: Int): List<Message>
+
+
 
 }

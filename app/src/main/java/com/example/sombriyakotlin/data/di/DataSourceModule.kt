@@ -6,13 +6,12 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
-import com.example.sombriyakotlin.data.datasource.AppDatabase
+import com.example.sombriyakotlin.data.datasource.ROM.AppDatabase
 import com.example.sombriyakotlin.data.datasource.DataStoreSettingsStorage
-import com.example.sombriyakotlin.data.datasource.HistoryDao
+import com.example.sombriyakotlin.data.datasource.ROM.ChatDatabase
+import com.example.sombriyakotlin.data.datasource.ROM.HistoryDao
+import com.example.sombriyakotlin.data.datasource.ROM.dao.MessageDao
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
-import com.example.sombriyakotlin.data.repository.HistoryRepositoryImpl
-import com.example.sombriyakotlin.domain.repository.HistoryRepository
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -65,11 +64,27 @@ object DataSourceModule {
             "sombriya_database" // Nombre del archivo de la base de datos
         ).build()
     }
+    @Provides
+    @Singleton
+    fun provideChatDatabase(@ApplicationContext context: Context): ChatDatabase {
+        return Room.databaseBuilder(
+            context,
+            ChatDatabase::class.java,
+            "chat_database" // Nombre del archivo de la base de datos
+        ).build()
+    }
+
 
     @Provides
     @Singleton
     fun provideHistoryDao(database: AppDatabase): HistoryDao {
         return database.historyDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMessageDao(database: ChatDatabase): MessageDao{
+        return  database.messageDao()
     }
 }
 

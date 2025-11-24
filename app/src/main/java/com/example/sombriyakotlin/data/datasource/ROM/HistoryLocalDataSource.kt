@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.data.datasource
+package com.example.sombriyakotlin.data.datasource.ROM
 
 import androidx.room.ColumnInfo
 import androidx.room.Dao
@@ -42,3 +42,5 @@ class HistoryLocalDataSource @Inject constructor(
     suspend fun insert(entity: History): Unit = dao.insert(entity)
     suspend fun getAll(): List<History> = dao.getAll()
 }
+
+

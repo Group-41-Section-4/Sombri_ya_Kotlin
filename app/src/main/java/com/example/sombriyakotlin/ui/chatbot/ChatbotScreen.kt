@@ -1,5 +1,6 @@
 package com.example.sombriyakotlin.ui.chatbot
 
+import android.R.id.message
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,6 +55,9 @@ fun ChatbotScreen(
     viewModel: ChatbotViewModel=hiltViewModel()
 )
 {
+//    val messageStatus = viewModel.getMessageByLocalId(message.localId)?.status
+//    MessageRow(message.copy(status = messageStatus ?: message.status))
+
     val chatState by viewModel.chat.collectAsState()
     val uiState by viewModel.chatbotState.collectAsState()
     val messages = chatState.messages // asumo `messages: List<Message>`
@@ -69,6 +74,13 @@ fun ChatbotScreen(
             listState.animateScrollToItem(messages.size - 1)
         }
     }
+//
+//
+//    LaunchedEffect(listState.firstVisibleItemIndex) {
+//        if (listState.firstVisibleItemIndex == 0 && messages.isNotEmpty()) { // llegó al top
+//            viewModel.loadMoreMessages()
+//        }
+//    }
 
 
     Column(

@@ -231,7 +231,7 @@ fun MainContent(navController: NavController,
                 }
             }
 
-            if (showConsentPopUp) {
+            if (connection && showConsentPopUp) {
                 ConsentDialog(
                     onAllow = {
                         // antes de pedir permiso de runtime, podemos chequear si ya se concedió
