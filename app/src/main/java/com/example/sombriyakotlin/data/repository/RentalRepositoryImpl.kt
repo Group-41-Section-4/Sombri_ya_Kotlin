@@ -2,16 +2,12 @@ package com.example.sombriyakotlin.data.repository
 
 import History
 import android.util.Log
-import com.example.sombriyakotlin.data.api.RentalApi
-import com.example.sombriyakotlin.data.api.UserApi
+import com.example.sombriyakotlin.data.serviceAdapter.RentalApi
 import com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
-import com.example.sombriyakotlin.data.dto.RentalHistoryDto
 import com.example.sombriyakotlin.data.dto.toDomain
-import com.example.sombriyakotlin.data.dto.toDto
 import com.example.sombriyakotlin.data.dto.toEndDto
 import com.example.sombriyakotlin.data.dto.toRequestDto
 import com.example.sombriyakotlin.domain.model.Rental
-import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.repository.RentalRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

@@ -206,7 +206,7 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth(),
                         colors= ButtonColors(Color(0xFF001242),Color(0xFF001242),Color(0xFF001242),Color(0xFF001242)),
                         onClick = {viewModel.loginUser(email,pass)},
-                        enabled = !isLoading)
+                        enabled = !isLoading && email.isNotBlank() && pass.isNotBlank())
                     {
                         if (isLoading) {
                             CircularProgressIndicator(

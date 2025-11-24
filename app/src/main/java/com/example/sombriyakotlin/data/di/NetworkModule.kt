@@ -1,9 +1,10 @@
 package com.example.sombriyakotlin.data.di
 
 import com.example.sombriyakotlin.BuildConfig
-import com.example.sombriyakotlin.data.api.RentalApi
-import com.example.sombriyakotlin.data.api.StationApi
-import com.example.sombriyakotlin.data.api.UserApi
+import com.example.sombriyakotlin.data.serviceAdapter.LocationApi
+import com.example.sombriyakotlin.data.serviceAdapter.RentalApi
+import com.example.sombriyakotlin.data.serviceAdapter.StationApi
+import com.example.sombriyakotlin.data.serviceAdapter.UserApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,6 +44,9 @@ object NetworkModule {
     fun provideStationApi(retrofit: Retrofit): StationApi =
         retrofit.create(StationApi::class.java)
 
+    @Provides @Singleton
+    fun provideLocationApi(retrofit: Retrofit): LocationApi =
+        retrofit.create(LocationApi::class.java)
 
     @Provides @Singleton
     @Named("OWM_API_KEY")

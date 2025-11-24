@@ -2,6 +2,7 @@ package com.example.sombriyakotlin.domain.di
 
 import com.example.sombriyakotlin.domain.repository.ChatbotRepository
 import com.example.sombriyakotlin.domain.repository.HistoryRepository
+import com.example.sombriyakotlin.domain.repository.LocationRepository
 import com.example.sombriyakotlin.domain.repository.NetworkRepository
 import com.example.sombriyakotlin.domain.repository.StationRepository
 import com.example.sombriyakotlin.domain.repository.RentalRepository
@@ -13,6 +14,10 @@ import com.example.sombriyakotlin.domain.usecase.chatbot.SendMessageUseCase
 import com.example.sombriyakotlin.domain.usecase.history.GetHistory
 import com.example.sombriyakotlin.domain.usecase.history.HistoryUseCases
 import com.example.sombriyakotlin.domain.usecase.history.SaveHistory
+import com.example.sombriyakotlin.domain.usecase.location.IsLocationConsentGiven
+import com.example.sombriyakotlin.domain.usecase.location.LocationUseCases
+import com.example.sombriyakotlin.domain.usecase.location.SendCurrentLocation
+import com.example.sombriyakotlin.domain.usecase.location.SetLocationConsent
 import com.example.sombriyakotlin.domain.usecase.stations.GetStationsUseCase
 import com.example.sombriyakotlin.domain.usecase.stations.StationsUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
@@ -75,6 +80,16 @@ object UseCaseModule {
         return StationsUseCases(
         GetStationsUseCase(repo),
             GetStationByTagUseCase(repo)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationUseCases(repo: LocationRepository): LocationUseCases{
+        return LocationUseCases(
+            sendCurrentLocation = SendCurrentLocation(repo),
+            isLocationConsentGiven = IsLocationConsentGiven(repo),
+            setLocationConsent = SetLocationConsent(repo)
         )
     }
 

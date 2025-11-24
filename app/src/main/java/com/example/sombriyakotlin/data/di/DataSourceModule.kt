@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import com.example.sombriyakotlin.data.datasource.AppDatabase
+import com.example.sombriyakotlin.data.datasource.DataStoreSettingsStorage
 import com.example.sombriyakotlin.data.datasource.HistoryDao
 import com.example.sombriyakotlin.data.datasource.UserLocalDataSource
 import com.example.sombriyakotlin.data.repository.HistoryRepositoryImpl
@@ -33,6 +34,13 @@ object DataSourceModule {
             context.preferencesDataStoreFile(USER_PREFERENCES)
         }
     }
+
+    @Provides
+    @Singleton
+    fun provideDataStoreSettingsStorage(
+        dataStore: DataStore<Preferences>
+    ): DataStoreSettingsStorage= DataStoreSettingsStorage(dataStore)
+
 
     @Provides
     @Singleton

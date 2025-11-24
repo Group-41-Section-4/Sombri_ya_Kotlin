@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.data.api
+package com.example.sombriyakotlin.data.serviceAdapter
 
 import com.example.sombriyakotlin.data.dto.QueryLocalizationDto
 import com.example.sombriyakotlin.data.dto.StationDto
