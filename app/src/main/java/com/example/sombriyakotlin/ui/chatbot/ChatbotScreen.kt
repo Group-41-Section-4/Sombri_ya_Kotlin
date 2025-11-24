@@ -69,11 +69,11 @@ fun ChatbotScreen(
 
 
 
-    LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(messages.size - 1)
-        }
-    }
+//    LaunchedEffect(messages.size) {
+//        if (messages.isNotEmpty()) {
+//            listState.animateScrollToItem(messages.size - 1)
+//        }
+//    }
 
     LaunchedEffect(listState.firstVisibleItemIndex) {
         if (listState.firstVisibleItemIndex == 0 && messages.isNotEmpty()) { // llegó al top

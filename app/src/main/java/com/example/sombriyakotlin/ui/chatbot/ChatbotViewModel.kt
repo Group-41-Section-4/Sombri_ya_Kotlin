@@ -3,6 +3,7 @@ package com.example.sombriyakotlin.ui.chatbot
 import android.util.Log
 import android.util.SparseArray
 import android.util.SparseIntArray
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sombriyakotlin.data.repository.ChatbotRepositoryImpl
@@ -44,7 +45,7 @@ class ChatbotViewModel @Inject constructor(
     private val _chat = MutableStateFlow(Chat( mutableListOf()))
     val chat: StateFlow<Chat> = _chat
 
-    private var oldestLoadedTimestamp: Long = Long.MAX_VALUE
+    private var oldestLoadedTimestamp: Long =   Long.MAX_VALUE
 
     private val messageCache = SparseArray<Message>()
     private val indexToPosition = SparseIntArray()
@@ -55,6 +56,7 @@ class ChatbotViewModel @Inject constructor(
             val history = chatbotRepository.getChatHistory()
             _chat.value = history
             rebuildCache(history.messages)
+            oldestLoadedTimestamp = history.messages.first().timestamp
             evictIfNeeded()
 //            loadMoreMessages()
         }
@@ -143,7 +145,7 @@ class ChatbotViewModel @Inject constructor(
         if (more.isNotEmpty()) {
             // asumiendo que 'more' viene ordenado de más antiguo a más reciente
             val loadedMessages = (more + _chat.value.messages).toMutableList()
-            oldestLoadedTimestamp = more.last().timestamp
+            oldestLoadedTimestamp = more.first().timestamp
             more.forEach { msg ->
                 val key = msg.position ?: return@forEach
                 messageCache.put(key, msg)
