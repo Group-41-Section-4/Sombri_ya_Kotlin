@@ -226,7 +226,7 @@ fun EstacionCard(estacion: Station,
 
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(text = "${estacion.placeName}", fontWeight = FontWeight.Bold)
-                if (!isconected) {
+                if (isconected) {
                     Row(modifier = Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter=painterResource(R.drawable.umbrella_available),
@@ -276,6 +276,7 @@ fun StationsSheet(
                 .padding(top = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
+
         ) {
             when (stationsUiState) {
                 is StationsViewModel.StationsState.Success -> {

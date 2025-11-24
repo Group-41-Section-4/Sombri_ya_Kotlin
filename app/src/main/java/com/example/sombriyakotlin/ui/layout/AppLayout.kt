@@ -10,6 +10,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -27,34 +29,49 @@ import kotlinx.coroutines.launch
 fun AppLayout(
     navController: NavController,
     navHostController: NavHostController,
-    content: @Composable () -> Unit,
-
+    content: @Composable (
+        (Boolean) -> Unit  // callback OPCIONAL
+    ) -> Unit = { _ -> }  // valor por defecto
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    var showBottomBar by remember { mutableStateOf(true) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         // -- Main content -- //
         Scaffold(
             topBar = { TopBar(navHostController) },
             bottomBar = {
-                Bar(
-                    navController = navHostController,
-                    onMenuClick = {
-                        scope.launch {
-                            if (drawerState.isClosed) drawerState.open()
-                            else drawerState.close()
-                        }
+                // Contenedor SIEMPRE presente
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                        contentAlignment = Alignment.BottomCenter
+                ) {
+                    // Contenido animado dentro del espacio fijo
+                    if (showBottomBar) {
+                        Bar(
+                            navController = navHostController,
+                            onMenuClick = {
+                                scope.launch {
+                                    if (drawerState.isClosed) drawerState.open()
+                                    else drawerState.close()
+                                }
+                            }
+                        )
                     }
-                )
+                }
             }
+
         ) { padding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                content()
+                // Se pasa el setter del estado
+                content { visible -> showBottomBar = visible }
             }
         }
 
