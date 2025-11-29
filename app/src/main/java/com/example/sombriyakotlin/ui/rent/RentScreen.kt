@@ -39,6 +39,7 @@ fun CardRent(navController: NavController) {
     var suppressActivePopup by remember { mutableStateOf(false) }
     var showNoInternetPopup by remember { mutableStateOf(false) }
     var navigateToMain by remember { mutableStateOf(false) }
+    var navigateToReport by remember { mutableStateOf(false) }
     val qrViewModel: QrViewModel = hiltViewModel()
 
     var showErrorPopup by remember { mutableStateOf(false) }
@@ -162,8 +163,15 @@ fun CardRent(navController: NavController) {
             showDevolucionPopup = false
             nfcEnabled = false
             rentViewModel.reset()
-            navigateToMain = true
+//            navigateToMain = false
+            navigateToReport=true
         })
+    }
+    if (navigateToReport){
+        navController.navigate(Routes.FORMULARIO){
+            popUpTo(Routes.RENT){inclusive=true}
+        }
+        navigateToReport=false
     }
     if (showReservaPopup) {
         PopUpReservaCreated(onDismiss = {

@@ -2,6 +2,7 @@ package com.example.sombriyakotlin
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -9,13 +10,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.navigation.compose.rememberNavController
 import com.example.sombriyakotlin.ui.navigation.AppNavigation
 import com.example.sombriyakotlin.ui.theme.SombriYaKotlinTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    lateinit var photoUri: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("QUEPASO","www")
@@ -23,12 +27,19 @@ class MainActivity : ComponentActivity() {
         askLocationPermission()
         super.onCreate(savedInstanceState)
 
+        val photoFile = File.createTempFile("foto_", ".jpg", cacheDir)
+        photoUri = FileProvider.getUriForFile(
+            this,
+            "${packageName}.provider",
+            photoFile
+        )
+
 
 
         setContent {
             val navController = rememberNavController()
             SombriYaKotlinTheme {
-                AppNavigation(navController = navController, false)
+                AppNavigation(navController = navController, false, photoUri )
             }
         }
     }
