@@ -92,14 +92,20 @@ class ChatbotViewModel @Inject constructor(
         viewModelScope.launch {
             _chatbotState.value = ChatState.Loading
 
-            val currentList = _chat.value.messages.toMutableList()
-            val newMessage = Message(content = text, isUser = true, timestamp = System.currentTimeMillis())
-            currentList.add(newMessage)
-            _chat.value = Chat(currentList)
+            val currentMessages = _chat.value.messages
+            val newMessage = Message(
+                content = text,
+                isUser = true,
+                timestamp = System.currentTimeMillis()
+            )
+
+            val updatedMessages = currentMessages + newMessage
+            val updatedChat = Chat(updatedMessages)
+            _chat.value = updatedChat
 
             try {
                 Log.d("ChatViewModel", "Enviando mensaje: $text")
-                val reply = chatbotRepository.sendMessage(Chat(currentList))
+                val reply = chatbotRepository.sendMessage(updatedChat)
                 Log.d("ChatViewModel", "Mensaje enviado: $reply")
                 updateCacheAndList(reply)
                 _chatbotState.value = ChatState.Success( _chat.value )
