@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.ui.account.signup.SingUpViewModel.SignUpState
 import com.example.sombriyakotlin.ui.popup.SomenthingWentWrongPopUp
@@ -65,7 +66,7 @@ fun SignUpScreen(
     var pass by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
 
-    val signUpState by viewModel.signUpState.collectAsState()
+    val signUpState by viewModel.signUpState.collectAsStateWithLifecycle()
 
     var errorMessage by remember { mutableStateOf("Algo salió mal :(") }
     var showErrorDialog by remember { mutableStateOf(false) }
