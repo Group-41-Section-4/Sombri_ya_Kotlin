@@ -1,6 +1,5 @@
 package com.example.sombriyakotlin.data.location
 
-import android.R.attr.priority
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
@@ -10,7 +9,6 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 
 import android.os.Looper
-import com.google.android.gms.location.*
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

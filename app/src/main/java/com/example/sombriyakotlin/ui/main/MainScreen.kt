@@ -2,14 +2,12 @@ package com.example.sombriyakotlin.ui.main
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -52,8 +50,6 @@ import com.example.sombriyakotlin.domain.model.WeatherType
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.main.animations.CloudEmojiAnimation
 import com.example.sombriyakotlin.ui.main.animations.RainAnimation
-import com.example.sombriyakotlin.ui.main.animations.SunRaysAnimation
-import com.example.sombriyakotlin.ui.popup.ConsentDialog
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -113,8 +109,6 @@ fun MainContent(
     )
 
     var showConsentPopUp by remember { mutableStateOf(false) }
-
-    val alreadySent = rememberSaveable { mutableStateOf(false) }
 
     val consent by homeViewModel.consentState.collectAsState() // Boolean? (null = no preguntado)
 
