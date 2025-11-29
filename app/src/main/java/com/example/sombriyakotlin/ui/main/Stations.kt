@@ -280,7 +280,10 @@ fun StationsSheet(
         ) {
             when (stationsUiState) {
                 is StationsViewModel.StationsState.Success -> {
-                    items(stationsUiState.stations) { station ->
+                    items(
+                        items = stationsUiState.stations,
+                        key = { station -> station.id }
+                    ) { station ->
                         EstacionCard(
                             estacion = station,
                             isconected = isConnected,
