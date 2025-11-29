@@ -50,6 +50,7 @@ class ChatbotRepositoryImpl @Inject constructor(
         val domain = entities.map { it.toDomain() }.reversed().toMutableList()
         return@withContext Chat(domain)
     }
+    private val gson by lazy { Gson() }
 
 
 
@@ -61,8 +62,6 @@ class ChatbotRepositoryImpl @Inject constructor(
             val entityToInsert = userMsg.toEntity()
             val localId = messageDao.insert(entityToInsert).toInt()
             val persistedUserEntity = messageDao.getByLocalId(localId)!!
-            val persistedUserDomain = persistedUserEntity.toDomain()
-            Log.d("ChatbotRepositoryImpl", "Persisted user entity: $persistedUserDomain")
 
             val historyEntities = messageDao.getRecent(PROMPT_WINDOW)
             Log.d("ChatbotRepositoryImpl", "History entities: $historyEntities")
@@ -75,7 +74,7 @@ class ChatbotRepositoryImpl @Inject constructor(
             val messageListDto = listOf(systemMessage) + historyEntities.map { it.toDto() }
             val chatRequest = ChatRequest(messages = messageListDto)
 
-            val json = Gson().toJson(chatRequest)
+            val json = gson.toJson(chatRequest)
             val body = json.toRequestBody("application/json; charset=utf-8".toMediaType())
             val request = Request.Builder().url(CHAT_URL).post(body).build()
 
@@ -84,7 +83,7 @@ class ChatbotRepositoryImpl @Inject constructor(
 
             val responseBody = response.body?.string()
             Log.d("ChatbotRepositoryImpl", "Response body: $responseBody")
-            val messageDto = Gson().fromJson(responseBody, ChatRespuestaDto::class.java)
+            val messageDto = gson.fromJson(responseBody, ChatRespuestaDto::class.java)
             Log.d("ChatbotRepositoryImpl", "MessageDto: $messageDto")
 
             persistedUserEntity.status= MessageStatus.CONFIRMED
