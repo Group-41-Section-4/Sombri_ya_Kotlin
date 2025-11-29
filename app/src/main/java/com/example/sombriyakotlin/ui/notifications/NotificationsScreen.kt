@@ -112,7 +112,7 @@ fun NotificationsScreen(
                 ) {
                     itemsIndexed(
                         items = notifications,
-                        key = { index, item -> "${item.id}#$index" }
+                        key = { _, item -> item.id }
                     ) { _, n ->
                         NotificationCard(n)
                     }
