@@ -2,13 +2,10 @@ package com.example.sombriyakotlin.ui.rent
 
 import android.app.Activity
 import android.nfc.NfcAdapter
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -34,7 +31,6 @@ fun CardRent(navController: NavController) {
 
     val rentViewModel: RentViewModel = hiltViewModel()
     val rentState by rentViewModel.rentState.collectAsStateWithLifecycle()
-    val hasActive by rentViewModel.hasActive.collectAsStateWithLifecycle()
 
     // Estados de los pop-ups
     var showReservaPopup by remember { mutableStateOf(false) }
@@ -64,10 +60,6 @@ fun CardRent(navController: NavController) {
 
     LaunchedEffect(Unit) {
         rentViewModel.fetchActiveRental()
-    }
-
-    //   Verificar conexión al entrar
-    LaunchedEffect(Unit) {
         if (!isOnline(activity)) {
             showNoInternetPopup = true
             Log.d("Rent", "Sin conexión: se muestra pop-up y se detiene flujo.")
@@ -134,7 +126,7 @@ fun CardRent(navController: NavController) {
 
     //Navegación hacia la pantalla principal
     if (navigateToMain) {
-        LaunchedEffect(Unit) {
+        LaunchedEffect(navigateToMain) {
             navController.navigate(Routes.MAIN) {
                 popUpTo(Routes.RENT) { inclusive = true }
             }
