@@ -56,6 +56,9 @@ class ChatbotViewModel @Inject constructor(
             val history = chatbotRepository.getChatHistory()
             _chat.value = history
             rebuildCache(history.messages)
+            Log.d("ChatbotViewModel", "Chat history: ${history.messages}")
+            if (history.messages.isEmpty()) return@launch
+
             oldestLoadedTimestamp = history.messages.first().timestamp
             evictIfNeeded()
 //            loadMoreMessages()

@@ -350,23 +350,23 @@ fun MainContent(
                 }
             }
 
-            if (connection && showConsentPopUp) {
-                ConsentDialog(
-                    onAllow = {
-                        // antes de pedir permiso de runtime, podemos chequear si ya se concedió
-                        homeViewModel.onConsentAnswered(true)
-                        if (location != null)
-                        {
-                            homeViewModel.sendCurrentLocation(
-                                location?.latitude ?: 0.0,
-                                location?.longitude ?: 0.0)
-                        }
-                    },
-                    onDeny = {
-                        homeViewModel.onConsentAnswered(false)
-                    }
-                )
-            }
+//            if (connection && showConsentPopUp) {
+//                ConsentDialog(
+//                    onAllow = {
+//                        // antes de pedir permiso de runtime, podemos chequear si ya se concedió
+//                        homeViewModel.onConsentAnswered(true)
+//                        if (location != null)
+//                        {
+//                            homeViewModel.sendCurrentLocation(
+//                                location?.latitude ?: 0.0,
+//                                location?.longitude ?: 0.0)
+//                        }
+//                    },
+//                    onDeny = {
+//                        homeViewModel.onConsentAnswered(false)
+//                    }
+//                )
+//            }
         }
 
     }
