@@ -2,14 +2,12 @@ package com.example.sombriyakotlin.ui.main
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -47,12 +45,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
+import com.example.sombriyakotlin.data.worker.GeoUtils
 import com.example.sombriyakotlin.domain.model.WeatherType
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.main.animations.CloudEmojiAnimation
 import com.example.sombriyakotlin.ui.main.animations.RainAnimation
-import com.example.sombriyakotlin.ui.main.animations.SunRaysAnimation
-import com.example.sombriyakotlin.ui.popup.ConsentDialog
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -95,7 +92,7 @@ fun MainContent(
     // Para mover la cámara solo una vez al obtener la primera ubicación
     var isInitialLocationSet by remember { mutableStateOf(false) }
 
-    val weather by homeViewModel.weatherState.collectAsState()
+    val weather by homeViewModel.weatherState.collectAsStateWithLifecycle()
 
     val stationsUiState by stationsViewModel.stationsState.collectAsStateWithLifecycle()
 
@@ -112,8 +109,6 @@ fun MainContent(
     )
 
     var showConsentPopUp by remember { mutableStateOf(false) }
-
-    val alreadySent = rememberSaveable { mutableStateOf(false) }
 
     val consent by homeViewModel.consentState.collectAsState() // Boolean? (null = no preguntado)
 
@@ -166,6 +161,8 @@ fun MainContent(
         }
     }
 
+    var lastSentLat by remember { mutableStateOf<Double?>(null) }
+    var lastSentLon by remember { mutableStateOf<Double?>(null) }
 
     LaunchedEffect(location) {
         location?.let { loc ->
@@ -188,14 +185,24 @@ fun MainContent(
                 homeViewModel.checkWeatherAt(loc.latitude, loc.longitude)
             }
         }
-        if (location != null && !alreadySent.value) {
-            alreadySent.value = true
+        val loc = location ?: return@LaunchedEffect
+        val lastLat = lastSentLat
+        val lastLon = lastSentLon
 
-            homeViewModel.sendCurrentLocation(
-                location?.latitude ?: 0.0,
-                location?.longitude ?: 0.0,
-            )
-        }
+        val shouldSend = lastLat == null || lastLon == null ||
+                GeoUtils.distanceMeters(
+                            lastLat, lastLon,
+                            loc.latitude, loc.longitude
+                                ) > 20.0 // threshold ~20m
+
+        if (shouldSend) {
+                lastSentLat = loc.latitude
+                lastSentLon = loc.longitude
+                homeViewModel.sendCurrentLocation(
+                        loc.latitude,
+                        loc.longitude,
+                    )
+            }
 
 
     }

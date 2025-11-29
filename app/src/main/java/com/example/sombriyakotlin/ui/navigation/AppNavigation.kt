@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.sombriyakotlin.feature.history.HistoryScreen
-import com.example.sombriyakotlin.feature.notifications.NotificationsScreen
+import com.example.sombriyakotlin.ui.notifications.NotificationsScreen
 import com.example.sombriyakotlin.ui.account.CardProfile
 import com.example.sombriyakotlin.ui.main.CardStations
 import com.example.sombriyakotlin.ui.main.MainWithDrawer

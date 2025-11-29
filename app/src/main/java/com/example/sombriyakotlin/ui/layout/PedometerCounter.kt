@@ -10,16 +10,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -33,10 +29,10 @@ fun PedometerCounter(
     viewModel: PedometerViewModel = hiltViewModel()
 ){
     val context = LocalContext.current
-    val count by viewModel.count.collectAsState()
+    val count by viewModel.count.collectAsStateWithLifecycle()
     val permission = Manifest.permission.ACTIVITY_RECOGNITION
 
-    val running by viewModel.isRunning.collectAsState()
+    val running by viewModel.isRunning.collectAsStateWithLifecycle()
 
 
     val launcher = rememberLauncherForActivityResult(

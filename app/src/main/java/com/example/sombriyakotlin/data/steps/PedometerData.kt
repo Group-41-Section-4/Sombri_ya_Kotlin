@@ -13,13 +13,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
 import javax.inject.Singleton
 
 @Singleton
@@ -31,7 +27,6 @@ class AndroidPedometerRepository(
     private val _events = MutableSharedFlow<StepEvent>(replay = 1)
     override fun observeStepEvents(): Flow<StepEvent> = _events.asSharedFlow()
 
-    private val scope = CoroutineScope(Dispatchers.Default + Job())
     private var listener: SensorEventListener? = null
     private var started = false
 
@@ -69,8 +64,8 @@ class AndroidPedometerRepository(
                     }
                     else -> 0
                 }
-                // emitimos de forma no bloqueante
-                scope.launch { _events.emit(StepEvent(timestamp = now, steps = steps)) }
+                // emitir en el mismo hilo del callback de forma ligera
+                _events.tryEmit(StepEvent(timestamp = now, steps = steps))
             }
 
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}

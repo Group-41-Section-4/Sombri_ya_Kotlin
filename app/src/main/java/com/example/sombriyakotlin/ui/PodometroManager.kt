@@ -3,12 +3,11 @@ package com.example.sombriyakotlin.ui
 import com.example.sombriyakotlin.ui.di.ApplicationScope
 import com.example.sombriyakotlin.domain.model.PedometerRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -67,11 +66,13 @@ class PedometerManager @Inject constructor(
         // lanzar en appScope para que sobreviva a ViewModels
         if (collectionJob?.isActive == true) return
         collectionJob = appScope.launch {
-            repo.observeStepEvents().collect { ev ->
-                // acumular pasos; si StepEvent.steps es Long, adapta aquí
-                val next = (_totalSteps.value + ev.steps).coerceAtMost(Int.MAX_VALUE)
-                _totalSteps.value = next
-            }
+            repo.observeStepEvents()
+                .conflate()
+                .collect { ev ->
+                    // acumular pasos; si StepEvent.steps es Long, adapta aquí
+                    val next = (_totalSteps.value + ev.steps).coerceAtMost(Int.MAX_VALUE)
+                    _totalSteps.value = next
+                }
         }
     }
 
