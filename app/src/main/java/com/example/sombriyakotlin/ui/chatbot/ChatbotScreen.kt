@@ -42,6 +42,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.domain.model.Message
@@ -58,14 +59,14 @@ fun ChatbotScreen(
 //    val messageStatus = viewModel.getMessageByLocalId(message.localId)?.status
 //    MessageRow(message.copy(status = messageStatus ?: message.status))
 
-    val chatState by viewModel.chat.collectAsState()
-    val uiState by viewModel.chatbotState.collectAsState()
+    val chatState by viewModel.chat.collectAsStateWithLifecycle()
+    val uiState by viewModel.chatbotState.collectAsStateWithLifecycle()
     val messages = chatState.messages // asumo `messages: List<Message>`
     val listState = rememberLazyListState()
 
     var mensaje by remember { mutableStateOf("") }
 
-    val isConnected by viewModel.isConnected.collectAsState()
+    val isConnected by viewModel.isConnected.collectAsStateWithLifecycle()
 
 
 

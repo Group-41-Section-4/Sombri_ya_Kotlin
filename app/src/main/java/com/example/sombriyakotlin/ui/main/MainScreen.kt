@@ -95,7 +95,7 @@ fun MainContent(
     // Para mover la cámara solo una vez al obtener la primera ubicación
     var isInitialLocationSet by remember { mutableStateOf(false) }
 
-    val weather by homeViewModel.weatherState.collectAsState()
+    val weather by homeViewModel.weatherState.collectAsStateWithLifecycle()
 
     val stationsUiState by stationsViewModel.stationsState.collectAsStateWithLifecycle()
 
