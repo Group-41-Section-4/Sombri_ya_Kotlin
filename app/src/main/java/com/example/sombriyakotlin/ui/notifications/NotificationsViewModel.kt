@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.feature.notifications
+package com.example.sombriyakotlin.ui.notifications
 
 import android.content.Context
 import android.location.Location

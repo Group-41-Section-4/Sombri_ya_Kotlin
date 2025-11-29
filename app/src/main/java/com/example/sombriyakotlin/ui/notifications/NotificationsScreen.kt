@@ -1,4 +1,4 @@
-package com.example.sombriyakotlin.feature.notifications
+package com.example.sombriyakotlin.ui.notifications
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.sombriyakotlin.R
@@ -67,7 +68,7 @@ fun NotificationsScreen(
             context = context
         )
     }
-    val notifications by notificationsVM.notifications.collectAsState()
+    val notifications by notificationsVM.notifications.collectAsStateWithLifecycle()
 
     val Bg = Color(0xFFFFFDFD)
 
