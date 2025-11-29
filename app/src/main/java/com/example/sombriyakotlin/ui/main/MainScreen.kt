@@ -47,6 +47,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
+import com.example.sombriyakotlin.data.worker.GeoUtils
 import com.example.sombriyakotlin.domain.model.WeatherType
 import com.example.sombriyakotlin.ui.layout.AppLayout
 import com.example.sombriyakotlin.ui.main.animations.CloudEmojiAnimation
@@ -166,6 +167,8 @@ fun MainContent(
         }
     }
 
+    var lastSentLat by remember { mutableStateOf<Double?>(null) }
+    var lastSentLon by remember { mutableStateOf<Double?>(null) }
 
     LaunchedEffect(location) {
         location?.let { loc ->
@@ -188,14 +191,24 @@ fun MainContent(
                 homeViewModel.checkWeatherAt(loc.latitude, loc.longitude)
             }
         }
-        if (location != null && !alreadySent.value) {
-            alreadySent.value = true
+        val loc = location ?: return@LaunchedEffect
+        val lastLat = lastSentLat
+        val lastLon = lastSentLon
 
-            homeViewModel.sendCurrentLocation(
-                location?.latitude ?: 0.0,
-                location?.longitude ?: 0.0,
-            )
-        }
+        val shouldSend = lastLat == null || lastLon == null ||
+                GeoUtils.distanceMeters(
+                            lastLat, lastLon,
+                            loc.latitude, loc.longitude
+                                ) > 20.0 // threshold ~20m
+
+        if (shouldSend) {
+                lastSentLat = loc.latitude
+                lastSentLon = loc.longitude
+                homeViewModel.sendCurrentLocation(
+                        loc.latitude,
+                        loc.longitude,
+                    )
+            }
 
 
     }

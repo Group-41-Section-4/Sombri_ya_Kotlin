@@ -13,6 +13,7 @@ import android.os.Looper
 import com.google.android.gms.location.*
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 
@@ -41,14 +42,25 @@ object GPSManager {
      * IMPORTANT: verifica permisos antes de collectar este Flow.
      */
     @SuppressLint("MissingPermission") // quien colecciona debe comprobar permisos
-    fun observeLocationFlow() = callbackFlow<Location> {
+    fun observeLocationFlow(): Flow<Location> = callbackFlow {
+        var lastLocation: Location? = null
         // intenta enviar la última ubicación conocida (si la hay)
         fusedClient.lastLocation
-            .addOnSuccessListener { last -> last?.let { trySend(it).isSuccess } }
+            .addOnSuccessListener { last ->
+                if (last != null) {
+                    lastLocation = last
+                    trySend(last).isSuccess
+                }
+            }
 
         val cb = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
-                result.lastLocation?.let { trySend(it).isSuccess }
+                val loc = result.lastLocation ?: return
+                val previous = lastLocation
+                if (previous == null || loc.distanceTo(previous) > 10f) {
+                    lastLocation = loc
+                    trySend(loc).isSuccess
+                }
             }
         }
 
