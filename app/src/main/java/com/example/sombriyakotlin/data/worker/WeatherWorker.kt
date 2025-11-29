@@ -6,7 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.sombriyakotlin.BuildConfig
 import com.example.sombriyakotlin.NotificationHelper
-import com.example.sombriyakotlin.data.datasource.*
+import java.util.concurrent.TimeUnit
 import com.example.sombriyakotlin.data.datasource.stations.StationsCacheLocalDataSource
 import com.example.sombriyakotlin.data.repository.StationsCacheRepository
 import com.example.sombriyakotlin.dataStore
@@ -16,13 +16,22 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import kotlin.math.*
+import com.example.sombriyakotlin.data.worker.GeoUtils
 
 class WeatherWorker(
     appContext: Context,
     params: WorkerParameters
 ) : CoroutineWorker(appContext, params) {
 
-    private val client by lazy { OkHttpClient() }
+    companion object {
+        val client: OkHttpClient by lazy {
+                OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .build()
+            }
+    }
 
     override suspend fun doWork(): Result {
         Log.d("WeatherWorker", "⚙️ doWork() START")
@@ -81,7 +90,7 @@ class WeatherWorker(
 
             //  Buscar la estación más cercana
             val nearest = cachedStations.minByOrNull {
-                distanceMeters(lat, lon, it.latitude, it.longitude)
+                GeoUtils.distanceMeters(lat, lon, it.latitude, it.longitude)
             }
 
             //  Mostrar notificación personalizada
@@ -107,16 +116,5 @@ class WeatherWorker(
             Log.e("WeatherWorker", " Excepción en doWork", e)
             Result.retry()
         }
-    }
-
-    /** Calcula distancia entre dos coordenadas (Haversine) */
-    private fun distanceMeters(aLat: Double, aLon: Double, bLat: Double, bLon: Double): Double {
-        val R = 6371000.0
-        val dLat = Math.toRadians(bLat - aLat)
-        val dLon = Math.toRadians(bLon - aLon)
-        val lat1 = Math.toRadians(aLat)
-        val lat2 = Math.toRadians(bLat)
-        val h = sin(dLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(dLon / 2).pow(2.0)
-        return 2 * R * asin(sqrt(h))
     }
 }
