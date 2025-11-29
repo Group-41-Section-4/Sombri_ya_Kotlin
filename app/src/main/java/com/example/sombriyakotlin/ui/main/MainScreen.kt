@@ -264,10 +264,10 @@ fun MainContent(
                         val scaledIcon = remember(context) {
                             // Crear un bitmap escalado para los iconos del mapa
                             val originalBitmap = (ContextCompat.getDrawable(context, R.drawable.pin_umbrella) as BitmapDrawable).bitmap
-                            val width = 75 // Nuevo ancho en píxeles
-                            val height = 100 // Nuevo alto en píxeles
-                            val scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, false)
-                            BitmapDescriptorFactory.fromBitmap(scaledBitmap)
+//                            val width = 75 // Nuevo ancho en píxeles
+//                            val height = 100 // Nuevo alto en píxeles
+//                            val scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, false)
+                            BitmapDescriptorFactory.fromBitmap(originalBitmap)
                         }
                         currentState.stations.forEach { station ->
                             Marker(

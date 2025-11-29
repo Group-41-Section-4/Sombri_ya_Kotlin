@@ -269,7 +269,7 @@ fun LoginScreen(
 
 
 @Composable
-private fun GoogleButton(viewModel: LoginViewModel, isLoading: Boolean, ){
+private fun GoogleButton(viewModel: LoginViewModel, isLoading: Boolean ){
     var googleAuth by remember { mutableStateOf(false) }
 
     val baseContext = LocalContext.current
