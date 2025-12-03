@@ -138,7 +138,7 @@ import com.example.sombriyakotlin.ui.navigation.safeNavigate
             MenuItemData(Icons.Outlined.CreditCard, "Métodos de pago") { navHostController.safeNavigate(Routes.PAYMENT_METHODS, Routes.MENU) },
             MenuItemData(Icons.Outlined.History, "Historial") { navHostController.safeNavigate(Routes.HISTORY, Routes.MENU) },
             MenuItemData(Icons.Outlined.Mic, "Acción de voz") { navHostController.safeNavigate(Routes.VOICE, Routes.MENU) },
-            MenuItemData(Icons.Outlined.Notifications, "Notificaciones") { navHostController.safeNavigate(Routes.NOTIFICATIONS, Routes.MENU) },
+//            MenuItemData(Icons.Outlined.Notifications, "Notificaciones") { navHostController.safeNavigate(Routes.NOTIFICATIONS, Routes.MENU) },
             MenuItemData(Icons.Outlined.SmartToy, "Sombri-IA") { navHostController.safeNavigate(Routes.CHATBOT, Routes.MENU) },
             MenuItemData(Icons.Outlined.HelpOutline, "Ayuda") { navHostController.safeNavigate(Routes.HELP, Routes.MENU) }
         )

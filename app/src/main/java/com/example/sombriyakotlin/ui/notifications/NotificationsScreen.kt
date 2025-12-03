@@ -24,41 +24,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.domain.model.Notification
 import com.example.sombriyakotlin.domain.model.NotificationType
+import com.example.sombriyakotlin.ui.layout.TopBarMini
 import com.example.sombriyakotlin.ui.main.LocationViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar(navController: NavController) {
-    val notificationsVM: NotificationsViewModel = hiltViewModel()
 
-    TopAppBar(
-        title = {
-            Text(
-                "Notificaciones",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(R.color.primary),
-            navigationIconContentColor = Color.Black
-        ),
-        navigationIcon = {
-            IconButton(onClick = {
-                notificationsVM.clearAll()
-                navController.navigate("main") }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
-            }
-        }
-    )
-}
 
 @Composable
 fun NotificationsScreen(
-    navController: NavController
+    navController: NavHostController,
 ) {val context = LocalContext.current
 
     val locationVM: LocationViewModel = viewModel()
@@ -74,7 +51,7 @@ fun NotificationsScreen(
 
     Scaffold(
         containerColor = Bg,
-        topBar = { TopBar(navController) },
+        topBar = { TopBarMini(navController, "Notificaciones", false ) },
         bottomBar = {
             if (notifications.isNotEmpty()) {
                 BottomAppBar(containerColor = Bg) {
