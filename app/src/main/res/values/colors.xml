@@ -14,7 +14,7 @@
     <color name  ="botonNfc">#005E7C</color>
     <color name="BlueInterface">#FF90E0EF</color>
     <color name="HomeBlue">#FF001242</color>
-    <color name="estaciones_button">#005E7C</color>
+    <color name="estaciones_button">#FFFFFF</color>
     <color name="EstacionCard">#D8EDF2</color>
     <color name="primary_cyan_28BCEF">#28BCEF</color>
     <color name="navy_001242">#001242</color>
