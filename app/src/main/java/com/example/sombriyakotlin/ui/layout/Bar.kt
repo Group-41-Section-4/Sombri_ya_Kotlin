@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,8 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,8 +40,7 @@ import androidx.compose.runtime.getValue
 
 @Composable
 fun Bar(
-    navController: NavHostController,
-    onMenuClick: () -> Unit
+    navController: NavHostController
 ) {
     val rentViewModel: RentViewModel = hiltViewModel()
     val hasActive by rentViewModel.hasActive.collectAsStateWithLifecycle()
@@ -54,11 +60,10 @@ fun Bar(
             colors = ButtonDefaults.buttonColors(containerColor = Color.Companion.Transparent),
             contentPadding = PaddingValues(0.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.mapa),
-                contentDescription = "Inicio",
-                modifier = Modifier.Companion.size(35.dp)
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.size(40.dp)) {
+                Icon(Icons.Default.Map, contentDescription = "Mapa",tint = Color.Black, modifier = Modifier.size(24.dp))
+                Text("Mapa", style = MaterialTheme.typography.labelSmall, color = Color.Black)
+            }
         }
 
         // Botón central (rentar o devolver)
@@ -92,15 +97,18 @@ fun Bar(
 
         // Botón menú
         Button(
-            onClick = { onMenuClick() },
+            onClick = {
+                navController.safeNavigate(Routes.MENU, Routes.MAIN)
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Companion.Transparent),
             contentPadding = PaddingValues(0.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.menu),
-                contentDescription = "Menú",
-                modifier = Modifier.Companion.size(45.dp)
-            )
+
+            // Ítem "Más" (seleccionado)
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.size(40.dp)) {
+                Icon(Icons.Default.Menu, contentDescription = "Más", tint = Color.Black, modifier = Modifier.size(24.dp))
+                Text("Más", style = MaterialTheme.typography.labelSmall, color = Color.Black)
+            }
         }
     }
 }

@@ -17,6 +17,7 @@ import androidx.navigation.navigation
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
 import com.example.sombriyakotlin.ui.account.navigation.authGraph
 import com.example.sombriyakotlin.ui.chatbot.ChatbotScreen
+import com.example.sombriyakotlin.ui.menu.MainMenu
 import com.example.sombriyakotlin.ui.reports.ReporScreen
 import com.example.sombriyakotlin.ui.voice.VoiceScreen
 
@@ -40,6 +41,8 @@ object Routes {
     const val VOICE = "voice"
 
     const val CHATBOT = "chatbot"
+
+    const val MENU = "menu"
 
     const val FORMULARIO = "formulario"
 
@@ -79,6 +82,10 @@ fun AppNavigation(navController: NavHostController,
 
             composable(Routes.RENT) {
                 MainRenta(navController , navController)
+            }
+
+            composable(Routes.MENU){
+                MainMenu(navController, navController)
             }
 
             composable(Routes.STATIONS) {
