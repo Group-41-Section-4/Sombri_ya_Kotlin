@@ -5,12 +5,16 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.SignalWifiOff
 import androidx.compose.material3.BottomSheetScaffold
@@ -33,10 +37,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -280,16 +288,10 @@ fun MainContent(
                             Marker(
                                 state = MarkerState(position = LatLng(station.latitude, station.longitude)),
                                 title = station.placeName,
-                                snippet = "${station.description} \n- ${station.availableUmbrellas} available",
+                                snippet = "${station.availableUmbrellas} available",
                                 icon = scaledIcon
                             )
                         }
-                    }
-                    is StationsViewModel.StationsState.Loading -> {
-                        // Opcional: Podrías mostrar un indicador de carga en algún lugar de la UI
-                    }
-                    is StationsViewModel.StationsState.Error -> {
-                        // Opcional: Podrías mostrar un mensaje de error
                     }
                     else -> {
                         // Estado 'Idle' o inicial, no se hace nada.
@@ -329,17 +331,30 @@ fun MainContent(
                 },
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = 5.dp),
+                    .padding(top = 5.dp)
+                    .shadow(5.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.estaciones_button)
                 )
             ) {
-                Text("ESTACIONES")
+                Icon(
+                    painter = painterResource(R.drawable.ic_launcher_foreground),
+                    contentDescription = "Buscar estaciones",
+                    modifier = Modifier
+                        .padding(end = 8.dp, start = 0.dp)
+                        .size(35.dp)
+                        .clip(CircleShape)
+                        .background(colorResource(R.color.HomeBlue))
+                        ,
+                    tint = Color(0xFF28BCEF)
+                )
+                Text("BUSCAR ESTACIONES CERCANAS", color = Color.Black, fontWeight = FontWeight.Bold)
                 if (!connection) {
                     Icon(
                         Icons.Rounded.SignalWifiOff,
                         contentDescription = "Sin conexión",
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier.padding(start = 8.dp),
+                        tint=Color.Black
                     )
                 }
             }
