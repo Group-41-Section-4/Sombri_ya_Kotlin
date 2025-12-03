@@ -17,6 +17,7 @@ import androidx.navigation.navigation
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
 import com.example.sombriyakotlin.ui.account.navigation.authGraph
 import com.example.sombriyakotlin.ui.chatbot.ChatbotScreen
+import com.example.sombriyakotlin.ui.help.HelpScreen
 import com.example.sombriyakotlin.ui.menu.MainMenu
 import com.example.sombriyakotlin.ui.reports.ReporScreen
 import com.example.sombriyakotlin.ui.tyc.TyCScreen
@@ -48,6 +49,8 @@ object Routes {
     const val TYC = "tyc"
 
     const val FORMULARIO = "formulario"
+
+    const val HELP = "help"
 
 }
 
@@ -124,6 +127,10 @@ fun AppNavigation(navController: NavHostController,
 
             composable(Routes.TYC){
                 TyCScreen(navController)
+            }
+
+            composable(Routes.HELP){
+                HelpScreen(navController)
             }
         }
     }
