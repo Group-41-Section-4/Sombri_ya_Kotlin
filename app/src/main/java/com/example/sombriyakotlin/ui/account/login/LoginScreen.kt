@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sombriyakotlin.ui.account.login.LoginViewModel.LoginState
 import com.example.sombriyakotlin.ui.popup.SomenthingWentWrongPopUp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -48,7 +49,7 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
 
-    val loginState by viewModel.loginState.collectAsState()
+    val loginState by viewModel.loginState.collectAsStateWithLifecycle()
 
     var errorMessage by remember { mutableStateOf("Algo salió mal :(") }
     var showErrorDialog by remember { mutableStateOf(false) }
@@ -269,7 +270,7 @@ fun LoginScreen(
 
 
 @Composable
-private fun GoogleButton(viewModel: LoginViewModel, isLoading: Boolean, ){
+private fun GoogleButton(viewModel: LoginViewModel, isLoading: Boolean ){
     var googleAuth by remember { mutableStateOf(false) }
 
     val baseContext = LocalContext.current

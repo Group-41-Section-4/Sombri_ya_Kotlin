@@ -1,11 +1,12 @@
 package com.example.sombriyakotlin.ui.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.sombriyakotlin.feature.history.HistoryScreen
-import com.example.sombriyakotlin.feature.notifications.NotificationsScreen
+import com.example.sombriyakotlin.ui.notifications.NotificationsScreen
 import com.example.sombriyakotlin.ui.account.CardProfile
 import com.example.sombriyakotlin.ui.main.CardStations
 import com.example.sombriyakotlin.ui.main.MainWithDrawer
@@ -16,6 +17,7 @@ import androidx.navigation.navigation
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
 import com.example.sombriyakotlin.ui.account.navigation.authGraph
 import com.example.sombriyakotlin.ui.chatbot.ChatbotScreen
+import com.example.sombriyakotlin.ui.reports.ReporScreen
 import com.example.sombriyakotlin.ui.history.detail.HistoryDetailScreen
 import com.example.sombriyakotlin.ui.voice.VoiceScreen
 
@@ -43,6 +45,8 @@ object Routes {
 
     const val CHATBOT = "chatbot"
 
+    const val FORMULARIO = "formulario"
+
 }
 
 
@@ -57,7 +61,7 @@ fun NavHostController.safeNavigate(route: String, baseRoute: String) {
 
 @Composable
 fun AppNavigation(navController: NavHostController,
-    isLoggedIn: Boolean) {
+    isLoggedIn: Boolean,uri: Uri) {
     NavHost(
         navController = navController,
         startDestination = if (isLoggedIn) Routes.MAIN_GRAPH else Routes.AUTH_GRAPH

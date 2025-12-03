@@ -77,6 +77,7 @@ fun HistoryScreen (
                     // La lista 'history' ahora es de tipo HistoryUiItem
                     itemsIndexed(
                         items = history,
+                        key = { _, h -> h.id }
                     ) { _, h ->
                         HistoryCard(h,
                             onCardClick = { rentalId ->

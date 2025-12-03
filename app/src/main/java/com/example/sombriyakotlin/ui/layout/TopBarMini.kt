@@ -21,13 +21,14 @@ import com.example.sombriyakotlin.ui.navigation.safeNavigate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarMini(navController: NavHostController, title: String, content: @Composable () -> Unit ? = {}){
+fun TopBarMini(navController: NavHostController, title: String,content: @Composable () -> Unit ? = {}){
     TopAppBar(
         title = {
             Text(
                 title,
                 modifier = Modifier.Companion.fillMaxWidth(),
-                textAlign = TextAlign.Companion.Center
+                textAlign = TextAlign.Companion.Center,
+                color = Color.Companion.White
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
