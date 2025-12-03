@@ -288,16 +288,10 @@ fun MainContent(
                             Marker(
                                 state = MarkerState(position = LatLng(station.latitude, station.longitude)),
                                 title = station.placeName,
-                                snippet = "${station.description} \n- ${station.availableUmbrellas} available",
+                                snippet = "${station.availableUmbrellas} available",
                                 icon = scaledIcon
                             )
                         }
-                    }
-                    is StationsViewModel.StationsState.Loading -> {
-                        // Opcional: Podrías mostrar un indicador de carga en algún lugar de la UI
-                    }
-                    is StationsViewModel.StationsState.Error -> {
-                        // Opcional: Podrías mostrar un mensaje de error
                     }
                     else -> {
                         // Estado 'Idle' o inicial, no se hace nada.
