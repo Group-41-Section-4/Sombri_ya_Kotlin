@@ -2,23 +2,33 @@ package com.example.sombriyakotlin.ui.menu
 
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
-//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material.icons.outlined.HelpOutline
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.SmartToy
 import androidx.compose.material3.*
-//import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
@@ -115,17 +125,30 @@ import com.example.sombriyakotlin.ui.navigation.safeNavigate
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun SettingsMenuScreen(navController: NavController,
-                           navHostController: NavHostController) {
+                           navHostController: NavHostController,
+                           menuViewModel: MenuViewModel = hiltViewModel()
+    ) {
+
+        val profileState by menuViewModel.profileState.collectAsState()
+        var currentName by rememberSaveable { mutableStateOf("") }
+
+
         // Definición de los elementos del menú
         val menuItems = listOf(
-            MenuItemData(Icons.Default.CreditCard, "Métodos de pago") { navHostController.safeNavigate(Routes.PAYMENT_METHODS, Routes.MENU) },
-            MenuItemData(Icons.Default.History, "Historial") { navHostController.safeNavigate(Routes.HISTORY, Routes.MENU) },
-            MenuItemData(Icons.Default.Mic, "Acción de voz") { navHostController.safeNavigate(Routes.VOICE, Routes.MENU) },
-            MenuItemData(Icons.Default.Notifications, "Notificaciones") { navHostController.safeNavigate(Routes.NOTIFICATIONS, Routes.MENU) },
-            MenuItemData(Icons.Default.SmartToy, "Sombri-IA") { navHostController.safeNavigate(Routes.CHATBOT, Routes.MENU) },
-            MenuItemData(Icons.Default.HelpOutline, "Ayuda") { navHostController.safeNavigate(Routes.MAIN, Routes.MENU) }
+            MenuItemData(Icons.Outlined.CreditCard, "Métodos de pago") { navHostController.safeNavigate(Routes.PAYMENT_METHODS, Routes.MENU) },
+            MenuItemData(Icons.Outlined.History, "Historial") { navHostController.safeNavigate(Routes.HISTORY, Routes.MENU) },
+            MenuItemData(Icons.Outlined.Mic, "Acción de voz") { navHostController.safeNavigate(Routes.VOICE, Routes.MENU) },
+            MenuItemData(Icons.Outlined.Notifications, "Notificaciones") { navHostController.safeNavigate(Routes.NOTIFICATIONS, Routes.MENU) },
+            MenuItemData(Icons.Outlined.SmartToy, "Sombri-IA") { navHostController.safeNavigate(Routes.CHATBOT, Routes.MENU) },
+            MenuItemData(Icons.Outlined.HelpOutline, "Ayuda") { navHostController.safeNavigate(Routes.MAIN, Routes.MENU) }
         )
 
+        LaunchedEffect(profileState) {
+            if (profileState is MenuViewModel.ProfileState.Success) {
+                val user = (profileState as MenuViewModel.ProfileState.Success).user
+                currentName = user.name
+            }
+        }
         Scaffold(
 
             // Barra superior con el nombre del usuario o "Más"
@@ -150,7 +173,7 @@ import com.example.sombriyakotlin.ui.navigation.safeNavigate
                             text = "Términos y condiciones",
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                             modifier = Modifier
-                                .clickable { /* Acción: Abrir TyC */ }
+                                .clickable { navHostController.safeNavigate(Routes.TYC, Routes.MENU) }
                                 .padding(horizontal = 24.dp, vertical = 24.dp)
                                 .fillMaxWidth()
                         )
@@ -163,7 +186,7 @@ import com.example.sombriyakotlin.ui.navigation.safeNavigate
                 }
             },
             topBar = {
-                UserProfileHeader(name = "Santiago", subtext = "Mi perfil >",
+                UserProfileHeader(name = currentName, subtext = "Mi perfil >",
                     onClick =
                         {navHostController.safeNavigate(
                             Routes.PROFILE, Routes.MENU)})

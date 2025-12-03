@@ -19,6 +19,7 @@ import com.example.sombriyakotlin.ui.account.navigation.authGraph
 import com.example.sombriyakotlin.ui.chatbot.ChatbotScreen
 import com.example.sombriyakotlin.ui.menu.MainMenu
 import com.example.sombriyakotlin.ui.reports.ReporScreen
+import com.example.sombriyakotlin.ui.tyc.TyCScreen
 import com.example.sombriyakotlin.ui.voice.VoiceScreen
 
 // Definimos las rutas de navegación
@@ -43,6 +44,8 @@ object Routes {
     const val CHATBOT = "chatbot"
 
     const val MENU = "menu"
+
+    const val TYC = "tyc"
 
     const val FORMULARIO = "formulario"
 
@@ -117,6 +120,10 @@ fun AppNavigation(navController: NavHostController,
 
             composable(Routes.FORMULARIO){
                 ReporScreen(photoUri = uri, navhostController = navController)
+            }
+
+            composable(Routes.TYC){
+                TyCScreen(navController)
             }
         }
     }
