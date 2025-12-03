@@ -19,7 +19,7 @@ interface RentalRepository {
 
     suspend fun getActiveRentalRemote(userId: String): Rental?
 
-
+    suspend fun getRentalDetail(rentalId: String): Rental
 
 }
 

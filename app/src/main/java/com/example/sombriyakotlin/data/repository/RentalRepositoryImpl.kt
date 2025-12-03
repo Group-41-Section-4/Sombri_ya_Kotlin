@@ -59,9 +59,10 @@ class RentalRepositoryImpl @Inject constructor(
     override suspend fun getActiveRentalRemote(userId: String): Rental? {
         val response =  rentalApi.getRentalsByUserAndStatus(userId, "ongoing").firstOrNull()
         return response?.toDomain()
-
-
     }
 
-
+    override suspend fun getRentalDetail(rentalId: String): Rental {
+        val response = rentalApi.getOneRental(rentalId)
+        return response.toDomain()
+    }
 }
