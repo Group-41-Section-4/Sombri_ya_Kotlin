@@ -1,5 +1,7 @@
 package com.example.sombriyakotlin.ui.history.detail
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -7,8 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
@@ -34,6 +34,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryDetailScreen(
     navController: NavHostController,
@@ -78,6 +79,7 @@ fun HistoryDetailScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryDetailContent(
     detail: Rental,
@@ -362,6 +364,7 @@ fun HistoryDetailContent(
  * Intenta parsear un String a LocalDateTime con algunos formatos comunes.
  * Si falla, devuelve null.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 private fun String.toLocalDateTimeOrNull(): LocalDateTime? {
     if (this.isBlank()) return null
     return runCatching {
