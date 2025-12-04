@@ -36,7 +36,7 @@ fun TopBarMini(navController: NavHostController, title: String, fromMenu: Boolea
             navigationIconContentColor = Color.Companion.Black
         ),
         navigationIcon = {
-            IconButton(onClick = { navController.safeNavigate(Routes.MAIN, if (fromMenu) Routes.MENU else Routes.MAIN) }) {
+            IconButton(onClick = { navController.safeNavigate(if (fromMenu) Routes.MENU else Routes.MAIN, Routes.MAIN ) }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Atrás"
