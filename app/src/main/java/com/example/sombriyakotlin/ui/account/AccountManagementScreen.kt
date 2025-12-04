@@ -80,16 +80,16 @@ fun AccountManagementScreen(
                 onClick = { showEmailDialog = true }
             )
 
-            // Aquí podrías agregar "Cambiar contraseña" cuando tengas endpoint
-            AccountOptionItem(
-                text = "Cambiar contraseña",
-                onClick = { /* TODO: implementar cuando tengas endpoint */ }
-            )
+//            // Aquí podrías agregar "Cambiar contraseña" cuando tengas endpoint
+//            AccountOptionItem(
+//                text = "Cambiar contraseña",
+//                onClick = { /* TODO: implementar cuando tengas endpoint */ }
+//            )
 
-            AccountOptionItem(
-                text = "Editar foto",
-                onClick = { /* TODO: abrir picker de imagen y llamar updateUserImage */ }
-            )
+//            AccountOptionItem(
+//                text = "Editar foto",
+//                onClick = { /* TODO: abrir picker de imagen y llamar updateUserImage */ }
+//            )
 
             AccountOptionItem(
                 text = "Eliminar cuenta",
