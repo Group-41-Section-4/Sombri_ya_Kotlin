@@ -63,25 +63,6 @@ class ProfileScreenViewModel @Inject constructor(
     }
 
 
-    fun updateUserName(newName: String) {
-        viewModelScope.launch {
-            _profileState.value = ProfileState.Loading
-            try
-            {/*
-            Falta que exista updateUser.name
-                val updatedUser = userUseCases.updateUserNameUseCase(newName)
-                _profileState.value = ProfileState.Success(updatedUser)
-
-                Log.d("ProfileViewModel", "Nombre actualizado: ${updatedUser.name}")
-
-                */
-            } catch (e: Exception) {
-                Log.e("ProfileViewModel", "Error actualizando nombre: ${e.message}", e)
-                _profileState.value = ProfileState.Error("Error actualizando nombre")
-            }
-        }
-    }
-
     suspend fun logout() {
         userUseCases.closeSessionUseCase()
     }
@@ -91,4 +72,45 @@ class ProfileScreenViewModel @Inject constructor(
             locationUseCases.setLocationConsent(given)
         }
     }
+
+    fun updateUserName(newName: String) {
+        viewModelScope.launch {
+            _profileState.value = ProfileState.Loading
+            try {
+                val updatedUser = userUseCases.updateUserNameUseCase(newName)
+                _profileState.value = ProfileState.Success(updatedUser)
+                Log.d("ProfileViewModel", "Nombre actualizado: ${updatedUser.name}")
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "Error actualizando nombre: ${e.message}", e)
+                _profileState.value = ProfileState.Error("Error actualizando nombre")
+            }
+        }
+    }
+
+    fun updateUserEmail(newEmail: String) {
+        viewModelScope.launch {
+            _profileState.value = ProfileState.Loading
+            try {
+                val updatedUser = userUseCases.updateUserEmailUseCase(newEmail)
+                _profileState.value = ProfileState.Success(updatedUser)
+                Log.d("ProfileViewModel", "Email actualizado: ${updatedUser.email}")
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "Error actualizando email: ${e.message}", e)
+                _profileState.value = ProfileState.Error("Error actualizando email")
+            }
+        }
+    }
+
+    fun deleteAccount(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                userUseCases.deleteMyAccountUseCase()
+                onSuccess()
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "Error eliminando cuenta: ${e.message}", e)
+                onError("Error eliminando la cuenta")
+            }
+        }
+    }
+
 }
