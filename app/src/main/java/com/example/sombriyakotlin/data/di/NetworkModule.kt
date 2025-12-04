@@ -3,6 +3,7 @@ package com.example.sombriyakotlin.data.di
 import com.example.sombriyakotlin.BuildConfig
 import com.example.sombriyakotlin.data.serviceAdapter.LocationApi
 import com.example.sombriyakotlin.data.serviceAdapter.RentalApi
+import com.example.sombriyakotlin.data.serviceAdapter.ReportApi
 import com.example.sombriyakotlin.data.serviceAdapter.StationApi
 import com.example.sombriyakotlin.data.serviceAdapter.UserApi
 import dagger.Module
@@ -39,6 +40,11 @@ object NetworkModule {
     @Provides @Singleton
     fun provideRentalApi(retrofit: Retrofit): RentalApi =
         retrofit.create(RentalApi::class.java)
+
+    @Provides @Singleton
+    fun provideReportApi(retrofit: Retrofit): ReportApi =
+        retrofit.create(ReportApi::class.java)
+
 
     @Provides @Singleton
     fun provideStationApi(retrofit: Retrofit): StationApi =

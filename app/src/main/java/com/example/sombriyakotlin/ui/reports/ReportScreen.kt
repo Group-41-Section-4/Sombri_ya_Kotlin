@@ -40,31 +40,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
 import com.example.sombriyakotlin.ui.layout.TopBarMini
 
-//@Preview
 @Composable
-fun ReporScreen(photoUri: Uri, navhostController: NavHostController){
+fun ReporScreen(photoUri: Uri, navhostController: NavHostController, viewModel: ReportViewModel = hiltViewModel()){
     val isClickable = remember { mutableStateOf(true) }
 
     val takePicture = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success) isClickable.value = false
-        Log.e("TakePicture", "Error al tomar foto: $success")
+        if (success) {
+            isClickable.value = false
+        }
+        else {
+            Log.e("TakePicture", "Error al tomar foto: $success")
+        }
 
     }
 
-
-
-
-
     var rating by remember { mutableStateOf(0) }
-        var descripcion by remember { mutableStateOf("") }
+    var descripcion by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
 
     Column(Modifier.padding(0.dp).fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         TopBarMini(navController = navhostController, "Reportar Problema")
@@ -76,7 +80,6 @@ fun ReporScreen(photoUri: Uri, navhostController: NavHostController){
             horizontalAlignment = Alignment.CenterHorizontally
         )
         {
-
 
             Spacer(Modifier.height(24.dp))
 
@@ -135,7 +138,10 @@ fun ReporScreen(photoUri: Uri, navhostController: NavHostController){
 
             // Botón enviar
             Button(
-                onClick = { /* Acción enviar */
+                onClick = {
+                    viewModel.sendReport(rating, descripcion, photoUri, context)
+
+                    /* Acción enviar */
                     navhostController.navigate("main") {
                         popUpTo("main") { inclusive = true }
                     }

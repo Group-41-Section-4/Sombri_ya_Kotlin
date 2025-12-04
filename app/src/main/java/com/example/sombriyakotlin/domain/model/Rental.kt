@@ -1,7 +1,7 @@
 package com.example.sombriyakotlin.domain.model
 
 data class Rental(
-    val id: Int = 0,
+    val id: String ="",
     val userId: String = "",
     val stationStartId: String = "",
     val paymentMethodId: String? = null,
