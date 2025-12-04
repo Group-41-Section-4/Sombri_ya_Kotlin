@@ -140,83 +140,6 @@ fun ContentCard(
 
         WaterLevelCircle(percentage = percentage, distance = userDistance)
 
-        // === EMAIL ===
-        OutlinedTextField(
-            value = currentMail,
-            onValueChange = {},
-            readOnly = true,
-            shape = RoundedCornerShape(24.dp),
-            prefix = {
-                Text(
-                    "Email",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(end = 130.dp)
-                )
-            },
-            trailingIcon = {
-                IconButton(onClick = { openDialogMail = true }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow),
-                        contentDescription = "Modificar información",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            },
-            colors = TextFieldDefaults.colors(
-                disabledContainerColor  = colorResource(R.color.secondary),
-                focusedContainerColor   = colorResource(R.color.secondary),
-                unfocusedContainerColor = colorResource(R.color.secondary),
-                focusedTextColor        = colorResource(R.color.gray),
-                unfocusedTextColor      = colorResource(R.color.gray),
-                focusedIndicatorColor   = colorResource(R.color.primary),
-                unfocusedIndicatorColor = colorResource(R.color.primary)
-            ),
-            modifier = Modifier.fillMaxWidth(),
-            enabled = false
-        )
-        // === CONTRASEÑA ===
-        OutlinedTextField(
-            value = "........",
-            onValueChange = {},
-            readOnly = true,
-            shape = RoundedCornerShape(24.dp),
-            prefix = {
-                Text(
-                    "Contraseña",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(end = 150.dp)
-                        .align(Alignment.Start)
-                )
-            },
-            visualTransformation = PasswordVisualTransformation(),
-            trailingIcon = {
-                IconButton(onClick = { openDialogPassword = true }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow),
-                        contentDescription = "Modificar información",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            },
-            colors = TextFieldDefaults.colors(
-                disabledContainerColor  = colorResource(R.color.secondary),
-                focusedContainerColor   = colorResource(R.color.secondary),
-                unfocusedContainerColor = colorResource(R.color.secondary),
-                focusedTextColor        = colorResource(R.color.gray),
-                unfocusedTextColor      = colorResource(R.color.gray),
-                focusedIndicatorColor   = colorResource(R.color.primary),
-                unfocusedIndicatorColor = colorResource(R.color.primary)
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { openDialogPassword = true },
-            enabled = false
-        )
-
         Row (
             modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -254,6 +177,20 @@ fun ContentCard(
         ) {
             Text("Cerrar Sesión")
         }
+
+        Button(
+            onClick = { navController.navigate(Routes.ACCOUNT_MANAGEMENT) },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.primary),
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Text("Administrar Cuenta")
+        }
+
     }
 
     // === DIÁLOGOS ===

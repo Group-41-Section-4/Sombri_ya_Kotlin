@@ -14,6 +14,7 @@ import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.ui.rent.MainRenta
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.navigation
+import com.example.sombriyakotlin.ui.account.AccountManagementScreen
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
 import com.example.sombriyakotlin.ui.account.navigation.authGraph
 import com.example.sombriyakotlin.ui.chatbot.ChatbotScreen
@@ -51,6 +52,9 @@ object Routes {
     const val FORMULARIO = "formulario"
 
     const val HELP = "help"
+
+    const val ACCOUNT_MANAGEMENT = "account_management"
+
 
 }
 
@@ -132,6 +136,12 @@ fun AppNavigation(navController: NavHostController,
             composable(Routes.HELP){
                 HelpScreen(navController)
             }
+
+            composable(Routes.ACCOUNT_MANAGEMENT) {
+                AccountManagementScreen(navController = navController)
+            }
+
+
         }
     }
 }
