@@ -82,10 +82,7 @@ object UseCaseModule {
             getRentalsHystoryUserUseCase = getRentalsHystoryUserUseCase(repo),
             getCurrentRentalUseCase = GetCurrentRentalUseCase(repo),
             setCurrentRentalUseCase = SetCurrentRentalUseCase(repo),
-            getActiveRentalRemoteUseCase = GetActiveRentalRemoteUseCase(repo) // 👈 nuevo
-            getCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.GetCurrentRentalUseCase(repo),
-            setCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.SetCurrentRentalUseCase(repo),
-            getActiveRentalRemoteUseCase = GetActiveRentalRemoteUseCase(repo) ,
+            getActiveRentalRemoteUseCase = GetActiveRentalRemoteUseCase(repo), // 👈 nuevo
             getRentalDetailUseCase = GetRentalDetailUseCase(repo)
 
         )

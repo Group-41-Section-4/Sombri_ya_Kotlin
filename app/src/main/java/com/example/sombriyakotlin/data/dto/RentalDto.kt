@@ -179,7 +179,7 @@ fun RentalHistoryDto.toDomain(): History {
 
 fun RentalDtov2.toDomainRental(): Rental {
     return Rental(
-        id = 0, // tu backend envía un UUID (String), tu modelo es Int;
+        id = "", // tu backend envía un UUID (String), tu modelo es Int;
         // si luego cambias el dominio a String, aquí lo mapeas.
         userId = user.id,
         stationStartId = startStation?.id.orEmpty(),
