@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.sombriyakotlin.data.serviceAdapter.RentalApi
 import com.example.sombriyakotlin.data.datasource.RentalLocalDataSource
 import com.example.sombriyakotlin.data.dto.toDomain
+import com.example.sombriyakotlin.data.dto.toDomainRental
 import com.example.sombriyakotlin.data.dto.toEndDto
 import com.example.sombriyakotlin.data.dto.toRequestDto
 import com.example.sombriyakotlin.domain.model.Rental
@@ -63,6 +64,6 @@ class RentalRepositoryImpl @Inject constructor(
 
     override suspend fun getRentalDetail(rentalId: String): Rental {
         val response = rentalApi.getOneRental(rentalId)
-        return response.toDomain()
+        return response.toDomainRental()
     }
 }

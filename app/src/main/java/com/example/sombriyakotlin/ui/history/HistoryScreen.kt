@@ -35,7 +35,7 @@ import javax.inject.Inject
 @Composable
 fun HistoryScreen (
     navController: NavHostController,
-    historyVM: HistoryViewModel = hiltViewModel()
+    historyVM: HistoryViewModel
 ) {
     // Aseguramos que la data se cargue solo una vez
     LaunchedEffect(Unit) {

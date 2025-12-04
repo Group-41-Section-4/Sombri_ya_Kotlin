@@ -2,6 +2,7 @@ package com.example.sombriyakotlin.data.serviceAdapter
 
 import com.example.sombriyakotlin.data.dto.EndRentalDto
 import com.example.sombriyakotlin.data.dto.RentalDto
+import com.example.sombriyakotlin.data.dto.RentalDtov2
 import com.example.sombriyakotlin.data.dto.RentalHistoryDto
 import com.example.sombriyakotlin.data.dto.RentalRequestDto
 import retrofit2.http.Body
@@ -29,6 +30,6 @@ interface RentalApi {
     ): List<RentalHistoryDto>
 
     @GET("rentals/{id}")
-    suspend fun getOneRental(@retrofit2.http.Path("id") id: String): RentalDto
+    suspend fun getOneRental(@retrofit2.http.Path("id") id: String): RentalDtov2
 
 }

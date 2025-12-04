@@ -2,6 +2,8 @@ package com.example.sombriyakotlin.ui.navigation
 
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,6 +15,7 @@ import com.example.sombriyakotlin.ui.main.MainWithDrawer
 import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.ui.rent.MainRenta
 import androidx.navigation.navigation
+import com.example.sombriyakotlin.feature.history.HistoryViewModel
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
 import com.example.sombriyakotlin.ui.account.navigation.authGraph
 import com.example.sombriyakotlin.ui.chatbot.ChatbotScreen
@@ -81,7 +84,7 @@ fun AppNavigation(navController: NavHostController,
             }
 
             composable(Routes.RENT) {
-                MainRenta(navController , navController)
+                MainRenta(navController, navController)
             }
 
             composable(Routes.STATIONS) {
@@ -96,22 +99,38 @@ fun AppNavigation(navController: NavHostController,
                 NotificationsScreen(navController)
             }
 
-            composable(Routes.HISTORY) {
-                HistoryScreen(navController)
+            composable(Routes.HISTORY) { backStackEntry ->
+                // ViewModel scoped
+                val historyVM: HistoryViewModel = hiltViewModel(backStackEntry)
+
+                HistoryScreen(
+                    navController = navController,
+                    historyVM = historyVM
+                )
             }
 
-            composable(Routes.HISTORY_DETAIL) {
-                HistoryDetailScreen(navController)
+            composable(Routes.HISTORY_DETAIL) { backStackEntry ->
+                // NavBackStackEntry como key del remember
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.HISTORY)
+                }
+
+                val historyVM: HistoryViewModel = hiltViewModel(parentEntry)
+
+                HistoryDetailScreen(
+                    navController = navController,
+                    historyVM = historyVM
+                )
             }
 
             composable(Routes.PAYMENT_METHODS) {
                 paymentMethopdsCard(navController)
             }
-            composable(Routes.VOICE){
-                VoiceScreen(navController,navController)
+            composable(Routes.VOICE) {
+                VoiceScreen(navController, navController)
             }
 
-            composable(Routes.CHATBOT){
+            composable(Routes.CHATBOT) {
                 ChatbotScreen(navController)
             }
         }
