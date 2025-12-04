@@ -10,5 +10,6 @@ data class Rental(
     val authType: String = "",
     val status: String = "",
     val startedAt: String = "",
-    val endedAt: String? = null
+    val endedAt: String? = null,
+    val steps: Int = 0
 )
