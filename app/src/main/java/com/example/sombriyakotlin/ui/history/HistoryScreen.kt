@@ -21,16 +21,21 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.sombriyakotlin.R
+import com.example.sombriyakotlin.domain.model.Rental
+import com.example.sombriyakotlin.domain.model.Station
 import com.example.sombriyakotlin.domain.usecase.history.GetHistory
 import com.example.sombriyakotlin.domain.usecase.history.SaveHistory
 import com.example.sombriyakotlin.ui.layout.TopBarMini
+import com.example.sombriyakotlin.ui.navigation.Routes.HISTORY_DETAIL
+import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @Composable
 fun HistoryScreen (
     navController: NavHostController,
-    historyVM: HistoryViewModel = hiltViewModel()
+    historyVM: HistoryViewModel
 ) {
     // Aseguramos que la data se cargue solo una vez
     LaunchedEffect(Unit) {
@@ -74,7 +79,11 @@ fun HistoryScreen (
                         items = history,
                         key = { _, h -> h.id }
                     ) { _, h ->
-                        HistoryCard(h)
+                        HistoryCard(h,
+                            onCardClick = { rentalId ->
+                                        historyVM.onDetailRequested(rentalId)
+                                        navController.navigate(HISTORY_DETAIL)
+                                })
                     }
                 }
             }
@@ -84,12 +93,13 @@ fun HistoryScreen (
 
 @Composable
 // ** CAMBIO: Aceptamos HistoryUiItem en lugar del DTO/Domain History **
-fun HistoryCard(h: HistoryUiItem) {
+fun HistoryCard(h: HistoryUiItem, onCardClick: (rentalId: String) -> Unit) {
     Card(
         shape = RoundedCornerShape(30.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = colorResource(R.color.light_blue)),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        onClick = { onCardClick(h.id) }
     ) {
         Row(
             modifier = Modifier

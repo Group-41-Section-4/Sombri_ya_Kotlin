@@ -6,6 +6,62 @@ import com.example.sombriyakotlin.domain.model.Rental
 
 /* ------------------ DTOs (nullables para reflejar el backend) ------------------ */
 
+
+
+import com.google.gson.annotations.SerializedName
+
+data class RentalDtov2(
+    @SerializedName("id") val id: String,
+    @SerializedName("start_time") val startTime: String,
+    @SerializedName("end_time") val endTime: String?,
+    @SerializedName("status") val status: String,
+    @SerializedName("duration_minutes") val durationMinutes: Int?,
+    @SerializedName("distance_meters") val distanceMeters: Double?,
+    @SerializedName("auth_type") val authType: String,
+    @SerializedName("auth_attempts") val authAttempts: Int?,
+    @SerializedName("user") val user: UserDtov2,
+    @SerializedName("umbrella") val umbrella: UmbrellaDto?,
+    @SerializedName("start_station") val startStation: StationDtov2?,
+    @SerializedName("end_station") val endStation: StationDtov2?
+)
+
+data class UserDtov2(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String?,
+    @SerializedName("email") val email: String?,
+    @SerializedName("biometric_enabled") val biometricEnabled: Boolean?,
+    @SerializedName("created_at") val createdAt: String?
+    // puedes añadir los demás campos si los vas a usar
+)
+
+data class UmbrellaDto(
+    @SerializedName("id") val id: String,
+    @SerializedName("state") val state: String,
+    @SerializedName("last_maintenance_at") val lastMaintenanceAt: String?
+)
+
+data class StationDtov2(
+    @SerializedName("id") val id: String,
+    @SerializedName("description") val description: String?,
+    @SerializedName("place_name") val placeName: String?,
+    @SerializedName("capacity") val capacity: Int?,
+    @SerializedName("latitude") val latitude: String?,
+    @SerializedName("longitude") val longitude: String?,
+    @SerializedName("location") val location: LocationDto?,
+)
+
+data class LocationDto(
+    @SerializedName("type") val type: String?,
+    @SerializedName("coordinates") val coordinates: List<Double>?
+)
+
+data class ImageDto(
+    @SerializedName("type") val type: String?,
+    @SerializedName("data") val data: String?
+)
+
+
+
 data class RentalDto(
     val userId: String? = null,
     val stationStartId: String? = null,
@@ -117,6 +173,23 @@ fun RentalHistoryDto.toDomain(): History {
         userId = null,
         stationStartId = null,
         paymentMethodId = null
+    )
+}
+
+
+fun RentalDtov2.toDomainRental(): Rental {
+    return Rental(
+        id = 0, // tu backend envía un UUID (String), tu modelo es Int;
+        // si luego cambias el dominio a String, aquí lo mapeas.
+        userId = user.id,
+        stationStartId = startStation?.id.orEmpty(),
+        paymentMethodId = null, // el endpoint no envía método de pago aún
+        startLat = startStation?.latitude?.toDoubleOrNull() ?: 0.0,
+        startLon = startStation?.longitude?.toDoubleOrNull() ?: 0.0,
+        authType = authType,
+        status = status,
+        startedAt = startTime,
+        endedAt = endTime
     )
 }
 
