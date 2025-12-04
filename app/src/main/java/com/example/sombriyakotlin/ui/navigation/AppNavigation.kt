@@ -16,11 +16,15 @@ import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.ui.rent.MainRenta
 import androidx.navigation.navigation
 import com.example.sombriyakotlin.feature.history.HistoryViewModel
+import com.example.sombriyakotlin.ui.account.AccountManagementScreen
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
 import com.example.sombriyakotlin.ui.account.navigation.authGraph
 import com.example.sombriyakotlin.ui.chatbot.ChatbotScreen
+import com.example.sombriyakotlin.ui.help.HelpScreen
+import com.example.sombriyakotlin.ui.menu.MainMenu
 import com.example.sombriyakotlin.ui.reports.ReporScreen
 import com.example.sombriyakotlin.ui.history.detail.HistoryDetailScreen
+import com.example.sombriyakotlin.ui.tyc.TyCScreen
 import com.example.sombriyakotlin.ui.voice.VoiceScreen
 
 // Definimos las rutas de navegación
@@ -47,7 +51,16 @@ object Routes {
 
     const val CHATBOT = "chatbot"
 
+    const val MENU = "menu"
+
+    const val TYC = "tyc"
+
     const val FORMULARIO = "formulario"
+
+    const val HELP = "help"
+
+    const val ACCOUNT_MANAGEMENT = "account_management"
+
 
 }
 
@@ -85,6 +98,10 @@ fun AppNavigation(navController: NavHostController,
 
             composable(Routes.RENT) {
                 MainRenta(navController, navController)
+            }
+
+            composable(Routes.MENU){
+                MainMenu(navController, navController)
             }
 
             composable(Routes.STATIONS) {
@@ -133,6 +150,24 @@ fun AppNavigation(navController: NavHostController,
             composable(Routes.CHATBOT) {
                 ChatbotScreen(navController)
             }
+
+            composable(Routes.FORMULARIO){
+                ReporScreen(photoUri = uri, navhostController = navController)
+            }
+
+            composable(Routes.TYC){
+                TyCScreen(navController)
+            }
+
+            composable(Routes.HELP){
+                HelpScreen(navController)
+            }
+
+            composable(Routes.ACCOUNT_MANAGEMENT) {
+                AccountManagementScreen(navController = navController)
+            }
+
+
         }
     }
 }

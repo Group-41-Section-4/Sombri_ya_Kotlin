@@ -30,11 +30,14 @@ import com.example.sombriyakotlin.domain.usecase.rental.getRentalsHystoryUserUse
 import com.example.sombriyakotlin.domain.usecase.stations.GetStationByTagUseCase
 import com.example.sombriyakotlin.domain.usecase.user.CloseSessionUseCase
 import com.example.sombriyakotlin.domain.usecase.user.CreateUserUseCase
+import com.example.sombriyakotlin.domain.usecase.user.DeleteMyAccountUseCase
 import com.example.sombriyakotlin.domain.usecase.user.GetUserDistance
 import com.example.sombriyakotlin.domain.usecase.user.GetUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.GoogleLogInUserCases
 import com.example.sombriyakotlin.domain.usecase.user.LogInUserUseCases
 import com.example.sombriyakotlin.domain.usecase.user.RefreshUserUseCase
+import com.example.sombriyakotlin.domain.usecase.user.UpdateUserEmailUseCase
+import com.example.sombriyakotlin.domain.usecase.user.UpdateUserNameUseCase
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.Module
 import dagger.Provides
@@ -56,7 +59,10 @@ object UseCaseModule {
             logInUserUseCases = LogInUserUseCases(repo),
             getUserDistance = GetUserDistance(repo),
             googleLogInUserUseCases = GoogleLogInUserCases(repo),
-            closeSessionUseCase = CloseSessionUseCase(repo)
+            closeSessionUseCase = CloseSessionUseCase(repo),
+            updateUserNameUseCase = UpdateUserNameUseCase(repo),
+            updateUserEmailUseCase = UpdateUserEmailUseCase(repo),
+            deleteMyAccountUseCase = DeleteMyAccountUseCase(repo)
         )
     }
 

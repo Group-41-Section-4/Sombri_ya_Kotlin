@@ -84,6 +84,7 @@ data class RentalRequestDto(
 data class EndRentalDto(
     val user_id: String,
     val station_end_id: String,
+    val steps: Int
 )
 
 data class StartGps(
@@ -150,7 +151,8 @@ fun Rental.toEndDto(): EndRentalDto {
     Log.d("RENT", "Response: $this")
     val request = EndRentalDto(
         user_id = userId,
-        station_end_id = stationStartId
+        station_end_id = stationStartId,
+        steps = steps
     )
     return request
 }

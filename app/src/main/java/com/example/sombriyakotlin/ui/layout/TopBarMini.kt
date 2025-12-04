@@ -18,8 +18,8 @@ import com.example.sombriyakotlin.ui.navigation.safeNavigate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarMini(navController: NavHostController, title: String, content: @Composable () -> Unit = {}) {
-    CenterAlignedTopAppBar(
+fun TopBarMini(navController: NavHostController, title: String, fromMenu: Boolean=true, content: @Composable () -> Unit ? = {}){
+    TopAppBar(
         title = {
             Text(
                 text = title,
@@ -31,7 +31,7 @@ fun TopBarMini(navController: NavHostController, title: String, content: @Compos
             navigationIconContentColor = Color.White
         ),
         navigationIcon = {
-            IconButton(onClick = { navController.safeNavigate(Routes.MAIN, Routes.MAIN) }) {
+            IconButton(onClick = { navController.safeNavigate(if (fromMenu) Routes.MENU else Routes.MAIN, Routes.MAIN ) }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Atrás"

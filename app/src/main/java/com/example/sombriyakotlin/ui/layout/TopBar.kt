@@ -25,17 +25,12 @@ fun TopBar(navController: NavHostController) {
             containerColor = colorResource(R.color.BlueInterface),
             navigationIconContentColor = Color.Companion.Black
         ),
-        navigationIcon = {
+        actions = {
             IconButton(onClick = {navController.safeNavigate(Routes.NOTIFICATIONS, Routes.MAIN) } ) {
                 Icon(
                     imageVector = Icons.Outlined.Notifications,
                     contentDescription = "notificaciones"
                 )
-            }
-        },
-        actions = {
-            IconButton(onClick = { navController.safeNavigate(Routes.PROFILE, Routes.MAIN) }) {
-                Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = "Perfil")
             }
         }
     )

@@ -43,7 +43,7 @@ class LoginViewModel @Inject constructor(
                 upDateRentalLocal()
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Error en el login: ${e.message}", e)
-                _loginState.value = LoginState.Error("Error en el login: Compruebe sus credenciales")
+                _loginState.value = LoginState.Error("${e.message}")
             }
         }
     }

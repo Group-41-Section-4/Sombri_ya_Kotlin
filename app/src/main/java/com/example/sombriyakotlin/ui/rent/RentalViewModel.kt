@@ -221,13 +221,15 @@ class RentViewModel @Inject constructor(
 
                 val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                 val endDate = sdf.format(Date())
+                stopPedometerFromOtherScreen()
 
                 val rentalToEnd = current.copy(
                     userId = user.id,
                     stationStartId = stationId,
                     endedAt = endDate,
                     status = "completed",
-                    authType = current.authType ?: "nfc"
+                    authType = current.authType ?: "nfc",
+                    steps = manager.totalSteps.value
                     // pasos
                 )
 
@@ -237,7 +239,6 @@ class RentViewModel @Inject constructor(
                 } else ended
 
                 Log.d("RENT", "Renta finalizada correctamente")
-                stopPedometerFromOtherScreen()
                 _rentState.value = RentState.Success(finalRental)
             } catch (e: Exception) {
                 val msg = if (e is HttpException) {
