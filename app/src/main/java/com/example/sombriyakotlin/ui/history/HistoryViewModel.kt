@@ -5,6 +5,7 @@ import HistoryItem
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sombriyakotlin.domain.model.Rental
 import com.example.sombriyakotlin.domain.usecase.ObserveConnectivityUseCase
 import com.example.sombriyakotlin.domain.usecase.history.HistoryUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
@@ -47,6 +48,15 @@ class HistoryViewModel @Inject constructor(
 
     var MemoryHistory = 0
 
+    data class HistoryDetailUiState(
+        val isLoading: Boolean = false,
+        val detail: Rental? = null,
+        val error: String? = null
+    )
+
+    private val _detailState = MutableStateFlow(HistoryDetailUiState())
+    val detailState: StateFlow<HistoryDetailUiState> = _detailState
+
 
     /* ------------------ utils de tiempo ------------------ */
     private fun parseIso(iso: String?): Date? {
@@ -80,6 +90,29 @@ class HistoryViewModel @Inject constructor(
         Log.d("HistoryVM", "Pantalla de historial abierta → iniciando carga de datos")
         loadUserHistory()
     }
+
+    fun onDetailRequested(rentalId: String) {
+        viewModelScope.launch {
+            Log.d("HistoryVM", "Solicitud de detalle de renta con ID: $rentalId")
+            _detailState.value = HistoryDetailUiState(isLoading = true)
+
+            try {
+                val detail = rentalUseCases.getRentalDetailUseCase(rentalId) // use case
+                _detailState.value = HistoryDetailUiState(
+                    isLoading = false,
+                    detail = detail
+                )
+                Log.d("HistoryVM", "Detalle de renta cargado: $detail")
+            } catch (e: Exception) {
+                _detailState.value = HistoryDetailUiState(
+                    isLoading = false,
+                    error = e.message
+                )
+                Log.e("HistoryVM", "Error cargando detalle de renta", e)
+            }
+        }
+    }
+
 
     /* ------------------ Carga del historial ------------------ */
 

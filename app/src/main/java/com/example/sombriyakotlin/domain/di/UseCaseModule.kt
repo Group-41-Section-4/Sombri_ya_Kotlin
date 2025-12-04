@@ -25,6 +25,7 @@ import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.EndRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetActiveRentalRemoteUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetCurrentRentalUseCase
+import com.example.sombriyakotlin.domain.usecase.rental.GetRentalDetailUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetRentalUserUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.SetCurrentRentalUseCase
@@ -35,11 +36,14 @@ import com.example.sombriyakotlin.domain.usecase.report.ReportUseCases
 import com.example.sombriyakotlin.domain.usecase.stations.GetStationByTagUseCase
 import com.example.sombriyakotlin.domain.usecase.user.CloseSessionUseCase
 import com.example.sombriyakotlin.domain.usecase.user.CreateUserUseCase
+import com.example.sombriyakotlin.domain.usecase.user.DeleteMyAccountUseCase
 import com.example.sombriyakotlin.domain.usecase.user.GetUserDistance
 import com.example.sombriyakotlin.domain.usecase.user.GetUserUseCase
 import com.example.sombriyakotlin.domain.usecase.user.GoogleLogInUserCases
 import com.example.sombriyakotlin.domain.usecase.user.LogInUserUseCases
 import com.example.sombriyakotlin.domain.usecase.user.RefreshUserUseCase
+import com.example.sombriyakotlin.domain.usecase.user.UpdateUserEmailUseCase
+import com.example.sombriyakotlin.domain.usecase.user.UpdateUserNameUseCase
 import com.example.sombriyakotlin.domain.usecase.user.UserUseCases
 import dagger.Module
 import dagger.Provides
@@ -61,7 +65,10 @@ object UseCaseModule {
             logInUserUseCases = LogInUserUseCases(repo),
             getUserDistance = GetUserDistance(repo),
             googleLogInUserUseCases = GoogleLogInUserCases(repo),
-            closeSessionUseCase = CloseSessionUseCase(repo)
+            closeSessionUseCase = CloseSessionUseCase(repo),
+            updateUserNameUseCase = UpdateUserNameUseCase(repo),
+            updateUserEmailUseCase = UpdateUserEmailUseCase(repo),
+            deleteMyAccountUseCase = DeleteMyAccountUseCase(repo)
         )
     }
 
@@ -76,6 +83,10 @@ object UseCaseModule {
             getCurrentRentalUseCase = GetCurrentRentalUseCase(repo),
             setCurrentRentalUseCase = SetCurrentRentalUseCase(repo),
             getActiveRentalRemoteUseCase = GetActiveRentalRemoteUseCase(repo) // 👈 nuevo
+            getCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.GetCurrentRentalUseCase(repo),
+            setCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.SetCurrentRentalUseCase(repo),
+            getActiveRentalRemoteUseCase = GetActiveRentalRemoteUseCase(repo) ,
+            getRentalDetailUseCase = GetRentalDetailUseCase(repo)
 
         )
     }

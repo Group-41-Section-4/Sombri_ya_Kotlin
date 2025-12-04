@@ -6,6 +6,7 @@ import com.example.sombriyakotlin.domain.model.LogInUser
 import com.example.sombriyakotlin.domain.model.User
 import com.example.sombriyakotlin.domain.model.UserHistory
 import kotlinx.coroutines.flow.Flow
+import okhttp3.MultipartBody
 
 interface UserRepository {
     suspend fun createUser(user: CreateUser):User
@@ -18,4 +19,9 @@ interface UserRepository {
     suspend fun googleLogIn(googleLogIn: GoogleLogIn): User
 
     suspend fun closeSession()
+
+    suspend fun updateUserName(newName: String): User
+    suspend fun updateUserEmail(newEmail: String): User
+    suspend fun updateUserImage(image: MultipartBody.Part): User
+    suspend fun deleteMyAccount()
 }

@@ -2,6 +2,8 @@ package com.example.sombriyakotlin.ui.navigation
 
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,14 +14,16 @@ import com.example.sombriyakotlin.ui.main.CardStations
 import com.example.sombriyakotlin.ui.main.MainWithDrawer
 import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.ui.rent.MainRenta
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.navigation
+import com.example.sombriyakotlin.feature.history.HistoryViewModel
+import com.example.sombriyakotlin.ui.account.AccountManagementScreen
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
 import com.example.sombriyakotlin.ui.account.navigation.authGraph
 import com.example.sombriyakotlin.ui.chatbot.ChatbotScreen
 import com.example.sombriyakotlin.ui.help.HelpScreen
 import com.example.sombriyakotlin.ui.menu.MainMenu
 import com.example.sombriyakotlin.ui.reports.ReporScreen
+import com.example.sombriyakotlin.ui.history.detail.HistoryDetailScreen
 import com.example.sombriyakotlin.ui.tyc.TyCScreen
 import com.example.sombriyakotlin.ui.voice.VoiceScreen
 
@@ -40,6 +44,9 @@ object Routes {
 
     const val NOTIFICATIONS = "notifications"
     const val HISTORY = "history"
+
+    const val HISTORY_DETAIL = "HISTORY_DETAIL"
+
     const val VOICE = "voice"
 
     const val CHATBOT = "chatbot"
@@ -51,6 +58,9 @@ object Routes {
     const val FORMULARIO = "formulario"
 
     const val HELP = "help"
+
+    const val ACCOUNT_MANAGEMENT = "account_management"
+
 
 }
 
@@ -87,7 +97,7 @@ fun AppNavigation(navController: NavHostController,
             }
 
             composable(Routes.RENT) {
-                MainRenta(navController , navController)
+                MainRenta(navController, navController)
             }
 
             composable(Routes.MENU){
@@ -106,18 +116,38 @@ fun AppNavigation(navController: NavHostController,
                 NotificationsScreen(navController)
             }
 
-            composable(Routes.HISTORY) {
-                HistoryScreen(navController)
+            composable(Routes.HISTORY) { backStackEntry ->
+                // ViewModel scoped
+                val historyVM: HistoryViewModel = hiltViewModel(backStackEntry)
+
+                HistoryScreen(
+                    navController = navController,
+                    historyVM = historyVM
+                )
+            }
+
+            composable(Routes.HISTORY_DETAIL) { backStackEntry ->
+                // NavBackStackEntry como key del remember
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Routes.HISTORY)
+                }
+
+                val historyVM: HistoryViewModel = hiltViewModel(parentEntry)
+
+                HistoryDetailScreen(
+                    navController = navController,
+                    historyVM = historyVM
+                )
             }
 
             composable(Routes.PAYMENT_METHODS) {
                 paymentMethopdsCard(navController)
             }
-            composable(Routes.VOICE){
-                VoiceScreen(navController,navController)
+            composable(Routes.VOICE) {
+                VoiceScreen(navController, navController)
             }
 
-            composable(Routes.CHATBOT){
+            composable(Routes.CHATBOT) {
                 ChatbotScreen(navController)
             }
 
@@ -132,6 +162,12 @@ fun AppNavigation(navController: NavHostController,
             composable(Routes.HELP){
                 HelpScreen(navController)
             }
+
+            composable(Routes.ACCOUNT_MANAGEMENT) {
+                AccountManagementScreen(navController = navController)
+            }
+
+
         }
     }
 }
