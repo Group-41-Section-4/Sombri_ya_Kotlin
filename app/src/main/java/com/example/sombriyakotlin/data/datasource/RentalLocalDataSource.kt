@@ -15,7 +15,7 @@ class RentalLocalDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
     companion object {
-        private val RENT_ID = intPreferencesKey("rent_id")
+        private val RENT_ID = stringPreferencesKey("rent_id")
         private val RENT_USER_ID = stringPreferencesKey("rent_user_id")
         private val RENT_STATION_START_ID = stringPreferencesKey("rent_station_start_id")
         private val RENT_PAYMENT_METHOD_ID = stringPreferencesKey("rent_payment_method_id")

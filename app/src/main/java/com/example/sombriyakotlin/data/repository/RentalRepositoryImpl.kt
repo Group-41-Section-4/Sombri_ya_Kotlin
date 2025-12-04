@@ -18,12 +18,12 @@ class RentalRepositoryImpl @Inject constructor(
     private val local: RentalLocalDataSource
 ): RentalRepository{
     override suspend fun createRental(rental: Rental): Rental {
-
+        local.clear()
         val response = rentalApi.createRental(rental.toRequestDto())
-
-
         val domain = response.toDomain()
+        Log.d("RENT", "Response: ${domain.id}")
         local.saveCurrent(domain)
+
         return domain
         }
 
@@ -34,7 +34,11 @@ class RentalRepositoryImpl @Inject constructor(
         val response = rentalApi.endRental(rental.toEndDto())
         Log.d("RENT", "Despues Response: $response")
         val domain = response.toDomain()
-        local.clear()
+        Log.d("RENT", "Response: ${domain.id}")
+
+        local.saveCurrent(domain)
+
+//        local.clear()
         return domain
     }
 

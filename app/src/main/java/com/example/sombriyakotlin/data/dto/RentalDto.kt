@@ -110,7 +110,7 @@ data class RentalHistoryDto(
 
 // DTO -> Dominio
 fun RentalDto.toDomain(): Rental = Rental(
-    id = 0,                                        // El DTO no trae id numérico: usa 0
+    id = rental_id ?: "",                                        // El DTO no trae id numérico: usa 0
     userId = userId ?: "",                         // evita NPE si backend no lo manda
     stationStartId = stationStartId ?: "",         // si en dominio es no-nulo, usa vacío por defecto
     paymentMethodId = paymentMethodId,             // puede ser null en dominio

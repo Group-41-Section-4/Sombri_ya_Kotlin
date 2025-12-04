@@ -13,15 +13,18 @@ import com.example.sombriyakotlin.data.repository.ChatbotRepositoryImpl
 import com.example.sombriyakotlin.data.repository.HistoryRepositoryImpl
 import com.example.sombriyakotlin.data.repository.LocationRepositoryImpl
 import com.example.sombriyakotlin.data.repository.RentalRepositoryImpl
+import com.example.sombriyakotlin.data.repository.ReportRepositoryImpl
 import com.example.sombriyakotlin.data.repository.StationRepositoryImpl
 import com.example.sombriyakotlin.data.repository.UserRepositoryImpl
 import com.example.sombriyakotlin.data.serviceAdapter.LocationApi
+import com.example.sombriyakotlin.data.serviceAdapter.ReportApi
 import com.example.sombriyakotlin.domain.model.Station
 import com.example.sombriyakotlin.domain.repository.ChatbotRepository
 import com.example.sombriyakotlin.domain.repository.HistoryRepository
 import com.example.sombriyakotlin.domain.repository.LocationRepository
 import com.example.sombriyakotlin.domain.repository.NetworkRepository
 import com.example.sombriyakotlin.domain.repository.RentalRepository
+import com.example.sombriyakotlin.domain.repository.ReportRepository
 import com.example.sombriyakotlin.domain.repository.StationRepository
 import com.example.sombriyakotlin.domain.repository.UserRepository
 import com.example.sombriyakotlin.domain.repository.WeatherRepository
@@ -50,6 +53,16 @@ abstract class RepositoryModule {
             rentalApi: RentalApi,
             rentalLocalDataSource: RentalLocalDataSource
         ): RentalRepository = RentalRepositoryImpl(rentalApi, rentalLocalDataSource)
+
+        @Provides
+        @Singleton
+        fun provideReportRepository(
+            reportApi: ReportApi
+        ): ReportRepository {
+            return ReportRepositoryImpl(reportApi)
+        }
+
+
 
         @Provides
         @Singleton

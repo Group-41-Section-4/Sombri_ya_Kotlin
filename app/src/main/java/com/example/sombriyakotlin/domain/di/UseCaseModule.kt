@@ -6,6 +6,7 @@ import com.example.sombriyakotlin.domain.repository.LocationRepository
 import com.example.sombriyakotlin.domain.repository.NetworkRepository
 import com.example.sombriyakotlin.domain.repository.StationRepository
 import com.example.sombriyakotlin.domain.repository.RentalRepository
+import com.example.sombriyakotlin.domain.repository.ReportRepository
 import com.example.sombriyakotlin.domain.repository.UserRepository
 import com.example.sombriyakotlin.domain.usecase.ObserveConnectivityUseCase
 import com.example.sombriyakotlin.domain.usecase.chatbot.ChatbotUseCases
@@ -23,10 +24,15 @@ import com.example.sombriyakotlin.domain.usecase.stations.StationsUseCases
 import com.example.sombriyakotlin.domain.usecase.rental.CreateRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.EndRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetActiveRentalRemoteUseCase
+import com.example.sombriyakotlin.domain.usecase.rental.GetCurrentRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetRentalDetailUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.GetRentalUserUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.RentalUseCases
+import com.example.sombriyakotlin.domain.usecase.rental.SetCurrentRentalUseCase
 import com.example.sombriyakotlin.domain.usecase.rental.getRentalsHystoryUserUseCase
+import com.example.sombriyakotlin.domain.usecase.report.CreateReportUseCase
+import com.example.sombriyakotlin.domain.usecase.report.GetReportByIdUseCase
+import com.example.sombriyakotlin.domain.usecase.report.ReportUseCases
 import com.example.sombriyakotlin.domain.usecase.stations.GetStationByTagUseCase
 import com.example.sombriyakotlin.domain.usecase.user.CloseSessionUseCase
 import com.example.sombriyakotlin.domain.usecase.user.CreateUserUseCase
@@ -74,11 +80,23 @@ object UseCaseModule {
             endRentalUseCase = EndRentalUseCase(repo),
             getRentalsUserUseCase = GetRentalUserUseCase(repo),
             getRentalsHystoryUserUseCase = getRentalsHystoryUserUseCase(repo),
+            getCurrentRentalUseCase = GetCurrentRentalUseCase(repo),
+            setCurrentRentalUseCase = SetCurrentRentalUseCase(repo),
+            getActiveRentalRemoteUseCase = GetActiveRentalRemoteUseCase(repo) // 👈 nuevo
             getCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.GetCurrentRentalUseCase(repo),
             setCurrentRentalUseCase = com.example.sombriyakotlin.domain.usecase.rental.SetCurrentRentalUseCase(repo),
             getActiveRentalRemoteUseCase = GetActiveRentalRemoteUseCase(repo) ,
             getRentalDetailUseCase = GetRentalDetailUseCase(repo)
 
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideReportUseCases(repo: ReportRepository): ReportUseCases{
+        return ReportUseCases(
+            createReportUseCase = CreateReportUseCase(repo),
+            getReportByIdUseCase = GetReportByIdUseCase(repo)
         )
     }
 

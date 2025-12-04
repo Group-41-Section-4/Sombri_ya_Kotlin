@@ -208,20 +208,22 @@ class RentViewModel @Inject constructor(
             Log.d("RENT", "Terminando renta...")
             _rentState.value = RentState.Loading
             try {
-                val current = rentalUseCases.getCurrentRentalUseCase().first()
-                if (current == null) {
-                    _rentState.value = RentState.Error("No hay alquiler activo")
-                    return@launch
-                }
-
                 val user = userUseCases.getUserUseCase().first() ?: run {
                     _rentState.value = RentState.Error("Usuario no autenticado")
                     return@launch
                 }
 
+                val current = rentalUseCases.getActiveRentalRemoteUseCase(user.id)
+                if (current == null) {
+                    _rentState.value = RentState.Error("No hay alquiler activo")
+                    return@launch
+                }
+
                 val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                 val endDate = sdf.format(Date())
-                stopPedometerFromOtherScreen()
+                Log.d("RENT", "Renta actual: $current")
+                if(manager.isRunning.value) {stopPedometerFromOtherScreen()}
+                Log.d("RENT", "Renta podomet after: $current")
 
                 val rentalToEnd = current.copy(
                     userId = user.id,
@@ -229,10 +231,10 @@ class RentViewModel @Inject constructor(
                     endedAt = endDate,
                     status = "completed",
                     authType = current.authType ?: "nfc",
-                    steps = manager.totalSteps.value
+                    steps =  manager.totalSteps.value
                     // pasos
                 )
-
+                Log.d("RENT", "Renta a finalizar: $rentalToEnd")
                 val ended = rentalUseCases.endRentalUseCase.invoke(rentalToEnd)
                 val finalRental = if (ended.endedAt.isNullOrBlank()) {
                     ended.copy(endedAt = rentalToEnd.endedAt)
