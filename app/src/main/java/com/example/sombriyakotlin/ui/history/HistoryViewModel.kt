@@ -93,6 +93,7 @@ class HistoryViewModel @Inject constructor(
 
     fun onDetailRequested(rentalId: String) {
         viewModelScope.launch {
+            Log.d("HistoryVM", "Solicitud de detalle de renta con ID: $rentalId")
             _detailState.value = HistoryDetailUiState(isLoading = true)
 
             try {
@@ -101,11 +102,13 @@ class HistoryViewModel @Inject constructor(
                     isLoading = false,
                     detail = detail
                 )
+                Log.d("HistoryVM", "Detalle de renta cargado: $detail")
             } catch (e: Exception) {
                 _detailState.value = HistoryDetailUiState(
                     isLoading = false,
                     error = e.message
                 )
+                Log.e("HistoryVM", "Error cargando detalle de renta", e)
             }
         }
     }

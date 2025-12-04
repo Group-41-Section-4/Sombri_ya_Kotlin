@@ -12,7 +12,6 @@ import com.example.sombriyakotlin.ui.main.CardStations
 import com.example.sombriyakotlin.ui.main.MainWithDrawer
 import com.example.sombriyakotlin.ui.paymentMethods.paymentMethopdsCard
 import com.example.sombriyakotlin.ui.rent.MainRenta
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.navigation
 import com.example.sombriyakotlin.ui.account.navigation.AuthRoutes
 import com.example.sombriyakotlin.ui.account.navigation.authGraph
@@ -102,7 +101,7 @@ fun AppNavigation(navController: NavHostController,
             }
 
             composable(Routes.HISTORY_DETAIL) {
-                HistoryDetailScreen()
+                HistoryDetailScreen(navController)
             }
 
             composable(Routes.PAYMENT_METHODS) {

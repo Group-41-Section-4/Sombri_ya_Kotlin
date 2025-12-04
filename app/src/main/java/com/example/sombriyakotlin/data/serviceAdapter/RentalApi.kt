@@ -28,7 +28,7 @@ interface RentalApi {
         @Query("status") status: String
     ): List<RentalHistoryDto>
 
-    @GET("rentals")
+    @GET("rentals/{id}")
     suspend fun getOneRental(@retrofit2.http.Path("id") id: String): RentalDto
 
 }
